@@ -3,24 +3,26 @@ package com.alienlab.db;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.sql.SQLException;
 
 /**
  * Created by 橘 on 2017/1/3.
  */
-@Component
-class ConnectorBean {
-    @Autowired
-    DataSourceUtil dataSourceUtil;
+public class ConnectorBean {
+    DataSourceUtil dataSourceUtil=new DataSourceUtil();
     private String url;
     private String dbType;
     private String userName;
     private String password;
     private DruidDataSource dataSource;
     private DruidPooledConnection connPool;
+
+    public ConnectorBean(){
+
+    }
 
     public ConnectorBean(String dbType,String userName,String password,String url) throws SQLException {
         this.dbType=dbType;

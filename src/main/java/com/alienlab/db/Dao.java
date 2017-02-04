@@ -22,20 +22,18 @@ import com.alibaba.druid.pool.DruidPooledConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-
 @Component
 public class Dao {
-    @Autowired
     Logger logger = Logger.getLogger(Dao.class);
-
+    @Autowired
+    DataSourceUtil dataSourceUtil;
     //当前操作所需的链接，每次执行都需要指定。
-    private ConnectorBean connectorBean;
+    private ConnectorBean connectorBean=null;
 
 
-    //未指定连接的构造函数
+    //未指定连接的构造函数，获取默认连接
     public Dao() {
-
+//        this.connectorBean=dataSourceUtil.getDefaultDataSource();
     }
 
     //指定特定连接的构造函数
@@ -43,10 +41,6 @@ public class Dao {
         this.connectorBean=connectorBean;
     }
 
-
-    public List getEntityList(String sql,Class entityClass){
-        return null;
-    }
 
     /**
      * 获取返回数据总行�?
@@ -61,6 +55,9 @@ public class Dao {
         Statement stmt = null;
         try {
             // sql=sql.toUpperCase();
+            if(this.connectorBean==null){
+                this.connectorBean=dataSourceUtil.getDefaultDataSource();
+            }
             conn = this.connectorBean.getConnPool();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 stmt = conn.createStatement();
@@ -98,6 +95,9 @@ public class Dao {
         Statement stmt = null;
         try {
             // sql=sql.toUpperCase();
+            if(this.connectorBean==null){
+                this.connectorBean=dataSourceUtil.getDefaultDataSource();
+            }
             conn = this.connectorBean.getConnPool();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 // pstmt=conn.prepareStatement(sql);
@@ -146,6 +146,9 @@ public class Dao {
         Statement pstmt = null;
         DruidPooledConnection conn = null;
         try {
+            if(this.connectorBean==null){
+                this.connectorBean=dataSourceUtil.getDefaultDataSource();
+            }
             conn = this.connectorBean.getConnPool();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 pstmt = conn.createStatement();
@@ -167,6 +170,9 @@ public class Dao {
         Statement pstmt = null;
         DruidPooledConnection conn = null;
         try {
+            if(this.connectorBean==null){
+                this.connectorBean=dataSourceUtil.getDefaultDataSource();
+            }
             conn = this.connectorBean.getConnPool();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 pstmt = conn.createStatement();

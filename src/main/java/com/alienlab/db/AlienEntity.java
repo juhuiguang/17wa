@@ -26,10 +26,7 @@ import java.util.Map;
  * 自定义简单entity的dao操作。
  * @param <T> entity类型
  */
-@Component
 public class AlienEntity<T> {
-
-    @Autowired
     Logger logger = Logger.getLogger(AlienEntity.class);
 
     /**
@@ -91,7 +88,7 @@ public class AlienEntity<T> {
      * @param list  查询结果集
      * @param entityclass
      */
-    public List list2T(List<Map<String, Object>> list,Class<T> entityclass){
+    public List list2T(List<Map<String, Object>> list,Class entityclass){
         try {
             List result=new ArrayList();
             if(list!=null){
