@@ -240,7 +240,7 @@ public class Dao {
     public boolean executeBatch(List<String> sql) throws SQLException {
         boolean bool = false;
         // 生产connection
-        Connection conn = this.connectorBean.getConnPool();
+        DruidPooledConnection conn = this.connectorBean.getConnPool();
         Statement sm = null;
         int[] result = null;
         sm = conn.createStatement();
@@ -289,10 +289,11 @@ public class Dao {
         }
     }
 
-    public  void closeConnection(Connection dbConnection) {
+    public  void closeConnection(DruidPooledConnection dbConnection) {
         try {
             if (dbConnection != null && (!dbConnection.isClosed())) {
-                dbConnection.close();
+
+                //dbConnection.close();
             }
         } catch (Exception e) {
             // TODO: handle exception

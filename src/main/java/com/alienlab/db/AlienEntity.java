@@ -8,10 +8,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +35,7 @@ public class AlienEntity<T> {
     Logger logger = Logger.getLogger(AlienEntity.class);
 
     /**
-     *
+     * 通过entity实例生成insert语句
      * @param entity
      * @return
      */
@@ -46,7 +51,19 @@ public class AlienEntity<T> {
         //解析字段
         Field[] fields=entityClass.getDeclaredFields();
         for (Field field:fields) {
+            field.setAccessible(true);
             Column column=field.getAnnotation(Column.class);
+            if(column==null){
+                PropertyDescriptor pd = null;
+                try {
+                    pd = new PropertyDescriptor(field.getName(),
+                            entityClass);
+                } catch (IntrospectionException e) {
+                    e.printStackTrace();
+                }
+                Method getMethod = pd.getReadMethod();//获得get方法
+                column=getMethod.getAnnotation(Column.class);
+            }
             if(fieldbuffer.length()==0){
                 fieldbuffer.append(column.name());
             }else{
@@ -55,14 +72,14 @@ public class AlienEntity<T> {
             if(column!=null){
                 try {
                     //日期与字符类型需要单引号
-                    if(field.getType().equals(Date.class)||field.getType().equals(String.class)){
-                        if(valuebuffer.length()==0){
+                    if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
+                        if(valuebuffer.length()>0){
                             valuebuffer.append(",").append("'").append(field.get(entity)).append("'");
                         }else{
                             valuebuffer.append("'").append(field.get(entity)).append("'");
                         }
                     }else{
-                        if(valuebuffer.length()==0){
+                        if(valuebuffer.length()>0){
                             valuebuffer.append(",").append(field.get(entity));
                         }else{
                             valuebuffer.append(field.get(entity));
@@ -79,7 +96,90 @@ public class AlienEntity<T> {
     }
 
     public String UpdateSql(T entity){
-        return "";
+        Field idfield=getIdField(entity);
+        if(idfield==null){
+            logger.error("update error,there is no id field in entity!");
+            return null;
+        }
+        //解析表名
+        Class entityClass=entity.getClass();
+        Table table= (Table) entityClass.getAnnotation(Table.class);
+        String tableName=table.name();
+        StringBuffer sqlbuffer=new StringBuffer();
+        sqlbuffer.append("update ").append(tableName).append(" set ");
+        StringBuffer wherebuffer=new StringBuffer();
+        StringBuffer updatebuffer=new StringBuffer();
+        //解析字段
+        Field[] fields=entityClass.getDeclaredFields();
+        for(Field field:fields){
+            field.setAccessible(true);
+            Column column=field.getAnnotation(Column.class);
+            if(column==null){
+                PropertyDescriptor pd = null;
+                try {
+                    pd = new PropertyDescriptor(field.getName(),
+                            entityClass);
+                } catch (IntrospectionException e) {
+                    e.printStackTrace();
+                }
+                Method getMethod = pd.getReadMethod();//获得get方法
+                column=getMethod.getAnnotation(Column.class);
+            }
+            if(column!=null){
+                try {
+                    if(field.getName().equals(idfield.getName())){
+                        wherebuffer.append(" where ").append(column.name()).append("=").append(field.get(entity));
+                    }else{
+                        //日期与字符类型需要单引号
+                        if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
+                            if(updatebuffer.length()>0){
+                                updatebuffer.append(",").append(column.name()).append("='").append(field.get(entity)).append("'");
+                            }else{
+                                updatebuffer.append(column.name()).append("='").append(field.get(entity)).append("'");
+                            }
+                        }else{
+                            if(updatebuffer.length()>0){
+                                updatebuffer.append(",").append(column.name()).append("=").append(field.get(entity));
+                            }else{
+                                updatebuffer.append(column.name()).append("=").append(field.get(entity));
+                            }
+                        }
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if(updatebuffer.length()>0&&wherebuffer.length()>0){
+            sqlbuffer.append(updatebuffer.toString()).append(wherebuffer.toString());
+            return sqlbuffer.toString();
+        }else{
+            logger.error("update error,no id field matched!");
+            return null;
+        }
+    }
+
+    public  Field getIdField(T entity){
+        Class entityClass=entity.getClass();
+        Field[] fields=entityClass.getDeclaredFields();
+        for(Field field:fields){
+            Id id=field.getAnnotation(Id.class);
+            if(id==null){
+                PropertyDescriptor pd = null;
+                try {
+                    pd = new PropertyDescriptor(field.getName(),
+                            entityClass);
+                } catch (IntrospectionException e) {
+                    e.printStackTrace();
+                }
+                Method getMethod = pd.getReadMethod();//获得get方法
+                id=getMethod.getAnnotation(Id.class);
+            }
+            if(id!=null){
+                return field;
+            }
+        }
+        return null;
     }
 
 
@@ -101,6 +201,17 @@ public class AlienEntity<T> {
                     for(int j=0;j<fields.length;j++){
                         fields[j].setAccessible(true);
                         Column column=fields[j].getAnnotation(Column.class);
+                        if(column==null){
+                            PropertyDescriptor pd = null;
+                            try {
+                                pd = new PropertyDescriptor(fields[j].getName(),
+                                        entityclass);
+                            } catch (IntrospectionException e) {
+                                e.printStackTrace();
+                            }
+                            Method getMethod = pd.getReadMethod();//获得get方法
+                            column=getMethod.getAnnotation(Column.class);
+                        }
                         if(column!=null){
                             if(item.containsKey(column.name().toUpperCase())){
                                 Object value=item.get(column.name().toUpperCase());
@@ -123,11 +234,9 @@ public class AlienEntity<T> {
                                         }else{
                                             value=new Date(Long.parseLong((String)value));
                                         }
-
-                                    }else if(fields[j].getType().equals(String.class)){
-
-                                    }else
-                                    {
+                                    }else if(fields[j].getType().equals(Timestamp.class)){
+                                        value=Timestamp.valueOf((String)value);
+                                    }else {
                                         Constructor constructor = fields[j].getType().getConstructor(String.class);
                                         value=constructor.newInstance(value);
                                     }

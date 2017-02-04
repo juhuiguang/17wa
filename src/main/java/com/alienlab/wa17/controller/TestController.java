@@ -5,6 +5,7 @@ import com.alienlab.db.AlienEntity;
 import com.alienlab.db.Dao;
 import com.alienlab.wa17.controller.util.HeaderUtil;
 import com.alienlab.wa17.entity.main.MainTbAccount;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +20,13 @@ import java.util.List;
 @RestController
 @RequestMapping
 public class TestController {
+    @Autowired
+    Dao dao;
     @GetMapping("/test")
     public String getTest(){
         AlienEntity<MainTbAccount> alienAccount=new AlienEntity<MainTbAccount>();
-        Dao dao=new Dao();
         List l=dao.getDataSet("select * from tb_account");
         List result=alienAccount.list2T(l,MainTbAccount.class);
-        return JSONObject.toJSONString(result);
+        return alienAccount.UpdateSql((MainTbAccount)result.get(0));
     }
 }
