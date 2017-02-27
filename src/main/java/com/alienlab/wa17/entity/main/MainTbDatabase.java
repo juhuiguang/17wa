@@ -20,6 +20,7 @@ public class MainTbDatabase {
     private String dbUser;
     private String dbPwd;
     private String dbSchema;
+    private String dbUrl;
 
     @Id
     @Column(name = "db_id")
@@ -129,6 +130,16 @@ public class MainTbDatabase {
 
     public void setDbSchema(String dbSchema) {
         this.dbSchema = dbSchema;
+    }
+
+    @Basic
+    @Column(name = "db_jdbcurl")
+    public String getDbUrl() {
+        return dbUrl;
+    }
+
+    public void setDbUrl(String dbUrl) {
+        this.dbUrl = dbUrl;
     }
 
     @Override

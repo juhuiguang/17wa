@@ -31,6 +31,7 @@ import java.util.Map;
  * 自定义简单entity的dao操作。
  * @param <T> entity类型
  */
+@Component
 public class AlienEntity<T> {
     Logger logger = Logger.getLogger(AlienEntity.class);
 
@@ -183,6 +184,74 @@ public class AlienEntity<T> {
     }
 
 
+    public T Obj2T(Map<String,Object> item,Class entityclass){
+        if(item==null) return null;
+        try {
+            Object instance=entityclass.newInstance();
+            Field[] fields=entityclass.getDeclaredFields();
+            //根据实例中的字段，从list中获得值
+            for(int j=0;j<fields.length;j++){
+                fields[j].setAccessible(true);
+                Column column=fields[j].getAnnotation(Column.class);
+                if(column==null){
+                    PropertyDescriptor pd = null;
+                    try {
+                        pd = new PropertyDescriptor(fields[j].getName(),
+                                entityclass);
+                    } catch (IntrospectionException e) {
+                        e.printStackTrace();
+                    }
+                    Method getMethod = pd.getReadMethod();//获得get方法
+                    column=getMethod.getAnnotation(Column.class);
+                }
+                if(column!=null){
+                    if(item.containsKey(column.name().toUpperCase())){
+                        Object value=item.get(column.name().toUpperCase());
+                        if(value==null||value.equals("")){
+                            fields[j].set(instance,null);//赋值
+                        }else{
+                            if(fields[j].getType().equals(float.class)){
+                                value=Float.parseFloat((String)value);
+                            }else if(fields[j].getType().equals(int.class)){
+                                value=Integer.parseInt((String)value);
+                            }else if(fields[j].getType().equals(boolean.class)){
+                                value=Boolean.parseBoolean((String)value);
+                            }else if(fields[j].getType().equals(long.class)){
+                                value=Long.parseLong((String)value);
+                            }else if(fields[j].getType().equals(double.class)){
+                                value=Double.parseDouble((String)value);
+                            }else if(fields[j].getType().equals(Date.class)){
+                                if(((String)value).indexOf(":")>0){
+                                    value= DateUtils.getDate((String)value,"yyyy-MM-dd HH:mm:ss");
+                                }else{
+                                    value=new Date(Long.parseLong((String)value));
+                                }
+                            }else if(fields[j].getType().equals(Timestamp.class)){
+                                value=Timestamp.valueOf((String)value);
+                            }else {
+                                Constructor constructor = fields[j].getType().getConstructor(String.class);
+                                value=constructor.newInstance(value);
+                            }
+                            fields[j].set(instance,value);//赋值
+                        }
+                    }
+                }
+            }
+            return (T)instance;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     /**
      * 将查询出的list转换成为指定的entity对象
      * @param list  查询结果集

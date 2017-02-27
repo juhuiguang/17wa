@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 
 import com.alibaba.druid.pool.DruidPooledConnection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,13 +29,14 @@ public class Dao {
     Logger logger = Logger.getLogger(Dao.class);
     @Autowired
     DataSourceUtil dataSourceUtil;
+
     //当前操作所需的链接，每次执行都需要指定。
     private ConnectorBean connectorBean=null;
 
 
     //未指定连接的构造函数，获取默认连接
     public Dao() {
-//        this.connectorBean=dataSourceUtil.getDefaultDataSource();
+
     }
 
     //指定特定连接的构造函数
@@ -81,6 +84,53 @@ public class Dao {
         return count;
     }
 
+//    public Page<T> getListPageResult(String pagesql,String totalsql,Pageable page,Class t){
+//        return null;
+//    }
+
+    public Map getMap(String sql){
+        Map<String, Object> data=null;
+        ResultSet resSet = null;
+        DruidPooledConnection conn = null;
+        Statement stmt = null;
+        try{
+            // sql=sql.toUpperCase();
+            if(this.connectorBean==null){
+                this.connectorBean=dataSourceUtil.getDefaultDataSource();
+            }
+            conn = this.connectorBean.getConnPool();
+            if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
+                stmt = conn.createStatement();
+                resSet = stmt.executeQuery(sql);//
+                ResultSetMetaData rsmd = resSet.getMetaData();
+                int columnCount = rsmd.getColumnCount();
+                //if(resSet.getFetchSize()==0){return null;}
+                data = new HashMap<String,Object>();
+                // 循环结果�??
+                while (resSet.next()) {
+                    // 每循环一条将列名和列值存入Map
+                    for (int i = 1; i <= columnCount; i++) {
+                        data.put(rsmd.getColumnLabel(i).toUpperCase(),
+                                TypeUtils.getString(resSet.getObject(rsmd.getColumnLabel(i))));
+                    }
+                }
+                if(data.size()==0){
+                    return null;
+                }
+            }else {
+                logger.info("SQL 输入语法错误或没有可用的连接");
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("SQL 输入语法错误或没有可用的连接---" + sql);
+        } finally {
+            closeResultSet(resSet);
+            closeStatement(stmt);
+            closeConnection(conn);
+        }
+        return data;
+
+    }
     /**
      * 获取返回数据
      *

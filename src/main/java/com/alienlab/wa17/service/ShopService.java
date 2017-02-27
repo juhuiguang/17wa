@@ -13,5 +13,7 @@ public interface ShopService {
     List<ClientTbShop> getShopes(int account_id) throws Exception;
 
     //获得当前连接库中所选门店账户信息
-    List<ClientTbShopAccount> getShopAccount(int account_id, int shop_id) throws Exception;
+    List<ClientTbShopAccount> getShopAccountList(int account_id, int shop_id) throws Exception;
+
+    ClientTbShopAccount getShopAccount(int account_id,int shop_id,String username) throws Exception;
 }

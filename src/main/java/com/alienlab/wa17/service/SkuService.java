@@ -1,7 +1,6 @@
 package com.alienlab.wa17.service;
 
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
-import com.sun.deploy.util.SessionState;
 
 import java.util.List;
 
