@@ -86,11 +86,62 @@ public class DaoToolImpl implements DaoTool {
         return dao.getMap(sql);
     }
 
+    public boolean exec(String sql,int account_id) throws Exception{
+        ConnectorBean connect=getConnectByAccount(account_id);
+        Dao dao=new Dao(connect);
+        return dao.execCommand(sql);
+    }
+
+    public Long execInsert(String sql,int account_id) throws Exception{
+        ConnectorBean connect=getConnectByAccount(account_id);
+        Dao dao=new Dao(connect);
+        return (Long)dao.execInsertId(sql);
+    }
 
     @Override
     public Object getObject(String sql, int account_id, Class entityclass) throws Exception {
         Map obj=getMap(sql,account_id);
         return alienEntity.Obj2T(obj,entityclass);
+    }
+
+    @Override
+    public Object getOne(Class entityClass, int account_id, long id) throws Exception {
+        String getOneSql=alienEntity.getOne(entityClass,id);
+        return getObject(getOneSql,account_id,entityClass);
+    }
+
+    @Override
+    public <T> T saveOne(T entity, int account_id) throws Exception {
+        if(alienEntity.getIdValue(entity)!=null){
+            return updateOne(account_id,entity);
+        }else{
+            String saveOneSql=alienEntity.InsertSql(entity);
+            Long result=execInsert(saveOneSql,account_id);
+            if(result!=null&&result>0){
+                entity=(T)alienEntity.setId(entity,result);
+                return entity;
+            }else{
+                throw new Exception("no instert result!");
+            }
+        }
+    }
+
+    @Override
+    public <T> T updateOne(int account_id,T entity) throws Exception {
+        String updateSql=alienEntity.UpdateSql(entity);
+        boolean result=exec(updateSql,account_id);
+        if(result){
+            return entity;
+        }else{
+            return null;
+        }
+
+    }
+
+    @Override
+    public boolean deleteOne(Class entityClass, int account_id, long id) throws Exception {
+        String delSql=alienEntity.deleteOne(entityClass,id);
+        return exec(delSql,account_id);
     }
 
 

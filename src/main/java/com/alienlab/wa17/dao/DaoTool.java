@@ -27,4 +27,12 @@ public interface DaoTool {
 
     Map getMap(String sql, int account_id) throws Exception;
     Object getObject(String sql,int account_id,Class entityclass) throws Exception;
+
+    Object getOne(Class entityClass,int account_id,long id) throws Exception;
+
+    <T> T saveOne(T entity, int account_id) throws Exception;
+
+    <T> T updateOne(int account_id,T entity) throws Exception;
+
+    boolean deleteOne(Class entityClass,int account_id,long id) throws Exception;
 }

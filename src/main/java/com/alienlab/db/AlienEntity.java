@@ -36,6 +36,68 @@ public class AlienEntity<T> {
     Logger logger = Logger.getLogger(AlienEntity.class);
 
     /**
+     * 根据entity类型，获取单个对象语句
+     * @param entityClass
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public String getOne(Class entityClass,long id) throws Exception {
+        //Class entityClass=entity.getClass();
+        Table table= (Table) entityClass.getAnnotation(Table.class);
+        String tableName=table.name();
+        Field idfield=getIdField(entityClass);
+        if(idfield!=null){
+            String sql="select * from "+tableName+" where "+idfield.getName()+"="+id;
+            return sql;
+        }else{
+            throw new Exception("can not find id field.");
+        }
+
+    }
+
+    /**
+     * 根据传入entity类型，生成delete语句
+     * @param entityClass
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public String deleteOne(Class entityClass,long id) throws Exception{
+        //Class entityClass=entity.getClass();
+        Table table= (Table) entityClass.getAnnotation(Table.class);
+        String tableName=table.name();
+        Field idfield=getIdField(entityClass);
+        if(idfield!=null){
+            String sql="delete from "+tableName+" where "+idfield.getName()+"="+id;
+            return sql;
+        }else{
+            throw new Exception("can not find id field.");
+        }
+    }
+
+    public T setId(T entity,Long id){
+        Field field=getIdField(entity.getClass());
+        try {
+            field.set(entity,id);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return entity;
+    }
+
+    public Long getIdValue(T entity){
+        Field field=getIdField(entity.getClass());
+        try {
+            return (Long)field.get(entity);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
      * 通过entity实例生成insert语句
      * @param entity
      * @return
@@ -97,7 +159,7 @@ public class AlienEntity<T> {
     }
 
     public String UpdateSql(T entity){
-        Field idfield=getIdField(entity);
+        Field idfield=getIdField(entity.getClass());
         if(idfield==null){
             logger.error("update error,there is no id field in entity!");
             return null;
@@ -160,8 +222,8 @@ public class AlienEntity<T> {
         }
     }
 
-    public  Field getIdField(T entity){
-        Class entityClass=entity.getClass();
+    public  Field getIdField(Class entityClass){
+        //Class entityClass=entity.getClass();
         Field[] fields=entityClass.getDeclaredFields();
         for(Field field:fields){
             Id id=field.getAnnotation(Id.class);

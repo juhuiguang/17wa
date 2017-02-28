@@ -24,6 +24,26 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    public ClientTbShop addShop(int account_id, ClientTbShop shop) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ClientTbShop updateShop(int account_id, ClientTbShop shop) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ClientTbShop setDefaultShop(int account_id, int shop, boolean isdefault) throws Exception {
+        return null;
+    }
+
+    @Override
+    public boolean delShop(int account_id, int shop) throws Exception {
+        return false;
+    }
+
+    @Override
     public List<ClientTbShopAccount> getShopAccountList(int account_id, int shop_id) throws Exception {
         String sql="select * from tb_shop_account where shop_id="+shop_id;
         return daoTool.getAllList(sql,account_id,ClientTbShopAccount.class);
@@ -33,5 +53,20 @@ public class ShopServiceImpl implements ShopService {
     public ClientTbShopAccount getShopAccount(int account_id, int shop_id, String username) throws Exception {
         String sql="select * from tb_shop_account where shop_id="+shop_id+" and account_name='"+username+"'";
         return (ClientTbShopAccount)daoTool.getObject(sql,account_id,ClientTbShopAccount.class);
+    }
+
+    @Override
+    public ClientTbShopAccount addAccount(int account_id, ClientTbShopAccount account) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ClientTbShopAccount setDenied(int account_id, int shopaccount) throws Exception {
+        return null;
+    }
+
+    @Override
+    public boolean delAccount(int account_id, int shopaccount) throws Exception {
+        return false;
     }
 }
