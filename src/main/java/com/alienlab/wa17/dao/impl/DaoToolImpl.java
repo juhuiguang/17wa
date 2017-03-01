@@ -116,7 +116,8 @@ public class DaoToolImpl implements DaoTool {
 
     @Override
     public <T> T saveOne(T entity, int account_id) throws Exception {
-        if(alienEntity.getIdValue(entity)!=null){
+        Long id=alienEntity.getIdValue(entity);
+        if(id!=null&&id>0){
             return updateOne(account_id,entity);
         }else{
             String saveOneSql=alienEntity.InsertSql(entity);

@@ -17,6 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -105,6 +107,7 @@ public class AlienEntity<T> {
     public String InsertSql(T entity){
         //解析表名
         Class entityClass=entity.getClass();
+        Field idfield=getIdField(entityClass);
         Table table= (Table) entityClass.getAnnotation(Table.class);
         String tableName=table.name();
         StringBuffer sqlbuffer=new StringBuffer();
@@ -127,32 +130,42 @@ public class AlienEntity<T> {
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
             }
-            if(fieldbuffer.length()==0){
-                fieldbuffer.append(column.name());
-            }else{
-                fieldbuffer.append(",").append(column.name());
-            }
-            if(column!=null){
-                try {
-                    //日期与字符类型需要单引号
-                    if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
-                        if(valuebuffer.length()>0){
-                            valuebuffer.append(",").append("'").append(field.get(entity)).append("'");
+            //如果不是主键字段
+            if(!field.getName().equals(idfield.getName())){
+                if(fieldbuffer.length()==0){
+                    fieldbuffer.append(column.name());
+                }else{
+                    fieldbuffer.append(",").append(column.name());
+                }
+
+                if(column!=null){
+                    try {
+                        //日期与字符类型需要单引号
+                        if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
+                            Object d=field.get(entity);
+                            if(d==null||d.equals("null")){
+                                DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                                d=ZonedDateTime.now().format(format);
+                            }
+                            if(valuebuffer.length()>0){
+                                valuebuffer.append(",").append("'").append(d).append("'");
+                            }else{
+                                valuebuffer.append("'").append(field.get(entity)).append("'");
+                            }
                         }else{
-                            valuebuffer.append("'").append(field.get(entity)).append("'");
+                            if(valuebuffer.length()>0){
+                                valuebuffer.append(",").append(field.get(entity));
+                            }else{
+                                valuebuffer.append(field.get(entity));
+                            }
                         }
-                    }else{
-                        if(valuebuffer.length()>0){
-                            valuebuffer.append(",").append(field.get(entity));
-                        }else{
-                            valuebuffer.append(field.get(entity));
-                        }
+                    }catch (IllegalAccessException e) {
+                        e.printStackTrace();
                     }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
                 }
             }
         }
+
         sqlbuffer.append("(").append(fieldbuffer.toString()).append(")").append(" values(").append(valuebuffer.toString()).append(")");
         logger.info("entity "+entityClass.getName()+" insert sql is:"+sqlbuffer.toString());
         return sqlbuffer.toString();
@@ -239,6 +252,7 @@ public class AlienEntity<T> {
                 id=getMethod.getAnnotation(Id.class);
             }
             if(id!=null){
+                field.setAccessible(true);
                 return field;
             }
         }

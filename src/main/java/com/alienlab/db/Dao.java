@@ -230,7 +230,7 @@ public class Dao {
                     sql = "SELECT @@IDENTITY AS id";
                     ResultSet rs = pstmt.executeQuery(sql);
                     if (rs.next()) {
-                        return rs.getObject(1);
+                        return rs.getLong(1);
                     }
                     return null;
                 } else {

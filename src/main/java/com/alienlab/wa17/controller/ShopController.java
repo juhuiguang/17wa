@@ -10,10 +10,7 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -84,6 +81,32 @@ public class ShopController {
             List<ClientTbShopAccount> shopAccounts=shopService.getShopAccountList(account,shop);
             return ResponseEntity.ok().body(shopAccounts);
         }catch(Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="增加/创建门店")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
+            @ApiImplicitParam(name="shop",value="门店对象",paramType = "body")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbShop.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PostMapping(value="/17wa-shop/{account}")
+    public ResponseEntity addShop(@PathVariable int account,@ApiParam @RequestBody ClientTbShop shop){
+        try {
+            shop=shopService.addShop(account,shop);
+            if(shop.getShopId()>0){
+                return ResponseEntity.ok().body(shop);
+            }else{
+                ExecResult er=new ExecResult(false,"门店信息保存失败了。");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
