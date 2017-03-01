@@ -25,7 +25,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ClientTbShop addShop(int account_id, ClientTbShop shop) throws Exception {
-        return null;
+        ClientTbShop s=daoTool.saveOne(shop,account_id);
+        return s;
     }
 
     @Override

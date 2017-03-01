@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -9,18 +11,31 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "tb_shop", schema = "17wa_client", catalog = "")
 public class ClientTbShop {
+    @ApiModelProperty(value="店铺ID")
     private long shopId;
+    @ApiModelProperty(value="是否默认店铺")
     private String shopIsdefault;
+    @ApiModelProperty(value="店铺名称")
     private String shopName;
+    @ApiModelProperty(value="店铺地址")
     private String shopAddr;
+    @ApiModelProperty(value="联系电话1")
     private String shopPhone1;
+    @ApiModelProperty(value="联系电话2")
     private String shopPhone2;
+    @ApiModelProperty(value="店铺微信号")
     private String shopWechat;
+    @ApiModelProperty(value="QQ号")
     private String shopQq;
+    @ApiModelProperty(value="阿里支付宝昵称")
     private String shopAlipayName;
+    @ApiModelProperty(value="支付宝账户")
     private String shopAlipay;
+    @ApiModelProperty(value="创建时间")
     private Timestamp shopTime;
+    @ApiModelProperty(value="所属市场")
     private Long marketId;
+    @ApiModelProperty(value="店铺标签")
     private String shopTags;
 
     @Id
