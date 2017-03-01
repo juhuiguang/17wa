@@ -42,12 +42,16 @@ public class DaoToolImpl implements DaoTool {
 
     @Override
     public MainTbDatabase getDatabaseByAccount(int account_id) {
-        if(databases.containsKey(account_id)){
+        if(databases.containsKey(account_id)&&databases.get(account_id)!=null){
             return databases.get(account_id);
         }else{
             String sql="select * from tb_database where account_id="+account_id;
             Map<String,Object> db=maindao.getMap(sql);
-            return (MainTbDatabase)alienEntity.Obj2T(db,MainTbDatabase.class);
+            MainTbDatabase mainTbDatabase=(MainTbDatabase)alienEntity.Obj2T(db,MainTbDatabase.class);
+            if(mainTbDatabase!=null){
+                databases.put(account_id,mainTbDatabase);
+            }
+            return mainTbDatabase;
         }
     }
 

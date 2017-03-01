@@ -61,7 +61,7 @@ public class Dao {
             if(this.connectorBean==null){
                 this.connectorBean=dataSourceUtil.getDefaultDataSource();
             }
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 stmt = conn.createStatement();
                 resSet = stmt.executeQuery(sql);//
@@ -98,7 +98,7 @@ public class Dao {
             if(this.connectorBean==null){
                 this.connectorBean=dataSourceUtil.getDefaultDataSource();
             }
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 stmt = conn.createStatement();
                 resSet = stmt.executeQuery(sql);//
@@ -148,7 +148,7 @@ public class Dao {
             if(this.connectorBean==null){
                 this.connectorBean=dataSourceUtil.getDefaultDataSource();
             }
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 // pstmt=conn.prepareStatement(sql);
                 stmt = conn.createStatement();
@@ -199,7 +199,7 @@ public class Dao {
             if(this.connectorBean==null){
                 this.connectorBean=dataSourceUtil.getDefaultDataSource();
             }
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 pstmt = conn.createStatement();
                 int row = pstmt.executeUpdate(sql);
@@ -223,7 +223,7 @@ public class Dao {
             if(this.connectorBean==null){
                 this.connectorBean=dataSourceUtil.getDefaultDataSource();
             }
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(conn)) {
                 pstmt = conn.createStatement();
                 if (pstmt.executeUpdate(sql) > 0) {
@@ -260,7 +260,7 @@ public class Dao {
         PreparedStatement pstmt = null;
         DruidPooledConnection conn = null;
         try {
-            conn = this.connectorBean.getConnPool();
+            conn = this.connectorBean.getDataSource().getConnection();
             if (!TypeUtils.isEmpty(sql) && !TypeUtils.isEmpty(map) && !TypeUtils.isEmpty(conn)) {
                 pstmt = conn.prepareStatement(sql);
                 for (String key : map.keySet()) {
@@ -290,7 +290,7 @@ public class Dao {
     public boolean executeBatch(List<String> sql) throws SQLException {
         boolean bool = false;
         // 生产connection
-        DruidPooledConnection conn = this.connectorBean.getConnPool();
+        DruidPooledConnection conn = this.connectorBean.getDataSource().getConnection();
         Statement sm = null;
         int[] result = null;
         sm = conn.createStatement();
@@ -342,8 +342,7 @@ public class Dao {
     public  void closeConnection(DruidPooledConnection dbConnection) {
         try {
             if (dbConnection != null && (!dbConnection.isClosed())) {
-
-                //dbConnection.close();
+                dbConnection.close();
             }
         } catch (Exception e) {
             // TODO: handle exception

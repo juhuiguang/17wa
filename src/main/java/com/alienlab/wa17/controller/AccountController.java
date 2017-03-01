@@ -45,6 +45,10 @@ public class AccountController {
             @ApiImplicitParam(name="username",value="门店用户",paramType = "query"),
             @ApiImplicitParam(name="pwd",value="登录密码",paramType = "query")
     })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbShopAccount.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
     @PostMapping(value="/17wa-account/")
     public ResponseEntity doShopLogin(@RequestParam int account,@RequestParam int shop,
                                       @RequestParam String username,@RequestParam String pwd){

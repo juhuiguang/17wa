@@ -20,7 +20,6 @@ public class ConnectorBean {
     private String userName;
     private String password;
     private DruidDataSource dataSource;
-    private DruidPooledConnection connPool;
 
     public ConnectorBean(){
 
@@ -33,9 +32,6 @@ public class ConnectorBean {
         this.url=url;
         if(this.dataSource==null){
             this.dataSource=createDataSource();
-        }
-        if(this.connPool==null){
-            this.connPool=this.dataSource.getConnection();
         }
         dataSourceUtil.addConnector(this);
     }
@@ -64,8 +60,11 @@ public class ConnectorBean {
         ds.setInitialSize(5);
         ds.setMaxActive(10);
         ds.setMinIdle(1);
+        ds.setTestWhileIdle(true);
         ds.setPoolPreparedStatements(false);
         ds.setDefaultAutoCommit(true);
+        ds.setRemoveAbandoned(true);
+        ds.setRemoveAbandonedTimeout(1800);
         return ds;
     }
 
@@ -109,12 +108,5 @@ public class ConnectorBean {
         this.dataSource = dataSource;
     }
 
-    public DruidPooledConnection getConnPool() {
-        return connPool;
-    }
-
-    public void setConnPool(DruidPooledConnection connPool) {
-        this.connPool = connPool;
-    }
 
 }
