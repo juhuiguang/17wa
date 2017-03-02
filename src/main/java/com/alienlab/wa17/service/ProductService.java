@@ -2,6 +2,7 @@ package com.alienlab.wa17.service;
 
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,6 +23,8 @@ public interface ProductService {
 
     //下架、售卖商品
     ClientTbProduct changeProductStatus(int account_id,int product_id,String status) throws Exception;
+
+
 
 
 

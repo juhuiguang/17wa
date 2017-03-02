@@ -35,4 +35,6 @@ public interface DaoTool {
     <T> T updateOne(int account_id,T entity) throws Exception;
 
     boolean deleteOne(Class entityClass,int account_id,long id) throws Exception;
+    boolean exec(String sql,int account_id) throws Exception;
+    Long execInsert(String sql,int account_id) throws Exception;
 }

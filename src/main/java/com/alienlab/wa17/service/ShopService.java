@@ -31,4 +31,6 @@ public interface ShopService {
     ClientTbShopAccount setDenied(int account_id,int shopaccount) throws Exception;
 
     boolean delAccount(int account_id,int shopaccount) throws Exception;
+
+    ClientTbShopAccount setActive(int account_id, int shopaccount) throws Exception;
 }
