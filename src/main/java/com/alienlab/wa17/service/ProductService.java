@@ -16,10 +16,10 @@ public interface ProductService {
     Page<ClientTbProduct> getProducts(int account_id,int shop_id,String keyword,Pageable page) throws Exception;
 
     //添加商品
-    ClientTbProduct addProduct(int account_id,ClientTbProduct product) throws Exception;
+    ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
 
     //修改商品
-    ClientTbProduct updateProduct(int account_id,ClientTbProduct product) throws Exception;
+    ClientTbProduct updateProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
 
     //下架、售卖商品
     ClientTbProduct changeProductStatus(int account_id,int product_id,String status) throws Exception;

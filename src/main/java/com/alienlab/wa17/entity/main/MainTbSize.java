@@ -13,6 +13,15 @@ public class MainTbSize {
     private String sizeTypeName;
     private Long sizeTypeId;
     private String sizeStatus;
+    public String sizeType="系统";
+
+    public String getSizeType() {
+        return sizeType;
+    }
+
+    public void setSizeType(String sizeType) {
+        this.sizeType = sizeType;
+    }
 
     @Id
     @Column(name = "size_id")

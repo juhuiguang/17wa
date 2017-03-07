@@ -19,7 +19,10 @@ public interface DaoTool {
      //根据账户id，获得db对象
     MainTbDatabase getDatabaseByAccount(int account_id);
 
+    List getAllList(String sql)throws Exception;
+    List getAllList(String sql,Class entityclass) throws Exception;
     List getAllList(String sql,int account_id) throws Exception;
+
     Page getPageList(String pagesql,String totalsql, Pageable page, int account_id) throws Exception;
 
     List getAllList(String sql,int account_id,Class entityclass) throws Exception;

@@ -1,5 +1,6 @@
 package com.alienlab.wa17.service.impl;
 
+import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
@@ -55,6 +56,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public boolean delShop(int account_id, int shop) throws Exception {
+        ClientTbShop clientshop=(ClientTbShop)daoTool.getOne(ClientTbShop.class,account_id,(long)shop);
+        if(clientshop.getShopIsdefault().equals("1")){
+            throw new Exception("您不可以删除默认门店。");
+        }
         return daoTool.deleteOne(ClientTbShop.class,account_id,(long)shop);
     }
 

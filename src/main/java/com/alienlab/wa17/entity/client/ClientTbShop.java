@@ -27,6 +27,8 @@ public class ClientTbShop {
     private String shopWechat;
     @ApiModelProperty(value="QQ号")
     private String shopQq;
+    @ApiModelProperty(value="支付方式标签")
+    private String payType;
     @ApiModelProperty(value="阿里支付宝昵称")
     private String shopAlipayName;
     @ApiModelProperty(value="支付宝账户")
@@ -34,7 +36,7 @@ public class ClientTbShop {
     @ApiModelProperty(value="创建时间")
     private Timestamp shopTime;
     @ApiModelProperty(value="所属市场")
-    private Long marketId;
+    private String marketName;
     @ApiModelProperty(value="店铺标签")
     private String shopTags;
 
@@ -94,6 +96,16 @@ public class ClientTbShop {
         return shopPhone2;
     }
 
+    @Basic
+    @Column(name = "shop_paytype")
+    public String getPayType() {
+        return payType;
+    }
+
+    public void setPayType(String payType) {
+        this.payType = payType;
+    }
+
     public void setShopPhone2(String shopPhone2) {
         this.shopPhone2 = shopPhone2;
     }
@@ -149,13 +161,13 @@ public class ClientTbShop {
     }
 
     @Basic
-    @Column(name = "market_id")
-    public Long getMarketId() {
-        return marketId;
+    @Column(name = "market_name")
+    public String getMarketName() {
+        return marketName;
     }
 
-    public void setMarketId(Long marketId) {
-        this.marketId = marketId;
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 
     @Basic
@@ -168,47 +180,5 @@ public class ClientTbShop {
         this.shopTags = shopTags;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        ClientTbShop that = (ClientTbShop) o;
-
-        if (shopId != that.shopId) return false;
-        if (shopIsdefault != null ? !shopIsdefault.equals(that.shopIsdefault) : that.shopIsdefault != null)
-            return false;
-        if (shopName != null ? !shopName.equals(that.shopName) : that.shopName != null) return false;
-        if (shopAddr != null ? !shopAddr.equals(that.shopAddr) : that.shopAddr != null) return false;
-        if (shopPhone1 != null ? !shopPhone1.equals(that.shopPhone1) : that.shopPhone1 != null) return false;
-        if (shopPhone2 != null ? !shopPhone2.equals(that.shopPhone2) : that.shopPhone2 != null) return false;
-        if (shopWechat != null ? !shopWechat.equals(that.shopWechat) : that.shopWechat != null) return false;
-        if (shopQq != null ? !shopQq.equals(that.shopQq) : that.shopQq != null) return false;
-        if (shopAlipayName != null ? !shopAlipayName.equals(that.shopAlipayName) : that.shopAlipayName != null)
-            return false;
-        if (shopAlipay != null ? !shopAlipay.equals(that.shopAlipay) : that.shopAlipay != null) return false;
-        if (shopTime != null ? !shopTime.equals(that.shopTime) : that.shopTime != null) return false;
-        if (marketId != null ? !marketId.equals(that.marketId) : that.marketId != null) return false;
-        if (shopTags != null ? !shopTags.equals(that.shopTags) : that.shopTags != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (shopId ^ (shopId >>> 32));
-        result = 31 * result + (shopIsdefault != null ? shopIsdefault.hashCode() : 0);
-        result = 31 * result + (shopName != null ? shopName.hashCode() : 0);
-        result = 31 * result + (shopAddr != null ? shopAddr.hashCode() : 0);
-        result = 31 * result + (shopPhone1 != null ? shopPhone1.hashCode() : 0);
-        result = 31 * result + (shopPhone2 != null ? shopPhone2.hashCode() : 0);
-        result = 31 * result + (shopWechat != null ? shopWechat.hashCode() : 0);
-        result = 31 * result + (shopQq != null ? shopQq.hashCode() : 0);
-        result = 31 * result + (shopAlipayName != null ? shopAlipayName.hashCode() : 0);
-        result = 31 * result + (shopAlipay != null ? shopAlipay.hashCode() : 0);
-        result = 31 * result + (shopTime != null ? shopTime.hashCode() : 0);
-        result = 31 * result + (marketId != null ? marketId.hashCode() : 0);
-        result = 31 * result + (shopTags != null ? shopTags.hashCode() : 0);
-        return result;
-    }
 }

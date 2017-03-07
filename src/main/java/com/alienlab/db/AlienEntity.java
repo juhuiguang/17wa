@@ -144,8 +144,11 @@ public class AlienEntity<T> {
                         if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
                             Object d=field.get(entity);
                             if(d==null||d.equals("null")){
-                                DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                                d=ZonedDateTime.now().format(format);
+                                d="";
+                                if(field.getType().equals(Date.class)||field.getType().equals(Timestamp.class)){
+                                    DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                                    d=ZonedDateTime.now().format(format);
+                                }
                             }
                             if(valuebuffer.length()>0){
                                 valuebuffer.append(",").append("'").append(d).append("'");
@@ -354,8 +357,10 @@ public class AlienEntity<T> {
                             } catch (IntrospectionException e) {
                                 e.printStackTrace();
                             }
-                            Method getMethod = pd.getReadMethod();//获得get方法
-                            column=getMethod.getAnnotation(Column.class);
+                            if(pd!=null) {
+                                Method getMethod = pd.getReadMethod();//获得get方法
+                                column = getMethod.getAnnotation(Column.class);
+                            }
                         }
                         if(column!=null){
                             if(item.containsKey(column.name().toUpperCase())){

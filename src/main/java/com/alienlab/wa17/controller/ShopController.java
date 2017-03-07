@@ -4,7 +4,10 @@ import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.main.MainTbAccount;
+import com.alienlab.wa17.entity.main.MainTbMarket;
+import com.alienlab.wa17.entity.main.dto.MarketDto;
 import com.alienlab.wa17.service.AccountService;
+import com.alienlab.wa17.service.MarketService;
 import com.alienlab.wa17.service.ShopService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,26 @@ public class ShopController {
     ShopService shopService;
     @Autowired
     AccountService accountService;
+    @Autowired
+    MarketService marketService;
+
+    @ApiOperation(value="获取市场列表")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = MarketDto.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @GetMapping(value="/17wa-shop/market")
+    public ResponseEntity getMarkets(){
+        try{
+            List<MarketDto> mks=marketService.getMarkets();
+            return ResponseEntity.ok().body(mks);
+        }catch(Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
 
     @ApiOperation(value="根据账户获得门店列表")
     @ApiImplicitParam(name="account",value="账户id",paramType = "path")
@@ -66,7 +89,7 @@ public class ShopController {
         }
     }
 
-    @ApiOperation(value="根据账户获得门店列表")
+    @ApiOperation(value="根据门店获得门店账户列表")
     @ApiImplicitParams({
         @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
         @ApiImplicitParam(name="shop",value="门店id",paramType = "path")

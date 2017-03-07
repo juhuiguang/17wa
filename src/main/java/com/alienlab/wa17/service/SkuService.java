@@ -9,11 +9,13 @@ import java.util.List;
  */
 public interface SkuService {
     //加载商品sku
-    List<ClientTbProductSku> loadSku(int account_id, int product_id) throws Exception;
+    List<ClientTbProductSku> loadSku(int account_id, long product_id) throws Exception;
 
     //创建sku
-    ClientTbProductSku addSku(int account_id, int product_id, ClientTbProductSku sku);
+    ClientTbProductSku addSku(int account_id, long product_id, ClientTbProductSku sku)throws Exception;
 
     //删除sku
-    boolean delSku(int account_id,int sku_id);
+    boolean delSkuSingle(int account_id,int sku_id)throws Exception;
+
+    boolean delSku(int account_id,int product_id) throws Exception;
 }

@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.main;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 
 /**
@@ -8,12 +10,21 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tb_market", schema = "17wa_main", catalog = "")
 public class MainTbMarket {
+    @ApiModelProperty(value="地区/市场编号")
     private long mkId;
+    @ApiModelProperty(value="地区/市场名称")
     private String mkName;
+    @ApiModelProperty(value="类型：城市、市场、商圈")
     private String mkType;
+    @ApiModelProperty(value="级别：1城市、2市场、3商圈")
     private Integer mkLevel;
+    @ApiModelProperty(value="父级编号")
     private Long mkPid;
+    @ApiModelProperty(value="排序")
     private Integer mkSort;
+    @ApiModelProperty(value="子节点数量")
+    private Integer leaf;
+
 
     @Id
     @Column(name = "mk_id")
@@ -73,6 +84,16 @@ public class MainTbMarket {
 
     public void setMkSort(Integer mkSort) {
         this.mkSort = mkSort;
+    }
+
+    @Basic
+    @Column(name = "leaf")
+    public Integer getLeaf() {
+        return leaf;
+    }
+
+    public void setLeaf(Integer leaf) {
+        this.leaf = leaf;
     }
 
     @Override

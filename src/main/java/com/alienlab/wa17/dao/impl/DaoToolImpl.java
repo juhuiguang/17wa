@@ -56,6 +56,17 @@ public class DaoToolImpl implements DaoTool {
     }
 
     @Override
+    public List getAllList(String sql) throws Exception {
+        return maindao.getDataSet(sql);
+    }
+
+    @Override
+    public List getAllList(String sql, Class entityclass) throws Exception {
+        List list=getAllList(sql);
+        return alienEntity.list2T(list,entityclass);
+    }
+
+    @Override
     public List getAllList(String sql, int account_id) throws Exception {
         ConnectorBean connect=getConnectByAccount(account_id);
         Dao dao=new Dao(connect);

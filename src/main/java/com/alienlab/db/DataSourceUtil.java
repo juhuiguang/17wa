@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Singleton;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,8 @@ public class DataSourceUtil {
     public final String DRIVER_ORACLE="oracle.jdbc.driver.OracleDriver";
     public final String DRIVER_MSSQL="com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
-    public Map<String,ConnectorBean> connectorMap=new HashMap<String,ConnectorBean>();
+    @Singleton
+    public static Map<String,ConnectorBean> connectorMap=new HashMap<String,ConnectorBean>();
 
     Logger logger = Logger.getLogger(DataSourceUtil.class);
 

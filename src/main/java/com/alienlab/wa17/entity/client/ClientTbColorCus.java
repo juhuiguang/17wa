@@ -13,6 +13,16 @@ public class ClientTbColorCus {
     private String colorSeries;
     private String colorRgb;
 
+    public String colorType="自定义";
+
+    public String getColorType() {
+        return colorType;
+    }
+
+    public void setColorType(String colorType) {
+        this.colorType = colorType;
+    }
+
     @Id
     @Column(name = "color_id")
     public long getColorId() {

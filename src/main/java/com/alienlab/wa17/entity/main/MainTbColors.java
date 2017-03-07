@@ -13,6 +13,15 @@ public class MainTbColors {
     private String colorRgb;
     private String colorSeries;
     private Long colorSeriesId;
+    public String colorType="系统";
+
+    public String getColorType() {
+        return colorType;
+    }
+
+    public void setColorType(String colorType) {
+        this.colorType = colorType;
+    }
 
     @Id
     @Column(name = "color_id")

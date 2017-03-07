@@ -14,6 +14,15 @@ public class ClientTbSizeCus {
     private Long sizeTypeId;
     private String sizeTypeName;
     private Timestamp sizeTime;
+    public String sizeType="自定义";
+
+    public String getSizeType() {
+        return sizeType;
+    }
+
+    public void setSizeType(String sizeType) {
+        this.sizeType = sizeType;
+    }
 
     @Id
     @Column(name = "size_id")

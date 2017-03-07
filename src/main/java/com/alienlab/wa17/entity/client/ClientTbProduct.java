@@ -1,31 +1,53 @@
 package com.alienlab.wa17.entity.client;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
  * Created by 橘 on 2017/2/21.
  */
+@ApiModel(value="产品对象")
 @Entity
 @Table(name = "tb_product", schema = "17wa_client", catalog = "")
 public class ClientTbProduct {
+    @ApiModelProperty(value="产品编码")
     private long productId;
+    @ApiModelProperty(value="自动货号",notes="表单提交时，可不赋值，规则是：日期+accountid+当日增量")
     private String productCode;
+    @ApiModelProperty(value="自编货号")
     private String productCode2;
+    @ApiModelProperty(value="所属账户Id",notes = "表单提交时可不赋值")
     private Long accountId;
+    @ApiModelProperty(value="产品名")
     private String productName;
+    @ApiModelProperty(value="产品缩略图路径",notes="表单提交时可不赋值，先提交产品基本信息，保存后，调用图片接口，发送图片")
     private String productPic;
+    @ApiModelProperty(value="厂商指导价格")
     private Integer productPrice1;
+    @ApiModelProperty(value="自定义价格",notes="自定义价格优先级最高")
     private Integer productPrice2;
+    @ApiModelProperty(value="产品描述",notes="多张图片地址，分号相隔，表单提交时可不提交，当表单基础信息保存完成后，调用图片上传接口，完成详情图片上传")
     private String productDesc;
-    private Long productType;
+    @ApiModelProperty(value="产品类型")
+    private String productType;
+    @ApiModelProperty(value="面料")
     private String productFabric;
+    @ApiModelProperty(value="面料成分")
     private String productFabricin;
+    @ApiModelProperty(value="尺码概要",notes = "选择的尺码组合成 S|M|L|XL|XXL的形式保存")
     private String productSizes;
+    @ApiModelProperty(value="颜色概要",notes = "选择的颜色组合成 红|蓝|绿|的形式保存")
     private String productColors;
+    @ApiModelProperty(value="产品状态")
     private String productStatus;
+    @ApiModelProperty(value="创建时间",notes = "表单提交时可不赋值，默认为正常状态，在状态改变功能中改变此状态")
     private Timestamp productTime;
+    @ApiModelProperty(value="产品标签",notes="用户选择的标签，组合类似颜色，尺码的格式保存")
     private String productTags;
+    @ApiModelProperty(value="产品最后更新时间",notes = "表单提交时可不赋值")
     private Timestamp updatetime;
 
     @Id
@@ -120,11 +142,11 @@ public class ClientTbProduct {
 
     @Basic
     @Column(name = "product_type")
-    public Long getProductType() {
+    public String getProductType() {
         return productType;
     }
 
-    public void setProductType(Long productType) {
+    public void setProductType(String productType) {
         this.productType = productType;
     }
 
