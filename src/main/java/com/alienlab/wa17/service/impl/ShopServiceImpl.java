@@ -57,7 +57,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public boolean delShop(int account_id, int shop) throws Exception {
         ClientTbShop clientshop=(ClientTbShop)daoTool.getOne(ClientTbShop.class,account_id,(long)shop);
-        if(clientshop.getShopIsdefault().equals("1")){
+        if(clientshop.getShopIsdefault()!=null&&clientshop.getShopIsdefault().equals("1")){
             throw new Exception("您不可以删除默认门店。");
         }
         return daoTool.deleteOne(ClientTbShop.class,account_id,(long)shop);

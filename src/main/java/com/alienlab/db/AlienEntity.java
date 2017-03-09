@@ -49,8 +49,20 @@ public class AlienEntity<T> {
         Table table= (Table) entityClass.getAnnotation(Table.class);
         String tableName=table.name();
         Field idfield=getIdField(entityClass);
-        if(idfield!=null){
-            String sql="select * from "+tableName+" where "+idfield.getName()+"="+id;
+        Column column=idfield.getAnnotation(Column.class);
+        if(column==null){
+            PropertyDescriptor pd = null;
+            try {
+                pd = new PropertyDescriptor(idfield.getName(),
+                        entityClass);
+            } catch (IntrospectionException e) {
+                e.printStackTrace();
+            }
+            Method getMethod = pd.getReadMethod();//获得get方法
+            column=getMethod.getAnnotation(Column.class);
+        }
+        if(idfield!=null&&column!=null){
+            String sql="select * from "+tableName+" where "+column.name()+"="+id;
             return sql;
         }else{
             throw new Exception("can not find id field.");
@@ -70,8 +82,20 @@ public class AlienEntity<T> {
         Table table= (Table) entityClass.getAnnotation(Table.class);
         String tableName=table.name();
         Field idfield=getIdField(entityClass);
-        if(idfield!=null){
-            String sql="delete from "+tableName+" where "+idfield.getName()+"="+id;
+        Column column=idfield.getAnnotation(Column.class);
+        if(column==null){
+            PropertyDescriptor pd = null;
+            try {
+                pd = new PropertyDescriptor(idfield.getName(),
+                        entityClass);
+            } catch (IntrospectionException e) {
+                e.printStackTrace();
+            }
+            Method getMethod = pd.getReadMethod();//获得get方法
+            column=getMethod.getAnnotation(Column.class);
+        }
+        if(idfield!=null&&column!=null){
+            String sql="delete from "+tableName+" where "+column.name()+"="+id;
             return sql;
         }else{
             throw new Exception("can not find id field.");
