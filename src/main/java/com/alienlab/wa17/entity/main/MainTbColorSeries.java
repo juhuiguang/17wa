@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.main;
 
+import org.hibernate.annotations.ListIndexBase;
+
 import javax.persistence.*;
 
 /**
@@ -10,12 +12,26 @@ import javax.persistence.*;
 public class MainTbColorSeries {
     private long seriesId;
     private String seriesName;
+    private String seriesRgb;
+
+    @Basic
+    @Column(name="series_rgb")
+    public String getSeriesRgb() {
+        return seriesRgb;
+    }
+
+    public void setSeriesRgb(String seriesRgb) {
+        this.seriesRgb = seriesRgb;
+    }
+
 
     @Id
     @Column(name = "series_id")
     public long getSeriesId() {
         return seriesId;
     }
+
+
 
     public void setSeriesId(long seriesId) {
         this.seriesId = seriesId;

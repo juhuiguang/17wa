@@ -37,6 +37,7 @@ public class ColorServiceImpl implements ColorService {
             ColorDto colorDto=new ColorDto();
             colorDto.setSeriesId(s.getSeriesId());
             colorDto.setSeriesName(s.getSeriesName());
+            colorDto.setSeriesRgb(s.getSeriesRgb());
             List<MainTbColors> subcolors=new ArrayList<>();
             for(MainTbColors color:colors){
                 if(color.getColorSeriesId().equals(colorDto.getSeriesId())){
