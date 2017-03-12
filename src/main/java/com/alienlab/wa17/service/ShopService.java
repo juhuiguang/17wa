@@ -3,6 +3,7 @@ package com.alienlab.wa17.service;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
+import com.alienlab.wa17.entity.client.dto.ShopAccountDto;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface ShopService {
 
     boolean delShop(int account_id,int shop) throws Exception;
 
+    List<ShopAccountDto> getShopAccountList(int account_id) throws Exception;
     //获得当前连接库中所选门店账户信息
     List<ClientTbShopAccount> getShopAccountList(int account_id, int shop_id) throws Exception;
 

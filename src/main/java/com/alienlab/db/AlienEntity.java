@@ -238,7 +238,12 @@ public class AlienEntity<T> {
                             if(updatebuffer.length()>0){
                                 updatebuffer.append(",").append(column.name()).append("='").append(field.get(entity)).append("'");
                             }else{
-                                updatebuffer.append(column.name()).append("='").append(field.get(entity)).append("'");
+                                Object o=null;
+                                if(field.get(entity)==null&&(field.getType().equals(Date.class)||(field.getType().equals(Timestamp.class)))){
+                                    DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                                    o=ZonedDateTime.now().format(format);
+                                }
+                                updatebuffer.append(column.name()).append("='").append(o).append("'");
                             }
                         }else{
                             if(updatebuffer.length()>0){

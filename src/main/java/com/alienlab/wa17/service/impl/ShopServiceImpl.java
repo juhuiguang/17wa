@@ -4,6 +4,7 @@ import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
+import com.alienlab.wa17.entity.client.dto.ShopAccountDto;
 import com.alienlab.wa17.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,11 @@ public class ShopServiceImpl implements ShopService {
             throw new Exception("您不可以删除默认门店。");
         }
         return daoTool.deleteOne(ClientTbShop.class,account_id,(long)shop);
+    }
+    @Override
+    public List<ShopAccountDto> getShopAccountList(int account_id) throws Exception {
+        String sql="select a.*,b.shop_name from tb_shop_account a,tb_shop b where a.shop_id=b.shop_id";
+        return daoTool.getAllList(sql,account_id,ShopAccountDto.class);
     }
 
     @Override
