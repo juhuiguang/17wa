@@ -3,6 +3,7 @@ package com.alienlab.wa17.controller;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
+import com.alienlab.wa17.entity.client.dto.ShopAccountDto;
 import com.alienlab.wa17.entity.main.MainTbAccount;
 import com.alienlab.wa17.entity.main.MainTbMarket;
 import com.alienlab.wa17.entity.main.dto.MarketDto;
@@ -88,6 +89,27 @@ public class ShopController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="根据账户获得所有门店账户列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbShopAccount.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @GetMapping(value="/17wa-shop/{account}/all")
+    public ResponseEntity getAllShopAccount(@PathVariable int account){
+        try{
+            List<ShopAccountDto> shopAccounts=shopService.getShopAccountList(account);
+            return ResponseEntity.ok().body(shopAccounts);
+        }catch(Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
 
     @ApiOperation(value="根据门店获得门店账户列表")
     @ApiImplicitParams({
