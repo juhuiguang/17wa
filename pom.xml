@@ -6,7 +6,7 @@
 	<groupId>com.alienlab</groupId>
 	<artifactId>17wa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>17wa</name>
 	<description>17wa服务端程序</description>
@@ -34,6 +34,11 @@
 					<groupId>org.slf4j</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -116,6 +121,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>17wa</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
