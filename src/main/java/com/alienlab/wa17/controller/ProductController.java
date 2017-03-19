@@ -9,12 +9,16 @@ import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbSizeCus;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
+import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.entity.main.MainTbTags;
 import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.spring.web.json.Json;
@@ -68,7 +72,7 @@ public class ProductController {
     })
     @ApiResponses({
             @ApiResponse(code = 200, message = "", response = ClientTbProduct.class),
-            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class)
     })
     @PostMapping("/17wa-product/{account}")
     public ResponseEntity addProduct(@PathVariable int account,@RequestBody String product){
@@ -118,7 +122,40 @@ public class ProductController {
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
+    }
 
+    @ApiOperation(value="获取账户下商品列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
+    })
+    @GetMapping("/17wa-product/{account}")
+    public ResponseEntity getShopList(@PathVariable int account,@RequestParam String keyword,@RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbProduct> results = productService.getProducts(account,keyword,new PageRequest(index, size));
+            return ResponseEntity.ok().body(results);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            ExecResult er=new ExecResult(false,ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 
+    @GetMapping("/17wa-product/{account}/product/{productid}")
+    @ApiOperation(value="获取商品详细信息，包含sku数组")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productid",value="商品id",paramType = "path")
+    })
+    public ResponseEntity loadProduct(@PathVariable int account,@PathVariable long productid){
+        try{
+            ProductSkuDto productSkuDto=productService.loadProduct(account,productid);
+            return ResponseEntity.ok().body(productSkuDto);
+        }catch(Exception ex){
+            ExecResult er=new ExecResult(false,ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
     }
 }

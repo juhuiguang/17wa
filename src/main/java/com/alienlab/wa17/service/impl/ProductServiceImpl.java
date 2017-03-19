@@ -5,6 +5,8 @@ import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.client.dto.ProductDto;
+import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,10 +29,12 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     SkuService skuService;
     @Override
-    public Page<ClientTbProduct> getProducts(int account_id, int shop_id, String keyword, Pageable page) throws Exception {
-        String sql="";
+    public Page<ClientTbProduct> getProducts(int account_id, String keyword, Pageable page) throws Exception {
+        String sql="SELECT product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes " +
+                "product_colors,product_status,product_tags FROM tb_product where product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%'";
+        Page<ClientTbProduct> results=daoTool.getPageList(sql,page,account_id,ClientTbProduct.class);
 
-        return null;
+        return results;
     }
 
     @Override
@@ -50,7 +55,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ClientTbProduct updateProduct(int account_id, ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception {
-
         product=daoTool.updateOne(account_id,product);
         int productid=(int)product.getProductId();
         //删除现有sku
@@ -80,5 +84,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ClientTbProduct changeProductStatus(int account_id, int product_id, String status) throws Exception {
         return null;
+    }
+
+    @Override
+    public ProductSkuDto loadProduct(int account_id, long product_id) throws Exception {
+        String sql="select * from tb_product where product_id="+product_id;
+        ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account_id,product_id);
+        if(product==null){
+            throw new Exception("未找到编码为"+product_id+"的产品");
+        }
+        List<ClientTbProductSku> skus=skuService.loadSku(account_id,product_id);
+        ProductSkuDto skuDto=new ProductSkuDto();
+        skuDto.setProduct(product);
+        skuDto.setSkus(skus);
+        return skuDto;
+
     }
 }

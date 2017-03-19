@@ -37,7 +37,7 @@ public class ImageController {
             @ApiImplicitParam(name="type",value="类型：产品图，介绍图",paramType = "query")
     })
     @PostMapping("/17wa-image")
-    public ResponseEntity uploadImage(@RequestBody MultipartFile file,@RequestParam int sort,@RequestParam int productId,@RequestParam String type, HttpServletRequest request){
+    public ResponseEntity uploadImage(@RequestPart("file") MultipartFile file,@RequestParam int sort,@RequestParam int productId,@RequestParam String type, HttpServletRequest request){
         String path=request.getSession().getServletContext().getRealPath(upload_path);
 //        List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");
 //        MultipartFile file = null;

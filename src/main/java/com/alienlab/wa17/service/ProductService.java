@@ -3,6 +3,8 @@ package com.alienlab.wa17.service;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
+import com.alienlab.wa17.entity.client.dto.ProductDto;
+import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public interface ProductService {
     //获得指定门店的商品信息
-    Page<ClientTbProduct> getProducts(int account_id,int shop_id,String keyword,Pageable page) throws Exception;
+    Page<ClientTbProduct> getProducts(int account_id,String keyword,Pageable page) throws Exception;
 
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
@@ -24,6 +26,7 @@ public interface ProductService {
     //下架、售卖商品
     ClientTbProduct changeProductStatus(int account_id,int product_id,String status) throws Exception;
 
+    ProductSkuDto loadProduct(int account_id, long product_id) throws Exception;
 
 
 

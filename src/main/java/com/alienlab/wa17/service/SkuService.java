@@ -18,4 +18,6 @@ public interface SkuService {
     boolean delSkuSingle(int account_id,int sku_id)throws Exception;
 
     boolean delSku(int account_id,int product_id) throws Exception;
+
+    ClientTbProductSku setStatus(int account_id,long sku_id,String status) throws Exception;
 }

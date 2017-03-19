@@ -1,5 +1,6 @@
 package com.alienlab.wa17.dao.impl;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.db.AlienEntity;
 import com.alienlab.db.ConnectorBean;
 import com.alienlab.db.Dao;
@@ -31,6 +32,8 @@ public class DaoToolImpl implements DaoTool {
     @Autowired
     AlienEntity alienEntity;
 
+    private final String mysqlPageTemplate="select a.* from ({sql}) a limit {start},{length}";
+    private final String totalTemplate="select count(1) total from ({sql}) a where 1=1";
     @Override
     public ConnectorBean getConnectByAccount(int account_id) throws Exception {
         MainTbDatabase dbproperties=getDatabaseByAccount(account_id);
@@ -56,6 +59,31 @@ public class DaoToolImpl implements DaoTool {
     }
 
     @Override
+    public String convertPageSql(String sql,Pageable page,int account_id)throws Exception {
+        ConnectorBean connect=getConnectByAccount(account_id);
+        String pageSql="";
+        if(connect!=null && !connect.getDbType().equals("")){
+            switch (connect.getDbType().toUpperCase()){
+                case "MYSQL":{
+                    int start=page.getPageNumber()*page.getPageSize();
+                    pageSql=mysqlPageTemplate.replace("{sql}",sql)
+                            .replace("{start}",String.valueOf(start))
+                            .replace("{length}",String.valueOf(page.getPageSize()));
+                }
+            }
+        }
+        if(pageSql.equals("")){
+            pageSql=sql;
+        }
+        return pageSql;
+    }
+
+    @Override
+    public String convertTotalSql(String sql) {
+        return totalTemplate.replace("{sql}",sql);
+    }
+
+    @Override
     public List getAllList(String sql) throws Exception {
         return maindao.getDataSet(sql);
     }
@@ -74,10 +102,12 @@ public class DaoToolImpl implements DaoTool {
     }
 
     @Override
-    public Page getPageList(String pagesql, String totalsql, Pageable page, int account_id) throws Exception {
+    public Page getPageList(String sql, Pageable page, int account_id) throws Exception {
+        String pagesql=convertPageSql(sql,page,account_id);
+        String totalsql=convertTotalSql(sql);
         List pagelist=getAllList(pagesql,account_id);
-        List totallist=getAllList(totalsql,account_id);
-        return new PageImpl(pagelist,page,totallist.size());
+        Map<String,Object> totalResult=getMap(totalsql,account_id);
+        return new PageImpl(pagelist,page,TypeUtils.castToInt(totalResult.get("total".toUpperCase())));
     }
 
     @Override
@@ -87,11 +117,13 @@ public class DaoToolImpl implements DaoTool {
     }
 
     @Override
-    public Page getPageList(String pagesql, String totalsql, Pageable page, int account_id, Class entityclass) throws Exception {
+    public Page getPageList(String sql, Pageable page, int account_id, Class entityclass) throws Exception {
+        String pagesql=convertPageSql(sql,page,account_id);
+        String totalsql=convertTotalSql(sql);
         List pagelist=getAllList(pagesql,account_id);
-        List totallist=getAllList(totalsql,account_id);
+        Map<String,Object> totalResult=getMap(totalsql,account_id);
         List entitylist=alienEntity.list2T(pagelist,entityclass);
-        return new PageImpl(entitylist,page,totallist.size());
+        return new PageImpl(entitylist,page, TypeUtils.castToInt(totalResult.get("total".toUpperCase())));
     }
 
     @Override

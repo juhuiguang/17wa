@@ -103,7 +103,12 @@ public class ClientTbProduct {
     @Basic
     @Column(name = "product_pic")
     public String getProductPic() {
-        return productPic;
+        if(productPic!=null&&!productPic.equals("")){
+            return productPic;
+        }else{
+            return "/image/product.png";
+        }
+
     }
 
     public void setProductPic(String productPic) {

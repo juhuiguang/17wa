@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 橘 on 2017/3/6.
@@ -37,5 +38,22 @@ public class SkuServiceImpl implements SkuService {
     public boolean delSku(int account_id, int product_id) throws Exception {
         String sql="delete from tb_product_sku where product_id="+product_id;
         return daoTool.exec(sql,account_id);
+    }
+
+    @Override
+    public ClientTbProductSku setStatus(int account_id, long sku_id, String status) throws Exception {
+        ClientTbProductSku sku=(ClientTbProductSku)daoTool.getOne(ClientTbProductSku.class,account_id,sku_id);
+        if(sku==null){
+            throw new Exception("未找到编码为"+sku_id+"的Sku");
+        }
+        sku.setSkuStatus(status);
+        sku=daoTool.updateOne(account_id,sku);
+        return sku;
+    }
+
+    private void refreshProductStatus(int account_id,long product_id){
+        String sql="SELECT sku_status,COUNT(sku_status) amount FROM tb_product_sku WHERE product_id="+product_id;
+        //List<Map<String,Object>> skuStatus=daoTool.getAllList(sql,account_id);
+
     }
 }
