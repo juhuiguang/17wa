@@ -384,7 +384,8 @@ public class AlienEntity<T> {
                                 pd = new PropertyDescriptor(fields[j].getName(),
                                         entityclass);
                             } catch (IntrospectionException e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
+                                continue;
                             }
                             if(pd!=null) {
                                 Method getMethod = pd.getReadMethod();//获得get方法

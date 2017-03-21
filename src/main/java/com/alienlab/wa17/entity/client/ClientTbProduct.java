@@ -1,7 +1,10 @@
 package com.alienlab.wa17.entity.client;
 
+import com.alienlab.utils.SpringUtil;
+import com.alienlab.wa17.WaImageProp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -13,6 +16,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "tb_product", schema = "17wa_client", catalog = "")
 public class ClientTbProduct {
+
     @ApiModelProperty(value="产品编码")
     private long productId;
     @ApiModelProperty(value="自动货号",notes="表单提交时，可不赋值，规则是：日期+accountid+当日增量")
@@ -106,7 +110,8 @@ public class ClientTbProduct {
         if(productPic!=null&&!productPic.equals("")){
             return productPic;
         }else{
-            return "/image/product.png";
+            WaImageProp waImageProp=SpringUtil.getBean(WaImageProp.class);
+            return waImageProp.getPath()+"/product.png";
         }
 
     }

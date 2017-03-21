@@ -17,6 +17,9 @@ public interface ProductService {
     //获得指定门店的商品信息
     Page<ClientTbProduct> getProducts(int account_id,String keyword,Pageable page) throws Exception;
 
+    //获得指定门店的商品信息
+    Page<ClientTbProduct> getAllProducts(int account_id,Pageable page) throws Exception;
+
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
 
@@ -27,6 +30,7 @@ public interface ProductService {
     ClientTbProduct changeProductStatus(int account_id,int product_id,String status) throws Exception;
 
     ProductSkuDto loadProduct(int account_id, long product_id) throws Exception;
+
 
 
 

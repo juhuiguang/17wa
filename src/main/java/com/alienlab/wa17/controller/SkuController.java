@@ -2,12 +2,14 @@ package com.alienlab.wa17.controller;
 
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbColorCus;
+import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbSizeCus;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.service.ColorService;
 import com.alienlab.wa17.service.SizeService;
+import com.alienlab.wa17.service.SkuService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -144,6 +146,31 @@ public class SkuController {
             boolean result=sizeService.delSize(account,sizeid);
             ExecResult er=new ExecResult(true,"尺码删除成功。");
             return ResponseEntity.ok().body(er);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @Autowired
+    SkuService skuService;
+
+    @ApiOperation(value="设置单品状态：上架、下架、缺货")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
+            @ApiImplicitParam(name="skuid",value="需指定状态的单品编码（sku_id）",paramType = "path"),
+            @ApiImplicitParam(name="status",value="需设置的状态：请直接传入中文状态名称(上架、下架、缺货)",paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbProductSku.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PutMapping(value="/17wa-sku/status/{account}/{skuid}")
+    public ResponseEntity setSkuStatus(@PathVariable int account,@PathVariable int skuid,@RequestParam String status){
+        try {
+            ClientTbProductSku sku=skuService.setStatus(account,skuid,status);
+            return ResponseEntity.ok().body(sku);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());

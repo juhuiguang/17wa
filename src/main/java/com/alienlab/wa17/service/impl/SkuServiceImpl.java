@@ -42,10 +42,14 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public ClientTbProductSku setStatus(int account_id, long sku_id, String status) throws Exception {
+        if(status.indexOf("上架")<0&&status.indexOf("下架")<0&&status.indexOf("缺货")<0){
+            throw new Exception("单品状态参数传入错误，允许的参数：[上架、下架、缺货]");
+        }
         ClientTbProductSku sku=(ClientTbProductSku)daoTool.getOne(ClientTbProductSku.class,account_id,sku_id);
         if(sku==null){
             throw new Exception("未找到编码为"+sku_id+"的Sku");
         }
+
         sku.setSkuStatus(status);
         sku=daoTool.updateOne(account_id,sku);
         return sku;

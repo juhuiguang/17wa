@@ -38,6 +38,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<ClientTbProduct> getAllProducts(int account_id, Pageable page) throws Exception {
+        String sql="SELECT product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes " +
+                "product_colors,product_status,product_tags FROM tb_product ";
+        Page<ClientTbProduct> results=daoTool.getPageList(sql,page,account_id,ClientTbProduct.class);
+
+        return results;
+    }
+
+    @Override
     public ClientTbProduct addProduct(int account_id, ClientTbProduct product, ClientTbProductSku [] clientTbProductSkus) throws Exception {
         product.setProductCode(getProductCode(account_id));
         product=daoTool.saveOne(product,account_id);

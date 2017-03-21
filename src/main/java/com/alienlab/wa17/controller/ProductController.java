@@ -91,7 +91,7 @@ public class ProductController {
         p.setProductPrice1(productbase.getInteger("productPrice1"));
         p.setProductPrice2(productbase.getInteger("productPrice2"));
         p.setProductType(productbase.getString("productType"));
-        p.setProductStatus("1");
+        p.setProductStatus("上架");
         p.setProductTags(productbase.getString("productTags"));
         ClientTbProductSku [] skus=null;
         if(colors!=null&&colors.size()>0&&sizes!=null&&sizes.size()>0){
@@ -109,7 +109,7 @@ public class ProductController {
                     skus[pos].setSizeId(size.getLong("sizeId"));
                     skus[pos].setSizeName(size.getString("sizeName"));
                     skus[pos].setSizeType(size.getString("sizeType"));
-                    skus[pos].setSkuStatus("1");
+                    skus[pos].setSkuStatus("上架");
                     pos++;
                 }
             }
@@ -124,7 +124,7 @@ public class ProductController {
         }
     }
 
-    @ApiOperation(value="获取账户下商品列表")
+    @ApiOperation(value="按关键字查询账户下商品列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query"),
@@ -135,6 +135,24 @@ public class ProductController {
     public ResponseEntity getShopList(@PathVariable int account,@RequestParam String keyword,@RequestParam int index,@RequestParam int size){
         try {
             Page<ClientTbProduct> results = productService.getProducts(account,keyword,new PageRequest(index, size));
+            return ResponseEntity.ok().body(results);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            ExecResult er=new ExecResult(false,ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取账户下全部商品列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
+    })
+    @GetMapping("/17wa-product/{account}/all")
+    public ResponseEntity getShopList(@PathVariable int account,@RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbProduct> results = productService.getAllProducts(account,new PageRequest(index, size));
             return ResponseEntity.ok().body(results);
         }catch(Exception ex){
             ex.printStackTrace();
