@@ -1,5 +1,6 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -38,6 +39,7 @@ public class ImageController {
     })
     @PostMapping("/17wa-image")
     public ResponseEntity uploadImage(@RequestPart("file") MultipartFile file,@RequestParam int sort,@RequestParam int productId,@RequestParam String type, HttpServletRequest request){
+//        System.out.println("file"+JSONObject.toJSONString(file));
         String path=request.getSession().getServletContext().getRealPath(upload_path);
 //        List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");
 //        MultipartFile file = null;

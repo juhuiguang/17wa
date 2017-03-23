@@ -231,19 +231,28 @@ public class AlienEntity<T> {
             if(column!=null){
                 try {
                     if(field.getName().equals(idfield.getName())){
+
                         wherebuffer.append(" where ").append(column.name()).append("=").append(field.get(entity));
                     }else{
                         //日期与字符类型需要单引号
                         if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
                             if(updatebuffer.length()>0){
-                                updatebuffer.append(",").append(column.name()).append("='").append(field.get(entity)).append("'");
+                                Object o=null;
+                                if(field.get(entity)==null||field.get(entity).equals("null")){
+                                    continue;
+                                }else{
+                                    o=field.get(entity);
+                                    updatebuffer.append(","+column.name()).append("='").append(o).append("'");
+                                }
                             }else{
                                 Object o=null;
-                                if(field.get(entity)==null&&(field.getType().equals(Date.class)||(field.getType().equals(Timestamp.class)))){
-                                    DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                                    o=ZonedDateTime.now().format(format);
+                                if(field.get(entity)==null||field.get(entity).equals("null")){
+                                    continue;
+                                }else{
+                                    o=field.get(entity);
+                                    updatebuffer.append(column.name()).append("='").append(o).append("'");
                                 }
-                                updatebuffer.append(column.name()).append("='").append(o).append("'");
+
                             }
                         }else{
                             if(updatebuffer.length()>0){
