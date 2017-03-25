@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +124,14 @@ public class DaoToolImpl implements DaoTool {
         List pagelist=getAllList(pagesql,account_id);
         Map<String,Object> totalResult=getMap(totalsql,account_id);
         List entitylist=alienEntity.list2T(pagelist,entityclass);
-        return new PageImpl(entitylist,page, TypeUtils.castToInt(totalResult.get("total".toUpperCase())));
+        if(entitylist==null){
+            entitylist=new ArrayList();
+        }
+        int totalcount=0;
+        if(totalResult!=null){
+            totalcount=TypeUtils.castToInt(totalResult.get("total".toUpperCase()));
+        }
+        return new PageImpl(entitylist,page, totalcount);
     }
 
     @Override

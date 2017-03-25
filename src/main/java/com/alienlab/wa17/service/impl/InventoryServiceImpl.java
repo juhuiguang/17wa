@@ -3,6 +3,7 @@ package com.alienlab.wa17.service.impl;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
+import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,44 +26,77 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public List<InventoryDto> loadInventory(int account, long shopId, long productId) throws Exception {
-        String sql="select * from tb_product_sku a left join tb_inventory lj on a.`id`=lj.`sku_id` and lj.`shop_id`=" +shopId+" "+
+        String sql="select a.*,lj.id inventory_id,lj.sku_id,lj.shop_id,lj.inventory_amount,lj.inventory_count_status,lj.inventory_count_time from tb_product_sku a left join tb_inventory lj on a.`id`=lj.`sku_id` and lj.`shop_id`=" +shopId+" "+
                 "where a.`product_id`="+productId;
         return daoTool.getAllList(sql,account,InventoryDto.class);
     }
 
     @Override
-    public ClientTbInventory addInventory(int account, long shopId, long productId, int amount, String type) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ClientTbInventory updateInventory(int account, long inventoryId, int amount) throws Exception {
-        ClientTbInventory inventory=(ClientTbInventory)daoTool.getOne(ClientTbInventory.class,account,inventoryId);
-        if(inventory==null){//不存在的库存需新增
-            throw new Exception("未找到库存信息，编码为"+inventoryId);
-        }else{
-            inventory.setInventoryAmount(amount);
-            inventory.setInventoryCountTime(new Timestamp(new Date().getTime()));
-            inventory=daoTool.updateOne(account,inventory);
+    public ClientTbInventory setInventory(int account,long shopId, long skuid, int amount,String type) throws Exception {
+        if("入库、出库、销售、退货、盘点、调入、调出".indexOf(type)<0){
+            throw new Exception("type参数传递错误，参考值：入库、出库、销售、退货、盘点、调入、调出");
         }
-
-        return inventory;
+        String sql="select * from tb_inventory where shop_id="+shopId+" and sku_id="+skuid;
+        ClientTbInventory inventory=(ClientTbInventory)daoTool.getObject(sql,account,ClientTbInventory.class);
+        if(inventory==null){
+            inventory=new ClientTbInventory();
+            inventory.setInventoryAmount(0);
+            inventory.setInventoryCountTime(new Timestamp(new Date().getTime()));
+            inventory.setInventoryCountStatus("正常");
+            inventory.setShopId(shopId);
+            inventory.setSkuId(skuid);
+            inventory=daoTool.saveOne(inventory,account);
+        }
+        if(inventory!=null&&inventory.getId()>0){
+            ClientTbInventoryDetail detail=new ClientTbInventoryDetail();
+            switch(type){
+                case "入库":
+                case "退货":
+                case "调入":
+                {
+                    amount=amount;
+                    break;
+                }
+                default:{
+                    amount=-amount;
+                }
+            }
+            detail.setDetailAmount(amount);
+            detail.setDetailTime(new Timestamp(new Date().getTime()));
+            detail.setDetailType(type);
+            detail.setInventoryId(inventory.getId());
+            detail=daoTool.saveOne(detail,account);
+            if(detail.getDetailId()>0){
+                inventory.setInventoryAmount(inventory.getInventoryAmount()+amount);
+                inventory=daoTool.updateOne(account,inventory);
+                return inventory;
+            }else{
+                throw  new Exception("保存库存明细记录失败。");
+            }
+        }else{
+            throw new Exception("库存主记录保存失败。");
+        }
     }
 
     @Override
-    public Page<ClientTbInventoryDetail> loadDetails(int account, long inventoryId, Pageable page) throws Exception {
-        return null;
+    public Page<InventoryDetailDto> loadDetails(int account, long inventoryId, String startDate, String endDate, Pageable page) throws Exception {
+        String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`id`=" +inventoryId+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
+        return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
 
     @Override
-    public Page<ClientTbInventoryDetail> loadDetailsByStatus(int account, long inventoryId, String status, Pageable page) throws Exception {
-        return null;
+    public Page<InventoryDetailDto> loadDetailsByStatus(int account, long inventoryId, String startDate, String endDate, String status, Pageable page) throws Exception {
+        String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`id`=" +inventoryId+" and a.detail_type='"+status+"'"+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
+        return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
 
 
-    @Override
-    public ClientTbInventoryDetail addInventoryLog(int account, long inventoryId, int amount, String type) throws Exception {
-
-        return null;
-    }
 }

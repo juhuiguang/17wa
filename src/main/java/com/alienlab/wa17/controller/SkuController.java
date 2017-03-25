@@ -1,13 +1,11 @@
 package com.alienlab.wa17.controller;
 
 import com.alienlab.wa17.controller.util.ExecResult;
-import com.alienlab.wa17.entity.client.ClientTbColorCus;
-import com.alienlab.wa17.entity.client.ClientTbProductSku;
-import com.alienlab.wa17.entity.client.ClientTbShop;
-import com.alienlab.wa17.entity.client.ClientTbSizeCus;
+import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.service.ColorService;
+import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SizeService;
 import com.alienlab.wa17.service.SkuService;
 import io.swagger.annotations.*;
@@ -29,6 +27,11 @@ public class SkuController {
     ColorService colorService;
     @Autowired
     SizeService sizeService;
+    @Autowired
+    SkuService skuService;
+    @Autowired
+    ProductService productService;
+
 
     @ApiOperation(value="根据账户获得合并后的颜色清单")
     @ApiImplicitParam(name="account",value="账户id",paramType = "path")
@@ -153,8 +156,6 @@ public class SkuController {
         }
     }
 
-    @Autowired
-    SkuService skuService;
 
     @ApiOperation(value="设置单品状态：上架、下架、缺货")
     @ApiImplicitParams({
@@ -171,6 +172,28 @@ public class SkuController {
         try {
             ClientTbProductSku sku=skuService.setStatus(account,skuid,status);
             return ResponseEntity.ok().body(sku);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="批量设置单品状态：上架、下架、缺货")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="需指定状态的产品编码（productId）",paramType = "path"),
+            @ApiImplicitParam(name="status",value="需设置的状态：请直接传入中文状态名称(上架、下架、缺货)",paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbProduct.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PostMapping(value="/17wa-sku/status/all/{account}/{productId}")
+    public ResponseEntity setSkuStatusBatch(@PathVariable int account,@PathVariable long productId,@RequestParam String status){
+        try {
+            ClientTbProduct product=productService.changeProductStatus(account,productId,status);
+            return ResponseEntity.ok().body(product);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());

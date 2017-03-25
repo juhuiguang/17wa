@@ -91,8 +91,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ClientTbProduct changeProductStatus(int account_id, int product_id, String status) throws Exception {
-        return null;
+    public ClientTbProduct changeProductStatus(int account_id, long product_id, String status) throws Exception {
+        if(status.indexOf("上架")<0&&status.indexOf("下架")<0&&status.indexOf("缺货")<0){
+            throw new Exception("单品状态参数传入错误，允许的参数：[上架、下架、缺货]");
+        }
+        String sql="UPDATE `tb_product_sku` SET `sku_status`='"+status+"' WHERE `product_id`="+product_id;
+        boolean result=daoTool.exec(sql,account_id);
+        if(result){
+            return refreshStatus(account_id,product_id);
+        }else{
+            throw new Exception("更新产品状态失败。");
+        }
     }
 
     @Override
@@ -108,5 +117,48 @@ public class ProductServiceImpl implements ProductService {
         skuDto.setSkus(skus);
         return skuDto;
 
+    }
+
+    @Override
+    public ClientTbProduct refreshStatus(int account, long productId) throws Exception {
+        ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account,productId);
+        if(product==null){
+            throw new Exception("未找到编码为"+productId+"的产品");
+        }
+        String sql="SELECT sku_status,COUNT(sku_status) statuamount, lj.skuamount FROM tb_product_sku a " +
+                "LEFT JOIN (SELECT COUNT(1) skuamount FROM tb_product_sku b WHERE product_id="+productId+") lj ON 1=1 " +
+                "WHERE a.product_id="+productId+" GROUP BY a.sku_status";
+        List<Map<String,Object>> statusCount=daoTool.getAllList(sql,account);
+        for(Map<String,Object> status:statusCount){
+            if(status.get("SKU_STATUS").equals("缺货")){
+                int skuamount=TypeUtils.castToInt(status.get("SKUAMOUNT"));
+                int statusamount=TypeUtils.castToInt(status.get("STATUAMOUNT"));
+                if(skuamount==statusamount){
+                    product.setProductStatus("缺货");
+                }else{
+                    product.setProductStatus("部分缺货");
+                }
+            }
+            else if(status.get("SKU_STATUS").equals("下架")){
+                int skuamount=TypeUtils.castToInt(status.get("SKUAMOUNT"));
+                int statusamount=TypeUtils.castToInt(status.get("STATUAMOUNT"));
+                if(skuamount==statusamount){
+                    product.setProductStatus("下架");
+                }else{
+                    product.setProductStatus("部分上架");
+                }
+            }
+            else if(status.get("SKU_STATUS").equals("上架")){
+                int skuamount=TypeUtils.castToInt(status.get("SKUAMOUNT"));
+                int statusamount=TypeUtils.castToInt(status.get("STATUAMOUNT"));
+                if(skuamount==statusamount){
+                    product.setProductStatus("上架");
+                }else{
+                    product.setProductStatus("部分上架");
+                }
+            }
+            product=daoTool.updateOne(account,product);
+        }
+        return product;
     }
 }

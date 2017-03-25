@@ -59,7 +59,8 @@ public class ImageController {
                 ExecResult er=new ExecResult(false,e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
             }
-            return ResponseEntity.ok().body(fileName);
+            ExecResult er=new ExecResult(true,fileName);
+            return ResponseEntity.ok().body(er);
         } else {
             ExecResult er=new ExecResult(false,"没有上传文件.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);

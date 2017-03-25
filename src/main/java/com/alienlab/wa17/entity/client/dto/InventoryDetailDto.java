@@ -1,6 +1,5 @@
 package com.alienlab.wa17.entity.client.dto;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Basic;
@@ -9,10 +8,9 @@ import javax.persistence.Id;
 import java.sql.Timestamp;
 
 /**
- * Created by 橘 on 2017/3/22.
+ * Created by 橘 on 2017/3/24.
  */
-@ApiModel(value="单品库存数据模型")
-public class InventoryDto {
+public class InventoryDetailDto {
     @ApiModelProperty(value="单品id")
     private long id;
     @ApiModelProperty(value="产品id")
@@ -40,6 +38,12 @@ public class InventoryDto {
     private String inventoryCountStatus;
     @ApiModelProperty(value="此店铺该单品的库存清点时间")
     private Timestamp inventoryCountTime;
+
+    private Long detailId;
+    private Long inventoryId;
+    private Integer detailAmount;
+    private Timestamp detailTime;
+    private String detailType;
 
     @Id
     @Column(name = "id")
@@ -169,5 +173,55 @@ public class InventoryDto {
 
     public void setInventoryCountTime(Timestamp inventoryCountTime) {
         this.inventoryCountTime = inventoryCountTime;
+    }
+
+    @Id
+    @Column(name = "detail_id")
+    public Long getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(long detailId) {
+        this.detailId = detailId;
+    }
+
+    @Basic
+    @Column(name = "inventory_id")
+    public Long getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(Long inventoryId) {
+        this.inventoryId = inventoryId;
+    }
+
+    @Basic
+    @Column(name = "detail_amount")
+    public Integer getDetailAmount() {
+        return detailAmount;
+    }
+
+    public void setDetailAmount(Integer detailAmount) {
+        this.detailAmount = detailAmount;
+    }
+
+    @Basic
+    @Column(name = "detail_time")
+    public Timestamp getDetailTime() {
+        return detailTime;
+    }
+
+    public void setDetailTime(Timestamp detailTime) {
+        this.detailTime = detailTime;
+    }
+
+    @Basic
+    @Column(name = "detail_type")
+    public String getDetailType() {
+        return detailType;
+    }
+
+    public void setDetailType(String detailType) {
+        this.detailType = detailType;
     }
 }

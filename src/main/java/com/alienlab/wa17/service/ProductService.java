@@ -1,5 +1,6 @@
 package com.alienlab.wa17.service;
 
+import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
@@ -27,9 +28,11 @@ public interface ProductService {
     ClientTbProduct updateProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
 
     //下架、售卖商品
-    ClientTbProduct changeProductStatus(int account_id,int product_id,String status) throws Exception;
+    ClientTbProduct changeProductStatus(int account_id,long product_id,String status) throws Exception;
 
     ProductSkuDto loadProduct(int account_id, long product_id) throws Exception;
+
+    ClientTbProduct refreshStatus(int account,long productId) throws Exception;
 
 
 

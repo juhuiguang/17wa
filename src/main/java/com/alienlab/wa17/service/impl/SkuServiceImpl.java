@@ -2,6 +2,7 @@ package com.alienlab.wa17.service.impl;
 
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.util.Map;
 public class SkuServiceImpl implements SkuService {
     @Autowired
     DaoTool daoTool;
+    @Autowired
+    ProductService productService;
     @Override
     public List<ClientTbProductSku> loadSku(int account_id, long product_id) throws Exception {
         String sql="select * from tb_product_sku where product_id="+product_id;
@@ -52,12 +55,9 @@ public class SkuServiceImpl implements SkuService {
 
         sku.setSkuStatus(status);
         sku=daoTool.updateOne(account_id,sku);
+        //更新产品主状态
+        productService.refreshStatus(account_id,sku.getProductId());
         return sku;
     }
 
-    private void refreshProductStatus(int account_id,long product_id){
-        String sql="SELECT sku_status,COUNT(sku_status) amount FROM tb_product_sku WHERE product_id="+product_id;
-        //List<Map<String,Object>> skuStatus=daoTool.getAllList(sql,account_id);
-
-    }
 }
