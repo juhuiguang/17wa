@@ -15,11 +15,13 @@ import java.util.List;
  * Created by juhuiguang on 2017/2/24.
  */
 public interface ProductService {
-    //获得指定门店的商品信息
     Page<ClientTbProduct> getProducts(int account_id,String keyword,Pageable page) throws Exception;
 
-    //获得指定门店的商品信息
     Page<ClientTbProduct> getAllProducts(int account_id,Pageable page) throws Exception;
+
+    Page<ClientTbProduct> getProducts(int account_id,String keyword,long shopId,Pageable page) throws Exception;
+
+    Page<ClientTbProduct> getAllProducts(int account_id,long shopId,Pageable page) throws Exception;
 
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;

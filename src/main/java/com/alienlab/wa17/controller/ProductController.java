@@ -124,6 +124,26 @@ public class ProductController {
         }
     }
 
+    @ApiOperation(value="按关键字查询账户下商品列表,包含当前门店的库存总量")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="店铺编码",paramType = "path"),
+            @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
+    })
+    @GetMapping("/17wa-product/{account}/{shopId}")
+    public ResponseEntity getProductList(@PathVariable int account,@PathVariable long shopId,@RequestParam String keyword,@RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbProduct> results = productService.getProducts(account,keyword,shopId,new PageRequest(index, size));
+            return ResponseEntity.ok().body(results);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            ExecResult er=new ExecResult(false,ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
     @ApiOperation(value="按关键字查询账户下商品列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
@@ -132,9 +152,28 @@ public class ProductController {
             @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
     })
     @GetMapping("/17wa-product/{account}")
-    public ResponseEntity getShopList(@PathVariable int account,@RequestParam String keyword,@RequestParam int index,@RequestParam int size){
+    public ResponseEntity getProductList(@PathVariable int account,@RequestParam String keyword,@RequestParam int index,@RequestParam int size){
         try {
             Page<ClientTbProduct> results = productService.getProducts(account,keyword,new PageRequest(index, size));
+            return ResponseEntity.ok().body(results);
+        }catch(Exception ex){
+            ex.printStackTrace();
+            ExecResult er=new ExecResult(false,ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取账户下全部商品列表,包含当前门店的库存总量")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="店铺编码",paramType = "path"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
+    })
+    @GetMapping("/17wa-product/{account}/{shopId}/all")
+    public ResponseEntity getAllProductList(@PathVariable int account,@PathVariable long shopId,@RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbProduct> results = productService.getAllProducts(account,shopId,new PageRequest(index, size));
             return ResponseEntity.ok().body(results);
         }catch(Exception ex){
             ex.printStackTrace();
@@ -150,7 +189,7 @@ public class ProductController {
             @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
     })
     @GetMapping("/17wa-product/{account}/all")
-    public ResponseEntity getShopList(@PathVariable int account,@RequestParam int index,@RequestParam int size){
+    public ResponseEntity getAllProductList(@PathVariable int account,@RequestParam int index,@RequestParam int size){
         try {
             Page<ClientTbProduct> results = productService.getAllProducts(account,new PageRequest(index, size));
             return ResponseEntity.ok().body(results);

@@ -68,7 +68,7 @@ public class InventoryController {
         }
     }
 
-    @ApiOperation(value="获取全部库存明细")
+    @ApiOperation(value="获取单品全部库存明细")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="inventoryId",value="库存记录编码",paramType = "path"),
@@ -90,7 +90,7 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
-    @ApiOperation(value="按状态查询库存明细")
+    @ApiOperation(value="按状态查询单品库存明细")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="inventoryId",value="库存记录编码",paramType = "path"),
@@ -107,6 +107,56 @@ public class InventoryController {
                                               @RequestParam int index,@RequestParam int size){
         try {
             Page<InventoryDetailDto> details=inventoryService.loadDetailsByStatus(account,inventoryId,startDate,endDate,status,new PageRequest(index,size));
+            return ResponseEntity.ok().body(details);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取指定产品的全部库存明细")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="门店id",paramType = "path"),
+            @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
+            @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+    })
+    @GetMapping("/17wa-inventory/product/{account}/{productId}/{shopId}")
+    public ResponseEntity getInventoryDetails(@PathVariable int account,@PathVariable long productId,@PathVariable long shopId,
+                                              @RequestParam String startDate, @RequestParam String endDate,
+                                              @RequestParam int index,@RequestParam int size){
+        try {
+            Page<InventoryDetailDto> details=inventoryService.loadDetailsByProduct(account,productId,shopId,startDate,endDate,new PageRequest(index,size));
+            return ResponseEntity.ok().body(details);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="按状态查询产品全部库存明细")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="门店id",paramType = "path"),
+            @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
+            @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
+            @ApiImplicitParam(name="status",value="库存状态",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+    })
+    @GetMapping("/17wa-inventory/product/status/{account}/{productId}/{shopId}")
+    public ResponseEntity getInventoryDetailsByStatus(@PathVariable int account,@PathVariable long productId,@PathVariable long shopId,
+                                                      @RequestParam String startDate, @RequestParam String endDate,
+                                                      @RequestParam String status,
+                                                      @RequestParam int index,@RequestParam int size){
+        try {
+            Page<InventoryDetailDto> details=inventoryService.loadDetailsByProductAndStatus(account,productId,shopId,startDate,endDate,status,new PageRequest(index,size));
             return ResponseEntity.ok().body(details);
         } catch (Exception e) {
             e.printStackTrace();

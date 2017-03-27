@@ -33,8 +33,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ClientTbInventory setInventory(int account,long shopId, long skuid, int amount,String type) throws Exception {
-        if("入库、出库、销售、退货、盘点、调入、调出".indexOf(type)<0){
-            throw new Exception("type参数传递错误，参考值：入库、出库、销售、退货、盘点、调入、调出");
+        if("入库、出库、销售、退货、盘点加、盘点减、调入、调出".indexOf(type)<0){
+            throw new Exception("type参数传递错误，参考值：入库、出库、销售、退货、盘点加、盘点减、调入、调出");
         }
         String sql="select * from tb_inventory where shop_id="+shopId+" and sku_id="+skuid;
         ClientTbInventory inventory=(ClientTbInventory)daoTool.getObject(sql,account,ClientTbInventory.class);
@@ -53,6 +53,7 @@ public class InventoryServiceImpl implements InventoryService {
                 case "入库":
                 case "退货":
                 case "调入":
+                case "盘点加":
                 {
                     amount=amount;
                     break;
@@ -94,6 +95,26 @@ public class InventoryServiceImpl implements InventoryService {
                 "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
                 "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
                 "AND b.`id`=" +inventoryId+" and a.detail_type='"+status+"'"+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
+        return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
+    }
+
+    @Override
+    public Page<InventoryDetailDto> loadDetailsByProduct(int account, long productId, long shopId, String startDate, String endDate, Pageable page) throws Exception {
+        String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`shop_id`=" +shopId+" AND c.product_id="+productId+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
+        return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
+    }
+
+    @Override
+    public Page<InventoryDetailDto> loadDetailsByProductAndStatus(int account, long productId, long shopId, String startDate, String endDate, String status, Pageable page) throws Exception {
+        String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`shop_id`=" +shopId+" and a.detail_type='"+status+"' AND c.product_id="+productId+
                 " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }

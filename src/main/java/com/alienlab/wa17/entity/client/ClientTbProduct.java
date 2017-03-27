@@ -53,6 +53,18 @@ public class ClientTbProduct {
     private String productTags;
     @ApiModelProperty(value="产品最后更新时间",notes = "表单提交时可不赋值")
     private Timestamp updatetime;
+    @ApiModelProperty(value="产品库存总量")
+    private Integer amount;
+
+    @Basic
+    @Column(name = "product_amount")
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
 
     @Id
     @Column(name = "product_id")

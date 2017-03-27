@@ -32,6 +32,9 @@ public class InventoryDto {
     @ApiModelProperty(value="单品状态")
     private String skuStatus;
 
+
+    @ApiModelProperty(value="店铺id")
+    private Long inventoryId;
     @ApiModelProperty(value="店铺id")
     private Long shopId;
     @ApiModelProperty(value="此店铺的单品库存量")
@@ -40,6 +43,15 @@ public class InventoryDto {
     private String inventoryCountStatus;
     @ApiModelProperty(value="此店铺该单品的库存清点时间")
     private Timestamp inventoryCountTime;
+
+    @Column(name = "inventory_id")
+    public Long getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(Long inventoryId) {
+        this.inventoryId = inventoryId;
+    }
 
     @Id
     @Column(name = "id")

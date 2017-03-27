@@ -22,4 +22,7 @@ public interface InventoryService {
     //按类型加载库存明细
     Page<InventoryDetailDto> loadDetailsByStatus(int account,long inventoryId,String startDate,String endDate,String status, Pageable page) throws Exception;
 
+    Page<InventoryDetailDto> loadDetailsByProduct(int account, long productId,long shopId,String startDate,String endDate,Pageable page) throws Exception;
+
+    Page<InventoryDetailDto> loadDetailsByProductAndStatus(int account,long productId,long shopId,String startDate,String endDate,String status, Pageable page) throws Exception;
 }
