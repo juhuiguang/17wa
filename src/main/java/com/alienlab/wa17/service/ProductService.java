@@ -23,6 +23,10 @@ public interface ProductService {
 
     Page<ClientTbProduct> getAllProducts(int account_id,long shopId,Pageable page) throws Exception;
 
+    Page<ClientTbProduct> getErrorProducts(int account_id,long shopId,Pageable page) throws Exception;
+
+    Page<ClientTbProduct> getOnSaleProducts(int account,long shopId,Pageable page) throws Exception;
+
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;
 
@@ -35,6 +39,7 @@ public interface ProductService {
     ProductSkuDto loadProduct(int account_id, long product_id) throws Exception;
 
     ClientTbProduct refreshStatus(int account,long productId) throws Exception;
+
 
 
 

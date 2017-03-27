@@ -1,7 +1,9 @@
 package com.alienlab.wa17.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
+import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import org.springframework.data.domain.Page;
@@ -18,11 +20,20 @@ public interface InventoryService {
     //设置产品sku库存记录
     ClientTbInventory setInventory(int account,long shopId, long skuid, int amount,String type) throws Exception;
     //加载库存明细
-    Page<InventoryDetailDto> loadDetails(int account, long inventoryId,String startDate,String endDate,Pageable page) throws Exception;
+    Page<InventoryDetailDto> loadDetails(int account, long skuId,String startDate,String endDate,Pageable page) throws Exception;
     //按类型加载库存明细
-    Page<InventoryDetailDto> loadDetailsByStatus(int account,long inventoryId,String startDate,String endDate,String status, Pageable page) throws Exception;
+    Page<InventoryDetailDto> loadDetailsByStatus(int account,long skuId,String startDate,String endDate,String status, Pageable page) throws Exception;
 
     Page<InventoryDetailDto> loadDetailsByProduct(int account, long productId,long shopId,String startDate,String endDate,Pageable page) throws Exception;
 
     Page<InventoryDetailDto> loadDetailsByProductAndStatus(int account,long productId,long shopId,String startDate,String endDate,String status, Pageable page) throws Exception;
+
+    JSONArray getInventoryStat(int account, long skuId, String startDate, String endDate) throws Exception;
+    JSONArray getInventoryStatByProd(int account, long productId, long shopId, String startDate, String endDate) throws Exception;
+
+    JSONArray getInventoryStatByStatus(int account, long skuId,String startDate,String endDate,String status) throws Exception;
+    JSONArray getInventoryStatByStatusAndProd(int account, long productId, long shopId,String startDate,String endDate,String status) throws Exception;
+
+    ClientTbProductInventoryStatus setProductInventoryStatus(int account,long productid,long shopid,String status)throws Exception;
+
 }

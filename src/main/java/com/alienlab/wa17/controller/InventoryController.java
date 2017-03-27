@@ -1,7 +1,10 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
+import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.service.InventoryService;
@@ -71,19 +74,23 @@ public class InventoryController {
     @ApiOperation(value="获取单品全部库存明细")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
-            @ApiImplicitParam(name="inventoryId",value="库存记录编码",paramType = "path"),
+            @ApiImplicitParam(name="skuid",value="单品编码",paramType = "path"),
             @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
             @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
             @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
             @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
     })
-    @GetMapping("/17wa-inventory/detail/{account}/{inventoryId}")
-    public ResponseEntity getInventoryDetails(@PathVariable int account,@PathVariable long inventoryId,
+    @GetMapping("/17wa-inventory/detail/{account}/{skuid}")
+    public ResponseEntity getInventoryDetails(@PathVariable int account,@PathVariable long skuid,
                                               @RequestParam String startDate, @RequestParam String endDate,
                                               @RequestParam int index,@RequestParam int size){
         try {
-            Page<InventoryDetailDto> details=inventoryService.loadDetails(account,inventoryId,startDate,endDate,new PageRequest(index,size));
-            return ResponseEntity.ok().body(details);
+            Page<InventoryDetailDto> details=inventoryService.loadDetails(account,skuid,startDate,endDate,new PageRequest(index,size));
+            JSONArray stat=inventoryService.getInventoryStat(account,skuid,startDate,endDate);
+            JSONObject result=new JSONObject();
+            result.put("details",details);
+            result.put("stat",stat);
+            return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
@@ -93,21 +100,25 @@ public class InventoryController {
     @ApiOperation(value="按状态查询单品库存明细")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
-            @ApiImplicitParam(name="inventoryId",value="库存记录编码",paramType = "path"),
+            @ApiImplicitParam(name="skuid",value="单品编码",paramType = "path"),
             @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
             @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
             @ApiImplicitParam(name="status",value="库存状态",paramType = "query"),
             @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
             @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
     })
-    @GetMapping("/17wa-inventory/detail/status/{account}/{inventoryId}")
-    public ResponseEntity getInventoryDetailsByStatus(@PathVariable int account,@PathVariable long inventoryId,
+    @GetMapping("/17wa-inventory/detail/status/{account}/{skuid}")
+    public ResponseEntity getInventoryDetailsByStatus(@PathVariable int account,@PathVariable long skuid,
                                               @RequestParam String startDate, @RequestParam String endDate,
                                               @RequestParam String status,
                                               @RequestParam int index,@RequestParam int size){
         try {
-            Page<InventoryDetailDto> details=inventoryService.loadDetailsByStatus(account,inventoryId,startDate,endDate,status,new PageRequest(index,size));
-            return ResponseEntity.ok().body(details);
+            Page<InventoryDetailDto> details=inventoryService.loadDetailsByStatus(account,skuid,startDate,endDate,status,new PageRequest(index,size));
+            JSONArray stat=inventoryService.getInventoryStatByStatus(account,skuid,startDate,endDate,status);
+            JSONObject result=new JSONObject();
+            result.put("details",details);
+            result.put("stat",stat);
+            return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
@@ -131,7 +142,11 @@ public class InventoryController {
                                               @RequestParam int index,@RequestParam int size){
         try {
             Page<InventoryDetailDto> details=inventoryService.loadDetailsByProduct(account,productId,shopId,startDate,endDate,new PageRequest(index,size));
-            return ResponseEntity.ok().body(details);
+            JSONArray stat=inventoryService.getInventoryStatByProd(account,productId,shopId,startDate,endDate);
+            JSONObject result=new JSONObject();
+            result.put("details",details);
+            result.put("stat",stat);
+            return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
@@ -157,10 +172,33 @@ public class InventoryController {
                                                       @RequestParam int index,@RequestParam int size){
         try {
             Page<InventoryDetailDto> details=inventoryService.loadDetailsByProductAndStatus(account,productId,shopId,startDate,endDate,status,new PageRequest(index,size));
-            return ResponseEntity.ok().body(details);
+            JSONArray stat=inventoryService.getInventoryStatByStatusAndProd(account,productId,shopId,startDate,endDate,status);
+            JSONObject result=new JSONObject();
+            result.put("details",details);
+            result.put("stat",stat);
+            return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="设置产品库存状态:正常，异常")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productid",value="产品编码",paramType = "query"),
+            @ApiImplicitParam(name="shopid",value="店铺编码",paramType = "query"),
+            @ApiImplicitParam(name="status",value="状态值：正常、异常",paramType = "query")
+    })
+    @PostMapping("/17wa-inventory/error/{account}")
+    public ResponseEntity setProductInventoryStatus(@PathVariable int account,@RequestParam long productid,@RequestParam long shopid,@RequestParam String status){
+        try {
+            ClientTbProductInventoryStatus inventoryStatus=inventoryService.setProductInventoryStatus(account,productid,shopid,status);
+            return ResponseEntity.ok().body(inventoryStatus);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }

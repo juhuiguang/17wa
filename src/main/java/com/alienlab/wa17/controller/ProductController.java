@@ -215,4 +215,22 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+    @ApiOperation(value="获取当前门店异常库存的产品")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="店铺编码",paramType = "path"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页页长",paramType = "query")
+    })
+    @GetMapping("/17wa-product/error/{account}/{shopId}")
+    public ResponseEntity getErrorProduct(@PathVariable int account,@PathVariable long shopId,@RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbProduct> results=productService.getErrorProducts(account,shopId,new PageRequest(index,size));
+            return ResponseEntity.ok().body(results);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 }

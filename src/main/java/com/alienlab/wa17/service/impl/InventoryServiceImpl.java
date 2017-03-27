@@ -1,8 +1,11 @@
 package com.alienlab.wa17.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
+import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.service.InventoryService;
@@ -80,21 +83,21 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Page<InventoryDetailDto> loadDetails(int account, long inventoryId, String startDate, String endDate, Pageable page) throws Exception {
+    public Page<InventoryDetailDto> loadDetails(int account, long skuId, String startDate, String endDate, Pageable page) throws Exception {
         String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
                 "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
                 "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
-                "AND b.`id`=" +inventoryId+
+                "AND b.`sku_id`=" +skuId+
                 " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
 
     @Override
-    public Page<InventoryDetailDto> loadDetailsByStatus(int account, long inventoryId, String startDate, String endDate, String status, Pageable page) throws Exception {
+    public Page<InventoryDetailDto> loadDetailsByStatus(int account, long skuId, String startDate, String endDate, String status, Pageable page) throws Exception {
         String sql="SELECT a.*,b.sku_id,b.shop_id,b.`inventory_amount`,b.`inventory_count_status`,b.`inventory_count_time`,c.`color_name`,c.`size_name` " +
                 "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
                 "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
-                "AND b.`id`=" +inventoryId+" and a.detail_type='"+status+"'"+
+                "AND b.`sku_id`=" +skuId+" and a.detail_type='"+status+"'"+
                 " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
@@ -117,6 +120,59 @@ public class InventoryServiceImpl implements InventoryService {
                 "AND b.`shop_id`=" +shopId+" and a.detail_type='"+status+"' AND c.product_id="+productId+
                 " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"'";
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
+    }
+
+    @Override
+    public JSONArray getInventoryStat(int account, long skuId, String startDate, String endDate) throws Exception {
+        String sql="SELECT detail_type,sum(detail_amount) detail_amount " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`sku_id`=" +skuId+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"' group by detail_type";
+        return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
+    }
+
+    @Override
+    public JSONArray getInventoryStatByProd(int account, long productId, long shopId,String startDate, String endDate) throws Exception {
+        String sql="SELECT detail_type,sum(detail_amount) detail_amount " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`shop_id`=" +shopId+" AND c.product_id="+productId+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"' group by detail_type";
+        return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
+    }
+
+    @Override
+    public JSONArray getInventoryStatByStatus(int account, long skuId,String startDate, String endDate,String status) throws Exception {
+        String sql="SELECT detail_type,sum(detail_amount) detail_amount " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`sku_id`=" +skuId+" and a.detail_type='"+status+"'"+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"' group by detail_type";
+        return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
+    }
+
+    @Override
+    public JSONArray getInventoryStatByStatusAndProd(int account, long productId, long shopId, String startDate, String endDate,String status) throws Exception {
+        String sql="detail_type,sum(detail_amount) detail_amount " +
+                "FROM `tb_inventory_detail` a,`tb_inventory` b,`tb_product_sku` c " +
+                "WHERE a.`inventory_id`=b.`id` AND b.`sku_id`=c.`id` " +
+                "AND b.`shop_id`=" +shopId+" and a.detail_type='"+status+"' AND c.product_id="+productId+
+                " AND a.`detail_time`>='"+startDate+"' AND a.`detail_time`<='"+endDate+"' group by detail_type";
+        return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
+    }
+
+    @Override
+    public ClientTbProductInventoryStatus setProductInventoryStatus(int account, long productid, long shopid, String status) throws Exception {
+        if("异常，正常".indexOf(status)<0){
+            throw new Exception("状态值传入错误。请传入[正常、异常]");
+        }
+        ClientTbProductInventoryStatus inventoryStatus=new ClientTbProductInventoryStatus();
+        inventoryStatus.setShopId(shopid);
+        inventoryStatus.setProductId(productid);
+        inventoryStatus.setStatus(status);
+        inventoryStatus=daoTool.saveOne(inventoryStatus,account);
+        return inventoryStatus;
     }
 
 

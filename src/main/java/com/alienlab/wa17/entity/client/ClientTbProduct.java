@@ -55,6 +55,18 @@ public class ClientTbProduct {
     private Timestamp updatetime;
     @ApiModelProperty(value="产品库存总量")
     private Integer amount;
+    @ApiModelProperty(value="产品库存状态")
+    private String inventroyStatus;
+
+    @Basic
+    @Column(name="inventory_status")
+    public String getInventroyStatus() {
+        return inventroyStatus;
+    }
+
+    public void setInventroyStatus(String inventroyStatus) {
+        this.inventroyStatus = inventroyStatus;
+    }
 
     @Basic
     @Column(name = "product_amount")
