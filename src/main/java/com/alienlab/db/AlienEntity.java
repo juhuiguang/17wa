@@ -156,10 +156,18 @@ public class AlienEntity<T> {
             }
             //如果不是主键字段
             if(!field.getName().equals(idfield.getName())){
-                if(fieldbuffer.length()==0){
-                    fieldbuffer.append(column.name());
-                }else{
-                    fieldbuffer.append(",").append(column.name());
+                try{
+                    if(field.get(entity)==null||field.get(entity).equals("null")) {
+                        continue;
+                    }else{
+                        if (fieldbuffer.length() == 0) {
+                            fieldbuffer.append(column.name());
+                        } else {
+                            fieldbuffer.append(",").append(column.name());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
 
                 if(column!=null){
@@ -168,23 +176,31 @@ public class AlienEntity<T> {
                         if(field.getType().equals(Date.class)||field.getType().equals(String.class)||field.getType().equals(Timestamp.class)){
                             Object d=field.get(entity);
                             if(d==null||d.equals("null")){
-                                d="";
-                                if(field.getType().equals(Date.class)||field.getType().equals(Timestamp.class)){
-                                    DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                                    d=ZonedDateTime.now().format(format);
+//                                d="";
+//                                if(field.getType().equals(Date.class)||field.getType().equals(Timestamp.class)){
+//                                    DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//                                    d=ZonedDateTime.now().format(format);
+//                                }
+                                continue;
+                            }else{
+                                if(valuebuffer.length()>0){
+                                    valuebuffer.append(",").append("'").append(d).append("'");
+                                }else{
+                                    valuebuffer.append("'").append(field.get(entity)).append("'");
                                 }
                             }
-                            if(valuebuffer.length()>0){
-                                valuebuffer.append(",").append("'").append(d).append("'");
-                            }else{
-                                valuebuffer.append("'").append(field.get(entity)).append("'");
-                            }
                         }else{
-                            if(valuebuffer.length()>0){
-                                valuebuffer.append(",").append(field.get(entity));
+                            Object d=field.get(entity);
+                            if(d==null||d.equals("null")){
+                                continue;
                             }else{
-                                valuebuffer.append(field.get(entity));
+                                if(valuebuffer.length()>0){
+                                    valuebuffer.append(",").append(field.get(entity));
+                                }else{
+                                    valuebuffer.append(field.get(entity));
+                                }
                             }
+
                         }
                     }catch (IllegalAccessException e) {
                         e.printStackTrace();

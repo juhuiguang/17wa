@@ -54,7 +54,7 @@ public class InventoryDto {
     }
 
     @Id
-    @Column(name = "id")
+    @Column(name = "sku_id")
     public long getId() {
         return id;
     }

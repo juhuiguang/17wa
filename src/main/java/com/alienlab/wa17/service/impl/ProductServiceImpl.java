@@ -78,6 +78,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ClientTbProduct> getOnSaleProducts(int account, long shopId, Pageable page) throws Exception {
+        String sql="";
+
         return null;
     }
 
