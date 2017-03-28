@@ -77,6 +77,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<ClientTbProduct> getOnSaleProducts(int account, long shopId, Pageable page) throws Exception {
+        return null;
+    }
+
+    @Override
     public ClientTbProduct addProduct(int account_id, ClientTbProduct product, ClientTbProductSku [] clientTbProductSkus) throws Exception {
         product.setProductCode(getProductCode(account_id));
         product=daoTool.saveOne(product,account_id);
