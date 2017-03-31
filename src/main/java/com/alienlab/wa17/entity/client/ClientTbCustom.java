@@ -1,7 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 
 /**

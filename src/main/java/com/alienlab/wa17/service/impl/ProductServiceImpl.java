@@ -5,6 +5,7 @@ import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.service.ProductService;
@@ -77,15 +78,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ClientTbProduct> getOnSaleProducts(int account, long shopId, Pageable page) throws Exception {
+    public List<InventoryDetailDto> getOnSaleProducts(int account, long shopId) throws Exception {
         String sql="select a.*,b.`id` sku_id,b.`color_name`,b.`size_name`,b.`sku_status`,c.`id` inventory_id,c.`inventory_amount`,c.`shop_id` " +
                 " from tb_product a,tb_product_sku b,tb_inventory c " +
                 " where b.`product_id`=a.`product_id` AND b.`sku_status` ='上架' " +
                 " and c.`shop_id`=1 " +
                 " and b.`id`=c.`sku_id` and c.`inventory_amount`>0 " +
                 " and (product_code2 like '%%' or product_name like '%%' )";
-
-        return null;
+        List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
+        return results;
     }
 
     @Override

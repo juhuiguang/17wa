@@ -4,6 +4,7 @@ import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
+import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ public interface ProductService {
 
     Page<ClientTbProduct> getErrorProducts(int account_id,long shopId,Pageable page) throws Exception;
 
-    Page<ClientTbProduct> getOnSaleProducts(int account,long shopId,Pageable page) throws Exception;
+    List<InventoryDetailDto> getOnSaleProducts(int account, long shopId) throws Exception;
 
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;

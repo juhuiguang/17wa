@@ -16,12 +16,12 @@ public class ClientTbOrder {
     private String cusName;
     private Integer cusRemain;
     private Long accountId;
-    private Integer orderMoney;
-    private Integer orderPayment;
-    private Integer orderAmount;
+    private Float orderMoney;
+    private Float orderPayment;
+    private Float orderAmount;
     private String orderPaytype;
-    private Integer orderOdd;
-    private Integer orderRecharge;
+    private Float orderOdd;
+    private Float orderRecharge;
     private Integer orderGradeIn;
     private Integer orderGradeOut;
     private String orderMemo;
@@ -99,31 +99,31 @@ public class ClientTbOrder {
 
     @Basic
     @Column(name = "order_money")
-    public Integer getOrderMoney() {
+    public Float getOrderMoney() {
         return orderMoney;
     }
 
-    public void setOrderMoney(Integer orderMoney) {
+    public void setOrderMoney(Float orderMoney) {
         this.orderMoney = orderMoney;
     }
 
     @Basic
     @Column(name = "order_payment")
-    public Integer getOrderPayment() {
+    public Float getOrderPayment() {
         return orderPayment;
     }
 
-    public void setOrderPayment(Integer orderPayment) {
+    public void setOrderPayment(Float orderPayment) {
         this.orderPayment = orderPayment;
     }
 
     @Basic
     @Column(name = "order_amount")
-    public Integer getOrderAmount() {
+    public Float getOrderAmount() {
         return orderAmount;
     }
 
-    public void setOrderAmount(Integer orderAmount) {
+    public void setOrderAmount(Float orderAmount) {
         this.orderAmount = orderAmount;
     }
 
@@ -139,21 +139,21 @@ public class ClientTbOrder {
 
     @Basic
     @Column(name = "order_odd")
-    public Integer getOrderOdd() {
+    public Float getOrderOdd() {
         return orderOdd;
     }
 
-    public void setOrderOdd(Integer orderOdd) {
+    public void setOrderOdd(Float orderOdd) {
         this.orderOdd = orderOdd;
     }
 
     @Basic
     @Column(name = "order_recharge")
-    public Integer getOrderRecharge() {
+    public Float getOrderRecharge() {
         return orderRecharge;
     }
 
-    public void setOrderRecharge(Integer orderRecharge) {
+    public void setOrderRecharge(Float orderRecharge) {
         this.orderRecharge = orderRecharge;
     }
 

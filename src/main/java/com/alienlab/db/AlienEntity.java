@@ -421,7 +421,12 @@ public class AlienEntity<T> {
                             if(item.containsKey(column.name().toUpperCase())){
                                 Object value=item.get(column.name().toUpperCase());
                                 if(value==null||value.equals("")){
-                                    fields[j].set(instance,null);//赋值
+                                    if(fields[j].getType().equals(String.class)){
+                                        fields[j].set(instance,"");//赋值
+                                    }else{
+                                        fields[j].set(instance,null);//赋值
+                                    }
+
                                 }else{
                                     if(fields[j].getType().equals(float.class)){
                                         value=Float.parseFloat((String)value);
@@ -434,10 +439,12 @@ public class AlienEntity<T> {
                                     }else if(fields[j].getType().equals(double.class)){
                                         value=Double.parseDouble((String)value);
                                     }else if(fields[j].getType().equals(Date.class)){
-                                        if(((String)value).indexOf(":")>0){
+                                        if(((String)value).indexOf("-")>0&&((String)value).indexOf(":")>0){
                                             value= DateUtils.getDate((String)value,"yyyy-MM-dd HH:mm:ss");
+                                        }else if(((String)value).indexOf("-")>0 && ((String)value).indexOf(":")<0){
+                                            value= DateUtils.getDate((String)value,"yyyy-MM-dd");
                                         }else{
-                                            value=new Date(Long.parseLong((String)value));
+                                            value=DateUtils.getDate((String)value,"yyyyMMdd");
                                         }
                                     }else if(fields[j].getType().equals(Timestamp.class)){
                                         value=Timestamp.valueOf((String)value);
@@ -445,6 +452,7 @@ public class AlienEntity<T> {
                                         Constructor constructor = fields[j].getType().getConstructor(String.class);
                                         value=constructor.newInstance(value);
                                     }
+
                                     fields[j].set(instance,value);//赋值
                                 }
                             }
