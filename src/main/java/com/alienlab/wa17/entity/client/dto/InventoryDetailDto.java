@@ -286,7 +286,7 @@ public class InventoryDetailDto {
 
 
     @Id
-    @Column(name = "id")
+    @Column(name = "sku_id")
     public long getId() {
         return id;
     }

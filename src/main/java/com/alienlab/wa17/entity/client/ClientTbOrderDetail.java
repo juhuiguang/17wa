@@ -10,11 +10,11 @@ import javax.persistence.*;
 public class ClientTbOrderDetail {
     private long detailId;
     private String detailProductName;
-    private Long orderId;
+    private String orderId;
     private Long skuId;
     private Integer detailAmount;
-    private Integer detailPrice;
-    private Integer detailTotalPrice;
+    private Float detailPrice;
+    private Float detailTotalPrice;
 
     @Id
     @Column(name = "detail_id")
@@ -38,11 +38,11 @@ public class ClientTbOrderDetail {
 
     @Basic
     @Column(name = "order_id")
-    public Long getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
@@ -68,21 +68,21 @@ public class ClientTbOrderDetail {
 
     @Basic
     @Column(name = "detail_price")
-    public Integer getDetailPrice() {
+    public Float getDetailPrice() {
         return detailPrice;
     }
 
-    public void setDetailPrice(Integer detailPrice) {
+    public void setDetailPrice(Float detailPrice) {
         this.detailPrice = detailPrice;
     }
 
     @Basic
     @Column(name = "detail_total_price")
-    public Integer getDetailTotalPrice() {
+    public Float getDetailTotalPrice() {
         return detailTotalPrice;
     }
 
-    public void setDetailTotalPrice(Integer detailTotalPrice) {
+    public void setDetailTotalPrice(Float detailTotalPrice) {
         this.detailTotalPrice = detailTotalPrice;
     }
 

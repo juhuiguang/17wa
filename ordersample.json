@@ -5,6 +5,7 @@
   "order_odd":"0",
   "order_recharge":"0",
   "order_grade_out":"0",
+  "order_memo":"这里是备注",
   "details":[
     {
       "detail_name":"测试产品1",

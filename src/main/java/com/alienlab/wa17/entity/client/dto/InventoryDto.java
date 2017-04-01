@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @ApiModel(value="单品库存数据模型")
 public class InventoryDto {
     @ApiModelProperty(value="单品id")
-    private long id;
+    private Long id;
     @ApiModelProperty(value="产品id")
     private Long productId;
     @ApiModelProperty(value="颜色编码")
@@ -33,7 +33,7 @@ public class InventoryDto {
     private String skuStatus;
 
 
-    @ApiModelProperty(value="店铺id")
+    @ApiModelProperty(value="单品库存id")
     private Long inventoryId;
     @ApiModelProperty(value="店铺id")
     private Long shopId;
@@ -54,12 +54,12 @@ public class InventoryDto {
     }
 
     @Id
-    @Column(name = "sku_id")
-    public long getId() {
+    @Column(name = "id")
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

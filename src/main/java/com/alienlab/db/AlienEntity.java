@@ -1,6 +1,7 @@
 package com.alienlab.db;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.utils.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -258,7 +260,15 @@ public class AlienEntity<T> {
                                     continue;
                                 }else{
                                     o=field.get(entity);
-                                    updatebuffer.append(","+column.name()).append("='").append(o).append("'");
+                                    if(field.getType().equals(Date.class)){
+                                        Date temp=TypeUtils.castToDate(o);
+                                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                                        String d=format.format(temp);
+                                        updatebuffer.append(","+column.name()).append("='").append(d).append("'");
+                                    }else{
+                                        updatebuffer.append(","+column.name()).append("='").append(o).append("'");
+                                    }
+
                                 }
                             }else{
                                 Object o=null;
@@ -266,7 +276,15 @@ public class AlienEntity<T> {
                                     continue;
                                 }else{
                                     o=field.get(entity);
-                                    updatebuffer.append(column.name()).append("='").append(o).append("'");
+                                    if(field.getType().equals(Date.class)){
+                                        Date temp=TypeUtils.castToDate(o);
+                                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                                        String d=format.format(temp);
+                                        updatebuffer.append(column.name()).append("='").append(d).append("'");
+                                    }else{
+                                        updatebuffer.append(column.name()).append("='").append(o).append("'");
+                                    }
+
                                 }
 
                             }
@@ -340,8 +358,12 @@ public class AlienEntity<T> {
                 if(column!=null){
                     if(item.containsKey(column.name().toUpperCase())){
                         Object value=item.get(column.name().toUpperCase());
-                        if(value==null||value.equals("")){
-                            fields[j].set(instance,null);//赋值
+                        if(value==null||value.equals("")||value.equals("null")){
+                            if(fields[j].getType().equals(String.class)){
+                                fields[j].set(instance,"");//赋值
+                            }else{
+                                fields[j].set(instance,null);//赋值
+                            }
                         }else{
                             if(fields[j].getType().equals(float.class)){
                                 value=Float.parseFloat((String)value);
@@ -354,10 +376,12 @@ public class AlienEntity<T> {
                             }else if(fields[j].getType().equals(double.class)){
                                 value=Double.parseDouble((String)value);
                             }else if(fields[j].getType().equals(Date.class)){
-                                if(((String)value).indexOf(":")>0){
+                                if(((String)value).indexOf("-")>0&&((String)value).indexOf(":")>0){
                                     value= DateUtils.getDate((String)value,"yyyy-MM-dd HH:mm:ss");
+                                }else if(((String)value).indexOf("-")>0 && ((String)value).indexOf(":")<0){
+                                    value= DateUtils.getDate((String)value,"yyyy-MM-dd");
                                 }else{
-                                    value=new Date(Long.parseLong((String)value));
+                                    value= TypeUtils.castToDate(value);
                                 }
                             }else if(fields[j].getType().equals(Timestamp.class)){
                                 value=Timestamp.valueOf((String)value);
@@ -420,7 +444,7 @@ public class AlienEntity<T> {
                         if(column!=null){
                             if(item.containsKey(column.name().toUpperCase())){
                                 Object value=item.get(column.name().toUpperCase());
-                                if(value==null||value.equals("")){
+                                if(value==null||value.equals("")||value.equals("null")){
                                     if(fields[j].getType().equals(String.class)){
                                         fields[j].set(instance,"");//赋值
                                     }else{

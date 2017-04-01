@@ -13,11 +13,11 @@ public class ClientTbCustom {
     private long customId;
     private String customName;
     private Timestamp customLatestTime;
-    private Integer customLatestMoney;
-    private Integer customLatestPayment;
-    private Integer customTotalMoney;
+    private Float customLatestMoney=0f;
+    private Float customLatestPayment=0f;
+    private Float customTotalMoney=0f;
     private String customLatestPaytype;
-    private Integer customRemainMoney;
+    private Float customRemainMoney=0f;
     private String customPhone;
     private Long customGrade;
     private Date customBirth;
@@ -55,31 +55,34 @@ public class ClientTbCustom {
 
     @Basic
     @Column(name = "custom_latest_money")
-    public Integer getCustomLatestMoney() {
+    public Float getCustomLatestMoney() {
+        if(customLatestMoney==null)return 0f;
         return customLatestMoney;
     }
 
-    public void setCustomLatestMoney(Integer customLatestMoney) {
+    public void setCustomLatestMoney(Float customLatestMoney) {
         this.customLatestMoney = customLatestMoney;
     }
 
     @Basic
     @Column(name = "custom_latest_payment")
-    public Integer getCustomLatestPayment() {
+    public Float getCustomLatestPayment() {
+        if(customLatestPayment==null)return 0f;
         return customLatestPayment;
     }
 
-    public void setCustomLatestPayment(Integer customLatestPayment) {
+    public void setCustomLatestPayment(Float customLatestPayment) {
         this.customLatestPayment = customLatestPayment;
     }
 
     @Basic
     @Column(name = "custom_total_money")
-    public Integer getCustomTotalMoney() {
+    public Float getCustomTotalMoney() {
+        if(customTotalMoney==null)return 0f;
         return customTotalMoney;
     }
 
-    public void setCustomTotalMoney(Integer customTotalMoney) {
+    public void setCustomTotalMoney(Float customTotalMoney) {
         this.customTotalMoney = customTotalMoney;
     }
 
@@ -95,11 +98,13 @@ public class ClientTbCustom {
 
     @Basic
     @Column(name = "custom_remain_money")
-    public Integer getCustomRemainMoney() {
+    public Float getCustomRemainMoney() {
+
+        if(customRemainMoney==null)return 0f;
         return customRemainMoney;
     }
 
-    public void setCustomRemainMoney(Integer customRemainMoney) {
+    public void setCustomRemainMoney(Float customRemainMoney) {
         this.customRemainMoney = customRemainMoney;
     }
 

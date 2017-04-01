@@ -9,12 +9,12 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "tb_order", schema = "17wa_client", catalog = "")
 public class ClientTbOrder {
-    private long orderId;
+    private Long orderId;
     private String orderCode;
     private Timestamp orderTime;
     private Long cusId;
     private String cusName;
-    private Integer cusRemain;
+    private Float cusRemain;
     private Long accountId;
     private Float orderMoney;
     private Float orderPayment;
@@ -26,6 +26,17 @@ public class ClientTbOrder {
     private Integer orderGradeOut;
     private String orderMemo;
     private Integer orderSort;
+    private Long shopId;
+
+    @Basic
+    @Column(name = "shop_id")
+    public Long getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(Long shopId) {
+        this.shopId = shopId;
+    }
 
     @Id
     @Column(name = "order_id")
@@ -79,11 +90,11 @@ public class ClientTbOrder {
 
     @Basic
     @Column(name = "cus_remain")
-    public Integer getCusRemain() {
+    public Float getCusRemain() {
         return cusRemain;
     }
 
-    public void setCusRemain(Integer cusRemain) {
+    public void setCusRemain(Float cusRemain) {
         this.cusRemain = cusRemain;
     }
 
