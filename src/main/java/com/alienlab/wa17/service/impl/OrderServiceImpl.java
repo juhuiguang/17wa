@@ -7,6 +7,7 @@ import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
 import com.alienlab.wa17.service.OrderService;
+import javassist.bytecode.analysis.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
@@ -54,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
         String ordernopre=account+"-"+format.format(new Date())+"-"+shopId;
         String sql="select count(1) num from tb_order where shop_id="+shopId+" and order_code like '"+ordernopre+"%'";
         Map<String,Object> map=daoTool.getMap(sql,account);
-        int no=TypeUtils.castToInt(map.get("num"));
+        int no=TypeUtils.castToInt(map.get("NUM"));
         String result=ordernopre+"-"+(no+1);
         return result;
     }
@@ -62,6 +63,11 @@ public class OrderServiceImpl implements OrderService {
     private boolean validateInventory(int account,long shopId,long skuid,Float saleAmount) throws Exception {
         String sql="select * from tb_inventory where sku_id="+skuid+" and shop_id="+shopId;
         Map<String,Object> map=daoTool.getMap(sql,account);
+        if(map==null){
+            return false;
+        }
+        String status= TypeUtils.castToString(map.get("INVENTORY_COUNT_STATUS"));
+        Float amount=TypeUtils.castToFloat(map.get("inventory_amount".toUpperCase()));
         return false;
     }
 }
