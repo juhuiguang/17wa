@@ -167,7 +167,11 @@ public class InventoryServiceImpl implements InventoryService {
         if("异常，正常".indexOf(status)<0){
             throw new Exception("状态值传入错误。请传入[正常、异常]");
         }
-        ClientTbProductInventoryStatus inventoryStatus=new ClientTbProductInventoryStatus();
+        String sql="select * from tb_product_inventory_status where product_id="+productid+" and shop_id="+shopid;
+        ClientTbProductInventoryStatus inventoryStatus=(ClientTbProductInventoryStatus)daoTool.getObject(sql,account,ClientTbProductInventoryStatus.class);
+        if(inventoryStatus==null){
+            inventoryStatus=new ClientTbProductInventoryStatus();
+        }
         inventoryStatus.setShopId(shopid);
         inventoryStatus.setProductId(productid);
         inventoryStatus.setStatus(status);
