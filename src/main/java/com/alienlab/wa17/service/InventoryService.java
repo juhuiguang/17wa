@@ -1,11 +1,14 @@
 package com.alienlab.wa17.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alienlab.wa17.entity.client.ClientTbDispatch;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
 import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
+import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,4 +39,13 @@ public interface InventoryService {
 
     ClientTbProductInventoryStatus setProductInventoryStatus(int account,long productid,long shopid,String status)throws Exception;
 
+    ClientTbDispatch addDispatch(int account,long fromShopId,long toShopId,long skuId,int amount) throws Exception;
+
+    boolean delDispatch(int account,long dispatchId) throws Exception;
+
+    ClientTbDispatch confirmDispatch(int account,long dispatchId,long shopId) throws Exception;
+
+    Page<DispatchDto> getDispatch(int account, long shopId) throws Exception;
+
+    List<SkuShopInventoryDto> getSkuShopList(int account,long productId) throws Exception;
 }

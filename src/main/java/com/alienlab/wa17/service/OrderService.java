@@ -8,4 +8,5 @@ import com.alienlab.wa17.entity.client.dto.OrderDto;
  */
 public interface OrderService {
     OrderDto addOrder(int account,long shopId,JSONObject orderinfo) throws Exception;
+    boolean validateInventory(int account,long shopId,long skuid,int saleAmount) throws Exception;
 }

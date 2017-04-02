@@ -1,9 +1,6 @@
 package com.alienlab.wa17.entity.client;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -24,7 +21,7 @@ public class ClientTbDispatch {
     private Timestamp dispatchToOktime;
     private String dispatchIsfinished;
 
-    @Basic
+    @Id
     @Column(name = "dispatch_id")
     public Long getDispatchId() {
         return dispatchId;

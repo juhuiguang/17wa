@@ -3,18 +3,23 @@ package com.alienlab.wa17.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alienlab.wa17.dao.DaoTool;
+import com.alienlab.wa17.entity.client.ClientTbDispatch;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
 import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
+import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
 import com.alienlab.wa17.service.InventoryService;
+import com.alienlab.wa17.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -177,6 +182,59 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryStatus.setStatus(status);
         inventoryStatus=daoTool.saveOne(inventoryStatus,account);
         return inventoryStatus;
+    }
+
+    @Autowired
+    OrderService orderService;
+    @Override
+    public ClientTbDispatch addDispatch(int account, long fromShopId, long toShopId, long skuId, int amount) throws Exception {
+        //查询调货提供方的库存量是否满足调货要求
+        boolean flag=orderService.validateInventory(account,fromShopId,skuId,amount);
+        if(!flag){
+            throw new Exception("调货方库存不足");
+        }
+        ClientTbDispatch dispatch=new ClientTbDispatch();
+        dispatch.setSkuId(skuId);
+        dispatch.setDispatchAmount(amount);
+        dispatch.setDispatchFromShop(fromShopId);
+        dispatch.setDispatchToShop(toShopId);
+        dispatch.setDispatchTime1(Timestamp.from(Instant.now()));
+        dispatch.setDispatchIsfinished("0");
+        dispatch=daoTool.saveOne(dispatch,account);
+        if(dispatch.getDispatchId()>0){
+            return dispatch;
+        }else{
+            throw new Exception("调货请求保存失败");
+        }
+
+    }
+
+    @Override
+    public boolean delDispatch(int account, long dispatchId) throws Exception {
+        ClientTbDispatch dispatch=(ClientTbDispatch)daoTool.getOne(ClientTbDispatch.class,account,dispatchId);
+        if(dispatch==null){
+            throw new Exception("未找到编码为"+dispatchId+"的调度记录");
+        }
+        if(dispatch.getDispatchFromIsok().equals("1")||dispatch.getDispatchToIsok().equals("1")||dispatch.getDispatchIsfinished().equals("1")){
+            throw new Exception("此调度记录已经进入调拨阶段，不可以删除");
+        }
+
+        return daoTool.deleteOne(ClientTbDispatch.class,account,dispatchId);
+    }
+
+    @Override
+    public ClientTbDispatch confirmDispatch(int account, long dispatchId, long shopId) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Page<DispatchDto> getDispatch(int account, long shopId) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<SkuShopInventoryDto> getSkuShopList(int account, long productId) throws Exception {
+        return null;
     }
 
 

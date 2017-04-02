@@ -3,6 +3,7 @@ package com.alienlab.wa17.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
+import com.alienlab.wa17.entity.client.ClientTbDispatch;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
 import java.util.List;
 
 /**
@@ -199,6 +201,27 @@ public class InventoryController {
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+    @ApiOperation(value="门店之间调货")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="fromShopId",value="调出店铺",paramType = "query"),
+            @ApiImplicitParam(name="toShopId",value="调入店铺",paramType = "query"),
+            @ApiImplicitParam(name="skuId",value="调货单品",paramType = "query"),
+            @ApiImplicitParam(name="amount",value="调货数量",paramType = "query")
+    })
+    @PostMapping("/17wa-inventory/dispatch/{account}")
+    public ResponseEntity addDispatch(@PathVariable int account, @RequestParam long fromShopId,
+                                      @RequestParam long toShopId, @RequestParam long skuId, @RequestParam int amount){
+
+        try {
+            ClientTbDispatch dispatch=inventoryService.addDispatch(account,fromShopId,toShopId,skuId,amount);
+            return ResponseEntity.ok().body(dispatch);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }

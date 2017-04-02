@@ -8,6 +8,7 @@ import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.ClientTbOrder;
 import com.alienlab.wa17.entity.client.ClientTbOrderDetail;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
+import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.OrderService;
 import javassist.bytecode.ExceptionsAttribute;
 import javassist.bytecode.analysis.Type;
@@ -118,8 +119,15 @@ public class OrderServiceImpl implements OrderService {
                     custom.setCustomLatestPaytype(order.getOrderPaytype());
                     custom.setCustomTotalMoney(custom.getCustomTotalMoney()+totalPrice);
                     custom=daoTool.updateOne(account,custom);
-                    //刷新库存
-                    refreshInventory(successDetails);
+                    try{
+                        //刷新库存
+                        refreshInventory(account,shopId,successDetails);
+                    }catch (Exception e){
+                        for(ClientTbOrderDetail detail:successDetails){
+                            daoTool.deleteOne(ClientTbOrderDetail.class,account,detail.getDetailId());
+                        }
+                        throw new Exception("更新库存失败。");
+                    }
 
                     OrderDto orderDto=new OrderDto();
                     orderDto.setOrderTime(order.getOrderTime());
@@ -137,9 +145,12 @@ public class OrderServiceImpl implements OrderService {
                     orderDto.setOrderId(order.getOrderId());
                     orderDto.setOrderMoney(order.getOrderMoney());
                     orderDto.setCusRemain(custom.getCustomRemainMoney());
-
                     return orderDto;
                 }else{//回滚已成功的订单明细
+                    for(ClientTbOrderDetail detail:successDetails){
+                        daoTool.deleteOne(ClientTbOrderDetail.class,account,detail.getDetailId());
+                    }
+                    daoTool.deleteOne(ClientTbOrder.class,account,order.getOrderId());
 
                 }
             }else{//订单主表保存失败
@@ -148,9 +159,17 @@ public class OrderServiceImpl implements OrderService {
         }
         return null;
     }
+    @Autowired
+    InventoryService inventoryService;
 
-    private boolean refreshInventory(List<ClientTbOrderDetail> details){
-        return false;
+    private boolean refreshInventory(int account,long shopId,List<ClientTbOrderDetail> details) throws Exception{
+        for(ClientTbOrderDetail detail:details){
+            if(detail.getSkuId()>0){
+                inventoryService.setInventory(account,shopId,detail.getSkuId(),detail.getDetailAmount(),"销售");
+            }
+
+        }
+        return true;
     }
 
     private String getOrderNo(int account,long shopId) throws Exception {
@@ -163,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
-    private boolean validateInventory(int account,long shopId,long skuid,int saleAmount) throws Exception {
+    public boolean validateInventory(int account,long shopId,long skuid,int saleAmount) throws Exception {
         String sql="select * from tb_inventory where sku_id="+skuid+" and shop_id="+shopId;
         Map<String,Object> map=daoTool.getMap(sql,account);
         if(map==null){
