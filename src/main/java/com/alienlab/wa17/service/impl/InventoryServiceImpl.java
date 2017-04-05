@@ -15,6 +15,7 @@ import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -224,17 +225,46 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ClientTbDispatch confirmDispatch(int account, long dispatchId, long shopId) throws Exception {
-        return null;
+        ClientTbDispatch dispatch=(ClientTbDispatch)daoTool.getOne(ClientTbDispatch.class,account,dispatchId);
+        if(dispatch==null){
+            throw new Exception("未找到编码为"+dispatchId+"的调度记录");
+        }
+        long fromShopId=dispatch.getDispatchFromShop();
+        long toShopId=dispatch.getDispatchToShop();
+        if(shopId==fromShopId){
+            dispatch.setDispatchFromIsok("1");
+            dispatch.setDispatchFromOktime(Timestamp.from(Instant.now()));
+        }else{
+            dispatch.setDispatchToIsok("1");
+            dispatch.setDispatchToOktime(Timestamp.from(Instant.now()));
+        }
+        if(dispatch.getDispatchFromIsok().equals("1")&&dispatch.getDispatchToIsok().equals("1")){
+            dispatch.setDispatchIsfinished("1");
+        }
+        dispatch=daoTool.updateOne(account,dispatch);
+        //库存操作
+        if(shopId==fromShopId){
+            setInventory(account,shopId,dispatch.getSkuId(),dispatch.getDispatchAmount(),"调出");
+        }else{
+            setInventory(account,shopId,dispatch.getSkuId(),dispatch.getDispatchAmount(),"调入");
+        }
+        return dispatch;
     }
 
     @Override
-    public Page<DispatchDto> getDispatch(int account, long shopId) throws Exception {
-        return null;
+    public Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception {
+        String sql="SELECT a.*,b.`color_name`,b.`product_id`,b.`size_name`,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_pic` FROM tb_dispatch a,tb_product_sku b,tb_product c " +
+                " WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`='1' OR a.`dispatch_from_shop`='1')";
+        Page<DispatchDto> result=daoTool.getPageList(sql,new PageRequest(index,size),account,DispatchDto.class);
+        return result;
     }
 
     @Override
-    public List<SkuShopInventoryDto> getSkuShopList(int account, long productId) throws Exception {
-        return null;
+    public List<SkuShopInventoryDto> getSkuShopList(int account, long skuId) throws Exception {
+        String sql="SELECT a.*,c.color_name,c.size_name,b.shop_id,b.shop_name,b.shop_isdefault FROM tb_inventory a,tb_shop b,tb_product_sku c " +
+                "WHERE a.`sku_id`=c.id AND c.id="+skuId+" AND a.shop_id=b.shop_id";
+        List<SkuShopInventoryDto> result=daoTool.getAllList(sql,account,SkuShopInventoryDto.class);
+        return result;
     }
 
 

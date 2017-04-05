@@ -6,8 +6,10 @@ import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbDispatch;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
 import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
+import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
 import com.alienlab.wa17.service.InventoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -204,7 +206,7 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
-    @ApiOperation(value="门店之间调货")
+    @ApiOperation(value="发起门店之间调货")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="fromShopId",value="调出店铺",paramType = "query"),
@@ -220,6 +222,60 @@ public class InventoryController {
             ClientTbDispatch dispatch=inventoryService.addDispatch(account,fromShopId,toShopId,skuId,amount);
             return ResponseEntity.ok().body(dispatch);
         } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="确认调货库存")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="dispatchId",value="调货编码",paramType = "query"),
+            @ApiImplicitParam(name="shopId",value="当前店铺编码",paramType = "query")
+    })
+    @PutMapping("/17wa-inventory/dispatch/{account}")
+    public ResponseEntity confirmDispatch(@PathVariable int account,@RequestParam long dispatchId,@RequestParam long shopId){
+        try{
+            ClientTbDispatch dispatch=inventoryService.confirmDispatch(account,dispatchId,shopId);
+            return ResponseEntity.ok().body(dispatch);
+        }catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取当前门店的调货记录表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="当前店铺编码",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+    })
+    @GetMapping("/17wa-inventory/dispatch/{account}")
+    public ResponseEntity getDispatch(@PathVariable int account,@RequestParam long shopId,@RequestParam int index,@RequestParam int size){
+        try{
+            Page<DispatchDto> result=inventoryService.getDispatch(account,shopId,index,size);
+            return ResponseEntity.ok().body(result);
+        }catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取指定产品的跨门店库存")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "path")
+    })
+    @GetMapping("/17wa-inventory/shop/{account}/{productId}")
+    public ResponseEntity getSkuShopList(@PathVariable int account, @PathVariable long productId){
+        try{
+            List<SkuShopInventoryDto> result=inventoryService.getSkuShopList(account,productId);
+            return ResponseEntity.ok().body(result);
+        }catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
