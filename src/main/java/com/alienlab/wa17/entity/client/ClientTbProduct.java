@@ -2,6 +2,7 @@ package com.alienlab.wa17.entity.client;
 
 import com.alienlab.utils.SpringUtil;
 import com.alienlab.wa17.WaImageProp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,7 @@ public class ClientTbProduct {
 
     @Basic
     @Column(name = "product_amount")
+    @JsonIgnore
     public Integer getAmount() {
         return amount;
     }

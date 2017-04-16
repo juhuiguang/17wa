@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
+@EnableAsync
 public class Application {
 	@Bean
 	@ConfigurationProperties(prefix = "17wa.image")

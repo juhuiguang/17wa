@@ -2,10 +2,13 @@ package com.alienlab.wa17.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
+import com.alienlab.wa17.service.ImageService;
+import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,15 +33,22 @@ import java.util.UUID;
 public class ImageController {
     @Value("${alienlab.upload.path}")
     String upload_path;
+    @Value("${17wa.image.path}")
+    String image_path;
+    @Autowired
+    ImageService imageService;
+    @Autowired
+    ProductService productService;
 
     @ApiOperation(value="图片上传接口")
     @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "query"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "query"),
             @ApiImplicitParam(name="sort",value="图片排序值",paramType = "query"),
-            @ApiImplicitParam(name="productId",value="图片排序值",paramType = "query"),
             @ApiImplicitParam(name="type",value="类型：产品图，介绍图",paramType = "query")
     })
     @PostMapping("/17wa-image")
-    public ResponseEntity uploadImage(@RequestPart("file") MultipartFile file,@RequestParam int sort,@RequestParam int productId,@RequestParam String type, HttpServletRequest request){
+    public ResponseEntity uploadImage(@RequestPart("file") MultipartFile file,@RequestParam int account,@RequestParam int sort,@RequestParam Long productId,@RequestParam String type, HttpServletRequest request){
 //        System.out.println("file"+JSONObject.toJSONString(file));
         String path=request.getSession().getServletContext().getRealPath(upload_path);
 //        List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");
@@ -47,10 +57,10 @@ public class ImageController {
         if (!file.isEmpty()) {
             String fName=file.getOriginalFilename();
             String exName=fName.substring(fName.indexOf('.')+1);
-            String fileName= UUID.randomUUID().toString()+"."+exName;
+            String fileName= UUID.randomUUID().toString();
             try {
                 byte[] bytes = file.getBytes();
-                stream = new BufferedOutputStream(new FileOutputStream(new File(path+File.separator+fileName)));
+                stream = new BufferedOutputStream(new FileOutputStream(new File(path+File.separator+fileName+"."+exName)));
                 stream.write(bytes);
                 stream.close();
 
@@ -59,7 +69,21 @@ public class ImageController {
                 ExecResult er=new ExecResult(false,e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
             }
-            ExecResult er=new ExecResult(true,fileName);
+            try{
+                String fnpath=path+File.separator;
+                imageService.convertImageAuto(fnpath,fileName,exName,110);
+                imageService.convertImageAuto(fnpath,fileName,exName,320);
+                imageService.convertImageAuto(fnpath,fileName,exName,750);
+                imageService.convertImageAuto(fnpath,fileName,exName,1200);
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                productService.setPics(account,productId,(image_path+fileName+"."+exName),type);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ExecResult er=new ExecResult(true,image_path+fileName+"."+exName);
             return ResponseEntity.ok().body(er);
         } else {
             ExecResult er=new ExecResult(false,"没有上传文件.");
@@ -68,4 +92,7 @@ public class ImageController {
 
 
     }
+
+
+
 }

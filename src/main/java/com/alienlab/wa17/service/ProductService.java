@@ -41,6 +41,10 @@ public interface ProductService {
 
     ClientTbProduct refreshStatus(int account,long productId) throws Exception;
 
+    boolean setPics(int account,long productId,String pic,String type) throws Exception;
+
+    List<String> getPics(int account,long productId)throws Exception;
+
 
 
 

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -203,5 +204,45 @@ public class ProductServiceImpl implements ProductService {
             product=daoTool.updateOne(account,product);
         }
         return product;
+    }
+
+    @Override
+
+    public boolean setPics(int account, long productId, String pic, String type) throws Exception {
+        ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account,productId);
+        if(product==null){
+            throw new Exception("未找到编号为"+productId+"的产品");
+        }
+        if(type.equals("产品图")){
+            product.setProductPic(pic);
+        }else{
+            String desc=product.getProductDesc();
+            if(desc!=null&&desc.length()>0){
+                desc+=","+pic;
+            }else{
+                desc+=pic;
+            }
+            product.setProductDesc(desc);
+        }
+        daoTool.updateOne(account,product);
+        return true;
+    }
+
+    @Override
+    public List<String> getPics(int account, long productId) throws Exception {
+        ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account,productId);
+        if(product==null){
+            throw new Exception("未找到编号为"+productId+"的产品");
+        }
+        List<String> result=new ArrayList<String>();
+        String pics=product.getProductDesc();
+        String [] picsArray=pics.split(",");
+        for(String pic:picsArray){
+            String fileName=pic.split("\\.")[0];
+            String ext=pic.split("\\.")[1];
+            fileName+="_750";
+            result.add(fileName+"."+ext);
+        }
+        return result;
     }
 }

@@ -3,6 +3,7 @@ package com.alienlab.db;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.utils.DateUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -145,6 +146,9 @@ public class AlienEntity<T> {
         for (Field field:fields) {
             field.setAccessible(true);
             Column column=field.getAnnotation(Column.class);
+            if(field.getAnnotation(JsonIgnore.class)!=null){
+                continue;
+            }
             if(column==null){
                 PropertyDescriptor pd = null;
                 try {
@@ -153,8 +157,12 @@ public class AlienEntity<T> {
                 } catch (IntrospectionException e) {
                     e.printStackTrace();
                 }
+
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
+                if(getMethod.getAnnotation(JsonIgnore.class)!=null){
+                    continue;
+                }
             }
             //如果不是主键字段
             if(!field.getName().equals(idfield.getName())){
@@ -234,6 +242,9 @@ public class AlienEntity<T> {
         Field[] fields=entityClass.getDeclaredFields();
         for(Field field:fields){
             field.setAccessible(true);
+            if(field.getAnnotation(JsonIgnore.class)!=null){
+                continue;
+            }
             Column column=field.getAnnotation(Column.class);
             if(column==null){
                 PropertyDescriptor pd = null;
@@ -245,6 +256,9 @@ public class AlienEntity<T> {
                 }
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
+                if(getMethod.getAnnotation(JsonIgnore.class)!=null){
+                    continue;
+                }
             }
             if(column!=null){
                 try {
