@@ -237,12 +237,34 @@ public class ProductServiceImpl implements ProductService {
         List<String> result=new ArrayList<String>();
         String pics=product.getProductDesc();
         String [] picsArray=pics.split(",");
-        for(String pic:picsArray){
-            String fileName=pic.split("\\.")[0];
-            String ext=pic.split("\\.")[1];
+        for(int i=0;i<picsArray.length&&i<7;i++){
+            String pic=picsArray[i];
+            if(pic.equals("")){
+                continue;
+            }
+            int pos=pic.lastIndexOf(".");
+            String fileName=pic.substring(0,pos);
+            String ext=pic.substring(pos+1);
             fileName+="_750";
             result.add(fileName+"."+ext);
         }
         return result;
+    }
+
+    @Override
+    public boolean delPic(int account, long productId, String pic, String type) throws Exception {
+        ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account,productId);
+        if(product==null){
+            throw new Exception("未找到编号为"+productId+"的产品");
+        }
+        if(type.equals("产品图")){
+            product.setProductPic("");
+        }else{
+            String pics=product.getProductDesc();
+            pics=pics.replaceAll(pic,"");
+            product.setProductDesc(pics);
+        }
+        daoTool.updateOne(account,product);
+        return true;
     }
 }

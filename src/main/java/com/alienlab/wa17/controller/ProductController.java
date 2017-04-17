@@ -233,4 +233,41 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="删除商品图片")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "query"),
+            @ApiImplicitParam(name="pic",value="图片地址",paramType = "query"),
+            @ApiImplicitParam(name="type",value="图片类型:产品图，介绍图",paramType = "query")
+    })
+    @DeleteMapping("/17wa-produt/pic/{account}")
+    public ResponseEntity delProductPic(@PathVariable int account, @RequestParam long productId, @RequestParam String pic,@RequestParam String type){
+        try {
+            boolean result=productService.delPic(account,productId,pic,type);
+            ExecResult er=new ExecResult(true,"success");
+            return ResponseEntity.ok().body(er);
+        } catch (Exception e) {
+            ExecResult er=new ExecResult(false,e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获得商品图片")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="productId",value="产品编码",paramType = "path")
+    })
+    @GetMapping("/17wa-produt/pic/{account}/{productId}")
+    public ResponseEntity getPics(@PathVariable int account, @PathVariable long productId){
+        try {
+            List<String> pics=productService.getPics(account,productId);
+            return ResponseEntity.ok().body(pics);
+        } catch (Exception e) {
+            ExecResult er=new ExecResult(false,e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 }

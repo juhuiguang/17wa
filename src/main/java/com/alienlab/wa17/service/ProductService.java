@@ -45,6 +45,8 @@ public interface ProductService {
 
     List<String> getPics(int account,long productId)throws Exception;
 
+    boolean delPic(int account,long productId,String pic,String type) throws Exception;
+
 
 
 
