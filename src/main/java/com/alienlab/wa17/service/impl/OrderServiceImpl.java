@@ -7,12 +7,16 @@ import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.ClientTbOrder;
 import com.alienlab.wa17.entity.client.ClientTbOrderDetail;
+import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
+import com.alienlab.wa17.entity.client.dto.OrderPrintDto;
 import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.OrderService;
 import javassist.bytecode.ExceptionsAttribute;
 import javassist.bytecode.analysis.Type;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -31,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     DaoTool daoTool;
     @Override
-    public OrderDto addOrder(int account,long shopId,JSONObject orderinfo) throws Exception {
+    public OrderPrintDto addOrder(int account,long shopId,JSONObject orderinfo) throws Exception {
         JSONArray details=orderinfo.getJSONArray("details");
         long customId=orderinfo.getLong("cus_id");
         ClientTbCustom custom=(ClientTbCustom)daoTool.getOne(ClientTbCustom.class,account,customId);
@@ -66,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
             List<ClientTbOrderDetail> successDetails=new ArrayList<ClientTbOrderDetail>();
             //主对象
             ClientTbOrder order=new ClientTbOrder();
-            order.setAccountId((long)account);
+            order.setAccountId(orderinfo.getLong("account"));
             order.setCusId(customId);
             order.setCusName(custom.getCustomName());
             order.setCusRemain(custom.getCustomRemainMoney());
@@ -87,6 +91,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderRecharge(recharge);
             order.setOrderTime(Timestamp.from(Instant.now()));
             order.setShopId(shopId);
+
             order=daoTool.saveOne(order,account);
             if(order.getOrderId()>0){
                 //单个保存
@@ -145,7 +150,12 @@ public class OrderServiceImpl implements OrderService {
                     orderDto.setOrderId(order.getOrderId());
                     orderDto.setOrderMoney(order.getOrderMoney());
                     orderDto.setCusRemain(custom.getCustomRemainMoney());
-                    return orderDto;
+                    try{
+                        return doPrint(account,shopId,orderDto,custom);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        throw e;
+                    }
                 }else{//回滚已成功的订单明细
                     for(ClientTbOrderDetail detail:successDetails){
                         daoTool.deleteOne(ClientTbOrderDetail.class,account,detail.getDetailId());
@@ -197,5 +207,55 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
         return true;
+    }
+    @Override
+    public OrderPrintDto doPrint(int account,Long orderId) throws Exception {
+        ClientTbOrder order=(ClientTbOrder)daoTool.getOne(ClientTbOrder.class,account,orderId);
+        if(order==null){
+            throw new Exception("未找到订单编号为："+orderId+"的订单");
+        }
+        Long shopId=order.getShopId();
+        Long customId=order.getCusId();
+        ClientTbCustom custom=(ClientTbCustom)daoTool.getOne(ClientTbCustom.class,account,customId);
+        ClientTbShop shop=(ClientTbShop)daoTool.getOne(ClientTbShop.class,account,shopId);
+        OrderPrintDto printDto=new OrderPrintDto();
+        printDto.setOrder(order);
+        printDto.setShop(shop);
+        printDto.setCustom(custom);
+        String sql="select * from tb_order_detail where order_id='"+order.getOrderCode()+"'";
+        List<ClientTbOrderDetail> details=daoTool.getAllList(sql,account,ClientTbOrderDetail.class);
+        printDto.setDetails(details);
+        return printDto;
+
+    }
+
+    @Override
+    public Page<ClientTbOrder> getOrders(int account, Long shopId,String startdate, String enddate, Pageable page) throws Exception {
+        String sql="select * from tb_order where order_time>='"+startdate+"' and order_time<='"+enddate+"' and shop_id="+shopId;
+        return daoTool.getPageList(sql,page,account,ClientTbOrder.class);
+    }
+
+    @Override
+    public OrderPrintDto doPrint(int account, Long shopId, OrderDto order, ClientTbCustom custom) throws Exception {
+        ClientTbShop shop=(ClientTbShop)daoTool.getOne(ClientTbShop.class,account,shopId);
+        ClientTbOrder orderInfo=new ClientTbOrder();
+        OrderPrintDto printDto=new OrderPrintDto();
+        orderInfo.setCusId(custom.getCustomId());
+        orderInfo.setCusName(custom.getCustomName());
+        orderInfo.setCusRemain(custom.getCustomRemainMoney());
+        orderInfo.setOrderAmount(order.getOrderAmount());
+        orderInfo.setOrderCode(order.getOrderCode());
+        orderInfo.setOrderGradeIn(order.getOrderGradeIn());
+        orderInfo.setOrderGradeOut(order.getOrderGradeOut());
+        orderInfo.setOrderId(order.getOrderId());
+        orderInfo.setOrderMoney(order.getOrderMoney());
+        orderInfo.setOrderPayment(order.getOrderPayment());
+        orderInfo.setOrderOdd(order.getOrderOdd());
+        orderInfo.setOrderRecharge(order.getOrderRecharge());
+        printDto.setOrder(orderInfo);
+        printDto.setCustom(custom);
+        printDto.setDetails(order.getDetails());
+        printDto.setShop(shop);
+        return printDto;
     }
 }

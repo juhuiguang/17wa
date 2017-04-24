@@ -1,5 +1,6 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
@@ -263,7 +264,13 @@ public class ProductController {
     public ResponseEntity getPics(@PathVariable int account, @PathVariable long productId){
         try {
             List<String> pics=productService.getPics(account,productId);
-            return ResponseEntity.ok().body(pics);
+            JSONArray array= new JSONArray();
+            for(String pic :pics){
+                JSONObject jsonObject=new JSONObject();
+                jsonObject.put("url",pic);
+                array.add(jsonObject);
+            }
+            return ResponseEntity.ok().body(array);
         } catch (Exception e) {
             ExecResult er=new ExecResult(false,e.getMessage());
             e.printStackTrace();
