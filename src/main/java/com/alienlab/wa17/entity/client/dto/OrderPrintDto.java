@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class OrderPrintDto {
     private ClientTbOrder order;
-    private List<ClientTbOrderDetail> details;
+    private List<OrderDetailDto> details;
     private ClientTbCustom custom;
     private ClientTbShop shop;
 
@@ -24,11 +24,11 @@ public class OrderPrintDto {
         this.order = order;
     }
 
-    public List<ClientTbOrderDetail> getDetails() {
+    public List<OrderDetailDto> getDetails() {
         return details;
     }
 
-    public void setDetails(List<ClientTbOrderDetail> details) {
+    public void setDetails(List<OrderDetailDto> details) {
         this.details = details;
     }
 

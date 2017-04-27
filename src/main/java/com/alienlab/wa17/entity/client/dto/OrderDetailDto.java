@@ -6,29 +6,35 @@ import com.alienlab.wa17.entity.client.ClientTbOrderDetail;
  * Created by 橘 on 2017/3/31.
  */
 public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，增加sku字段，增加库存字段
-    private long skuid;
-    private Long productId;
+    private long detailId;
+    private long skuId;
     private String colorName;
     private String sizeName;
+    private String productCode;
+    private String productCode2;
+    private String detailProductName;
+    private String orderId;
+    private Integer detailAmount;
+    private Float detailPrice;
+    private Float detailTotalPrice;
 
-    private long inventory_id;
-    private Long shopId;
-    private Integer inventoryAmount;
-
-    public long getSkuid() {
-        return skuid;
+    @Override
+    public long getDetailId() {
+        return detailId;
     }
 
-    public void setSkuid(long skuid) {
-        this.skuid = skuid;
+    public void setDetailId(long detailId) {
+        this.detailId = detailId;
     }
 
-    public Long getProductId() {
-        return productId;
+    @Override
+    public Long getSkuId() {
+        return skuId;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    @Override
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     public String getColorName() {
@@ -47,27 +53,69 @@ public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，
         this.sizeName = sizeName;
     }
 
-    public long getInventory_id() {
-        return inventory_id;
+    public String getProductCode() {
+        return productCode;
     }
 
-    public void setInventory_id(long inventory_id) {
-        this.inventory_id = inventory_id;
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
     }
 
-    public Long getShopId() {
-        return shopId;
+    public String getProductCode2() {
+        return productCode2;
     }
 
-    public void setShopId(Long shopId) {
-        this.shopId = shopId;
+    public void setProductCode2(String productCode2) {
+        this.productCode2 = productCode2;
     }
 
-    public Integer getInventoryAmount() {
-        return inventoryAmount;
+    @Override
+    public String getDetailProductName() {
+        return detailProductName;
     }
 
-    public void setInventoryAmount(Integer inventoryAmount) {
-        this.inventoryAmount = inventoryAmount;
+    @Override
+    public void setDetailProductName(String detailProductName) {
+        this.detailProductName = detailProductName;
+    }
+
+    @Override
+    public String getOrderId() {
+        return orderId;
+    }
+
+    @Override
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    @Override
+    public Integer getDetailAmount() {
+        return detailAmount;
+    }
+
+    @Override
+    public void setDetailAmount(Integer detailAmount) {
+        this.detailAmount = detailAmount;
+    }
+
+    @Override
+    public Float getDetailPrice() {
+        return detailPrice;
+    }
+
+    @Override
+    public void setDetailPrice(Float detailPrice) {
+        this.detailPrice = detailPrice;
+    }
+
+    @Override
+    public Float getDetailTotalPrice() {
+        return detailTotalPrice;
+    }
+
+    @Override
+    public void setDetailTotalPrice(Float detailTotalPrice) {
+        this.detailTotalPrice = detailTotalPrice;
     }
 }
