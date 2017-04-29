@@ -41,8 +41,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ClientTbProduct> getAllProducts(int account_id, Pageable page) throws Exception {
-        String sql="SELECT product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes " +
-                "product_colors,product_status,product_tags FROM tb_product ";
+        String sql="SELECT a.product_id,a.product_code,a.product_code2,a.account_id,a.product_name,a.product_pic,a.product_price1,a.product_price2,a.product_type,a.product_fabric,a.product_fabricin,a.product_sizes," +
+                "a.product_colors,a.product_status,a.product_tags,lj.product_amount FROM tb_product a" +
+                " LEFT JOIN (SELECT c.`product_id`,SUM(b.`inventory_amount`) product_amount FROM tb_inventory b,tb_product_sku c WHERE b.`sku_id`=c.`id` ) lj ON lj.product_id=a.`product_id` ";
         Page<ClientTbProduct> results=daoTool.getPageList(sql,page,account_id,ClientTbProduct.class);
 
         return results;

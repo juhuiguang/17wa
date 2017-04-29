@@ -3,7 +3,7 @@ package com.alienlab.db;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.utils.DateUtils;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.alienlab.wa17.entity.LogicField;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -146,7 +146,7 @@ public class AlienEntity<T> {
         for (Field field:fields) {
             field.setAccessible(true);
             Column column=field.getAnnotation(Column.class);
-            if(field.getAnnotation(JsonIgnore.class)!=null){
+            if(field.getAnnotation(LogicField.class)!=null){
                 continue;
             }
             if(column==null){
@@ -160,7 +160,7 @@ public class AlienEntity<T> {
 
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
-                if(getMethod.getAnnotation(JsonIgnore.class)!=null){
+                if(getMethod.getAnnotation(LogicField.class)!=null){
                     continue;
                 }
             }
@@ -242,7 +242,7 @@ public class AlienEntity<T> {
         Field[] fields=entityClass.getDeclaredFields();
         for(Field field:fields){
             field.setAccessible(true);
-            if(field.getAnnotation(JsonIgnore.class)!=null){
+            if(field.getAnnotation(LogicField.class)!=null){
                 continue;
             }
             Column column=field.getAnnotation(Column.class);
@@ -256,7 +256,7 @@ public class AlienEntity<T> {
                 }
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
-                if(getMethod.getAnnotation(JsonIgnore.class)!=null){
+                if(getMethod.getAnnotation(LogicField.class)!=null){
                     continue;
                 }
             }

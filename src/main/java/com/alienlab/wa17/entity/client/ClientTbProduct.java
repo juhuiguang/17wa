@@ -2,6 +2,7 @@ package com.alienlab.wa17.entity.client;
 
 import com.alienlab.utils.SpringUtil;
 import com.alienlab.wa17.WaImageProp;
+import com.alienlab.wa17.entity.LogicField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -61,6 +62,7 @@ public class ClientTbProduct {
 
     @Basic
     @Column(name="inventory_status")
+    @LogicField
     public String getInventroyStatus() {
         return inventroyStatus;
     }
@@ -71,7 +73,7 @@ public class ClientTbProduct {
 
     @Basic
     @Column(name = "product_amount")
-    @JsonIgnore
+    @LogicField
     public Integer getAmount() {
         return amount;
     }
