@@ -4,6 +4,7 @@ import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
+import com.alienlab.wa17.entity.main.MainTbColors;
 import com.alienlab.wa17.service.ColorService;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SizeService;
@@ -72,6 +73,8 @@ public class SkuController {
         }
     }
 
+
+
     @ApiOperation(value="删除用户账户下的颜色")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
@@ -93,6 +96,9 @@ public class SkuController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+
+
 
 
     @ApiOperation(value="根据账户获得合并后的尺码清单")

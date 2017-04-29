@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -143,12 +144,12 @@ public class AlienEntity<T> {
         StringBuffer valuebuffer=new StringBuffer();//记录insert的value
         //解析字段
         Field[] fields=entityClass.getDeclaredFields();
+        LogicField logicField=null;
         for (Field field:fields) {
             field.setAccessible(true);
             Column column=field.getAnnotation(Column.class);
-            if(field.getAnnotation(LogicField.class)!=null){
-                continue;
-            }
+            logicField=field.getAnnotation(LogicField.class);
+
             if(column==null){
                 PropertyDescriptor pd = null;
                 try {
@@ -160,10 +161,9 @@ public class AlienEntity<T> {
 
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
-                if(getMethod.getAnnotation(LogicField.class)!=null){
-                    continue;
-                }
+                logicField=getMethod.getAnnotation(LogicField.class);
             }
+            if(logicField!=null)continue;
             //如果不是主键字段
             if(!field.getName().equals(idfield.getName())){
                 try{
@@ -242,9 +242,9 @@ public class AlienEntity<T> {
         Field[] fields=entityClass.getDeclaredFields();
         for(Field field:fields){
             field.setAccessible(true);
-            if(field.getAnnotation(LogicField.class)!=null){
-                continue;
-            }
+            boolean logicField=false;
+            logicField=field.isAnnotationPresent(LogicField.class);
+            Annotation a[]=field.getAnnotations();
             Column column=field.getAnnotation(Column.class);
             if(column==null){
                 PropertyDescriptor pd = null;
@@ -256,14 +256,15 @@ public class AlienEntity<T> {
                 }
                 Method getMethod = pd.getReadMethod();//获得get方法
                 column=getMethod.getAnnotation(Column.class);
-                if(getMethod.getAnnotation(LogicField.class)!=null){
-                    continue;
+                if(!logicField){
+                    logicField=getMethod.isAnnotationPresent(LogicField.class);
                 }
             }
+            if(logicField)continue;
             if(column!=null){
                 try {
-                    if(field.getName().equals(idfield.getName())){
 
+                    if(field.getName().equals(idfield.getName())){
                         wherebuffer.append(" where ").append(column.name()).append("=").append(field.get(entity));
                     }else{
                         //日期与字符类型需要单引号

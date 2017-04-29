@@ -56,13 +56,14 @@ public class ClientTbProduct {
     @ApiModelProperty(value="产品最后更新时间",notes = "表单提交时可不赋值")
     private Timestamp updatetime;
     @ApiModelProperty(value="产品库存总量")
+    @LogicField
     private Integer amount;
     @ApiModelProperty(value="产品库存状态")
+    @LogicField
     private String inventroyStatus;
 
     @Basic
     @Column(name="inventory_status")
-    @LogicField
     public String getInventroyStatus() {
         return inventroyStatus;
     }
@@ -73,7 +74,6 @@ public class ClientTbProduct {
 
     @Basic
     @Column(name = "product_amount")
-    @LogicField
     public Integer getAmount() {
         return amount;
     }
