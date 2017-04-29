@@ -91,4 +91,14 @@ public class ColorServiceImpl implements ColorService {
     public boolean delColor(int account_id, int color_id) throws Exception {
        return daoTool.deleteOne(ClientTbColorCus.class,account_id,color_id);
     }
+
+    @Override
+    public MainTbColors addMainColor(MainTbColors color) throws Exception {
+        return null;
+    }
+
+    @Override
+    public boolean delMainColor(int color_id) throws Exception {
+        return false;
+    }
 }

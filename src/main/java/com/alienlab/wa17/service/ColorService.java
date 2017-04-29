@@ -3,6 +3,7 @@ package com.alienlab.wa17.service;
 import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.main.MainTbColorSeries;
+import com.alienlab.wa17.entity.main.MainTbColors;
 
 import java.util.List;
 
@@ -16,5 +17,10 @@ public interface ColorService {
 
     ClientTbColorCus addColor(int account_id,ClientTbColorCus color) throws Exception;
     boolean delColor(int account_id,int color_id) throws Exception;
+
+    MainTbColors addMainColor(MainTbColors color) throws Exception;
+    boolean delMainColor(int color_id) throws Exception;
+
+
 }
 

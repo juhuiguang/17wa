@@ -20,4 +20,15 @@ public class TagServiceImpl implements TagService {
        String sql="select * from tb_tags where tag_type='"+typeName+"'";
        return daoTool.getAllList(sql,MainTbTags.class);
     }
+
+    @Override
+    public MainTbTags addTag(MainTbTags tag) throws Exception {
+        MainTbTags result=daoTool.updateOne(0,tag);
+        return result;
+    }
+
+    @Override
+    public boolean delTag(int tagId) throws Exception {
+        return daoTool.deleteOne(MainTbTags.class,0,tagId);
+    }
 }

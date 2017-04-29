@@ -23,6 +23,21 @@ public class MarketServiceImpl implements MarketService {
         return getSubMarkets("0");
     }
 
+    @Override
+    public MarketDto addMarket(MarketDto market) throws Exception {
+        return null;
+    }
+
+    @Override
+    public MarketDto updateMarket(MarketDto market) throws Exception {
+        return null;
+    }
+
+    @Override
+    public boolean delMarket(int marketId) throws Exception {
+        return false;
+    }
+
     private List<MarketDto> getSubMarkets(String pid) throws Exception{
         String sql="select a.*,(select count(1) from tb_market b where b.mk_pid=a.mk_id) as leaf from tb_market a where a.mk_pid="+pid+" order by mk_sort";
         List<MainTbMarket> submks=daoTool.getAllList(sql,MainTbMarket.class);

@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface TagService {
     List<MainTbTags> getTags(String typeName) throws Exception;
+    MainTbTags addTag(MainTbTags tag) throws Exception;
+    boolean delTag(int tagId) throws Exception;
 }

@@ -37,11 +37,16 @@ public class DaoToolImpl implements DaoTool {
     private final String totalTemplate="select count(1) total from ({sql}) a where 1=1";
     @Override
     public ConnectorBean getConnectByAccount(int account_id) throws Exception {
-        MainTbDatabase dbproperties=getDatabaseByAccount(account_id);
-        if(dbproperties==null){
-            throw new Exception("id为"+account_id+"的账户不存在。");
+        if(account_id==0){
+            return dataSourceUtil.getDefaultDataSource();
+        }else{
+            MainTbDatabase dbproperties=getDatabaseByAccount(account_id);
+            if(dbproperties==null){
+                throw new Exception("id为"+account_id+"的账户不存在。");
+            }
+            return dataSourceUtil.getConnector(dbproperties.getDbType(),dbproperties.getDbUrl(),dbproperties.getDbUser(),dbproperties.getDbPwd());
         }
-        return dataSourceUtil.getConnector(dbproperties.getDbType(),dbproperties.getDbUrl(),dbproperties.getDbUser(),dbproperties.getDbPwd());
+
     }
 
     @Override

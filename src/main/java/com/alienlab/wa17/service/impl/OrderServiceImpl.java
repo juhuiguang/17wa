@@ -8,6 +8,7 @@ import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.ClientTbOrder;
 import com.alienlab.wa17.entity.client.ClientTbOrderDetail;
 import com.alienlab.wa17.entity.client.ClientTbShop;
+import com.alienlab.wa17.entity.client.dto.OrderDetailDto;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
 import com.alienlab.wa17.entity.client.dto.OrderPrintDto;
 import com.alienlab.wa17.service.InventoryService;
@@ -53,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
                 String productName=detail.getString("detail_name");
                 //处理抹零请求
                 if(productName.equals("抹零")){
-                    odd=detail.getFloat("total_price");
+                    //odd=detail.getFloat("total_price");
                 }else if(productName.equals("核销")){//处理核销
                     recharge=detail.getFloat("total_price");
                 }else{//一般商品的请求,验证库存是否可以满足下单
@@ -72,6 +73,13 @@ public class OrderServiceImpl implements OrderService {
             ClientTbOrder order=new ClientTbOrder();
             order.setAccountId(orderinfo.getLong("account"));
             order.setCusId(customId);
+            odd=orderinfo.getFloat("order_odd");
+            totalPrice-=odd;
+            //积分换算成金额，如果存在倍率在这里处理
+            Float grademoney=orderinfo.getInteger("order_grade_out")*0.1f;
+            //订单总额-积分抵扣金额
+            totalPrice-=grademoney;
+
             order.setCusName(custom.getCustomName());
             order.setCusRemain(custom.getCustomRemainMoney());
             order.setOrderAmount(amount);
@@ -79,11 +87,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCode(orderCode);
             order.setOrderGradeIn(Math.round(totalPrice));
             order.setOrderGradeOut(orderinfo.getInteger("order_grade_out"));
-            //积分换算成金额，如果存在倍率在这里处理
-            Float grademoney=orderinfo.getInteger("order_grade_out")*0.1f;
             order.setOrderMemo(orderinfo.getString("order_memo"));
-            //订单总额-积分抵扣金额
-            totalPrice-=grademoney;
             order.setOrderMoney(totalPrice);
             order.setOrderOdd(odd);
             order.setOrderPayment(orderinfo.getFloat("order_payment"));
@@ -136,11 +140,14 @@ public class OrderServiceImpl implements OrderService {
 
                     OrderDto orderDto=new OrderDto();
                     orderDto.setOrderTime(order.getOrderTime());
+                    orderDto.setAccountId(order.getAccountId());
+                    orderDto.setOrderAmount(order.getOrderAmount());
+                    orderDto.setOrderOdd(order.getOrderOdd());
                     orderDto.setOrderRecharge(order.getOrderRecharge());
                     orderDto.setOrderPaytype(order.getOrderPaytype());
+                    orderDto.setShopId(shopId);
                     orderDto.setOrderPayment(order.getOrderPayment());
                     orderDto.setDetails(successDetails);
-                    orderDto.setAccountId((long)account);
                     orderDto.setCusId(order.getCusId());
                     orderDto.setCusName(order.getCusName());
                     orderDto.setOrderCode(order.getOrderCode());
@@ -183,8 +190,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String getOrderNo(int account,long shopId) throws Exception {
-        SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
-        String ordernopre=account+"-"+format.format(new Date())+"-"+shopId;
+        SimpleDateFormat format=new SimpleDateFormat("ddyyMM");
+        String ordernopre=account+format.format(new Date())+shopId;
         String sql="select count(1) num from tb_order where shop_id="+shopId+" and order_code like '"+ordernopre+"%'";
         Map<String,Object> map=daoTool.getMap(sql,account);
         int no=TypeUtils.castToInt(map.get("NUM"));
@@ -222,9 +229,7 @@ public class OrderServiceImpl implements OrderService {
         printDto.setOrder(order);
         printDto.setShop(shop);
         printDto.setCustom(custom);
-        String sql="select * from tb_order_detail where order_id='"+order.getOrderCode()+"'";
-        List<ClientTbOrderDetail> details=daoTool.getAllList(sql,account,ClientTbOrderDetail.class);
-        printDto.setDetails(details);
+        printDto.setDetails(loadOrderDetails(account,orderId));
         return printDto;
 
     }
@@ -247,15 +252,53 @@ public class OrderServiceImpl implements OrderService {
         orderInfo.setOrderCode(order.getOrderCode());
         orderInfo.setOrderGradeIn(order.getOrderGradeIn());
         orderInfo.setOrderGradeOut(order.getOrderGradeOut());
+        orderInfo.setOrderPaytype(order.getOrderPaytype());
         orderInfo.setOrderId(order.getOrderId());
         orderInfo.setOrderMoney(order.getOrderMoney());
         orderInfo.setOrderPayment(order.getOrderPayment());
         orderInfo.setOrderOdd(order.getOrderOdd());
         orderInfo.setOrderRecharge(order.getOrderRecharge());
+        orderInfo.setOrderTime(Timestamp.from(Instant.now()));
+        orderInfo.setAccountId(order.getAccountId());
         printDto.setOrder(orderInfo);
         printDto.setCustom(custom);
-        printDto.setDetails(order.getDetails());
+        printDto.setDetails(loadOrderDetails(account,order.getOrderId()));
         printDto.setShop(shop);
         return printDto;
     }
+
+    private List<OrderDetailDto> loadOrderDetails(int account, long orderId) throws Exception{
+        ClientTbOrder order=(ClientTbOrder)daoTool.getOne(ClientTbOrder.class,account,orderId);
+        if(order==null){
+            throw new Exception("未找到订单编号为："+orderId+"的订单");
+        }
+        String sql="SELECT a.*,b.`color_name`,b.`size_name`,c.`product_code2`,c.`product_code` FROM `tb_order_detail` a " +
+                "LEFT JOIN tb_product_sku b ON a.`sku_id`=b.`id` " +
+                "LEFT JOIN tb_product c ON c.`product_id`=b.`product_id` " +
+                " WHERE a.`order_id`='"+order.getOrderCode()+"'";
+        List<Map<String,Object>> details=daoTool.getAllList(sql,account);
+        List<OrderDetailDto> result=new ArrayList<OrderDetailDto>();
+        for(Map<String,Object> detail:details){
+            OrderDetailDto orderDetail=new OrderDetailDto();
+            orderDetail.setColorName(TypeUtils.castToString(detail.get("COLOR_NAME")));
+            orderDetail.setDetailAmount(TypeUtils.castToInt(detail.get("DETAIL_AMOUNT")));
+            orderDetail.setDetailId(TypeUtils.castToInt(detail.get("DETAIL_ID")));
+            orderDetail.setDetailPrice(TypeUtils.castToFloat(detail.get("DETAIL_PRICE")));
+            orderDetail.setDetailProductName(TypeUtils.castToString(detail.get("DETAIL_PRODUCT_NAME")));
+            orderDetail.setDetailTotalPrice(TypeUtils.castToFloat(detail.get("DETAIL_TOTAL_PRICE")));
+            orderDetail.setOrderId(TypeUtils.castToString(detail.get("ORDER_ID")));
+            orderDetail.setProductCode(TypeUtils.castToString(detail.get("PRODUCT_CODE")));
+            orderDetail.setProductCode2(TypeUtils.castToString(detail.get("PRODUCT_CODE2")));
+            orderDetail.setSizeName(TypeUtils.castToString(detail.get("SIZE_NAME")));
+            orderDetail.setSkuId(TypeUtils.castToLong(detail.get("SKU_ID")));
+            result.add(orderDetail);
+        }
+        return result;
+    }
+
+
+
+
+
+
 }

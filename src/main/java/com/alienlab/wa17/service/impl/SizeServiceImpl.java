@@ -92,4 +92,14 @@ public class SizeServiceImpl implements SizeService {
     public boolean delSize(int account_id, int size_id) throws Exception {
         return daoTool.deleteOne(ClientTbSizeCus.class,account_id,size_id);
     }
+
+    @Override
+    public MainTbSize addMainSize(MainTbSize size) throws Exception {
+        return null;
+    }
+
+    @Override
+    public boolean delMainSize(int sizeId) throws Exception {
+        return false;
+    }
 }

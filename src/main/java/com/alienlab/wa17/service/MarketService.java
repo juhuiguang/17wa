@@ -10,4 +10,8 @@ import java.util.List;
  */
 public interface MarketService {
     List<MarketDto> getMarkets() throws Exception ;
+
+    MarketDto addMarket(MarketDto market) throws Exception;
+    MarketDto updateMarket(MarketDto market) throws Exception;
+    boolean delMarket(int marketId) throws Exception;
 }

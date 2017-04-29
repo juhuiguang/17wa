@@ -9,20 +9,6 @@
   "details":[
     {
       "detail_name":"测试产品1",
-      "sku_id":"82",
-      "detail_amount":"5",
-      "detail_price":"100",
-      "total_price":"500"
-    },
-    {
-      "detail_name":"测试产品1",
-      "sku_id":"83",
-      "detail_amount":"5",
-      "detail_price":"100",
-      "total_price":"500"
-    },
-    {
-      "detail_name":"测试产品1",
       "sku_id":"84",
       "detail_amount":"5",
       "detail_price":"100",

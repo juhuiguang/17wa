@@ -2,6 +2,7 @@ package com.alienlab.wa17.service;
 
 import com.alienlab.wa17.entity.client.ClientTbSizeCus;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
+import com.alienlab.wa17.entity.main.MainTbSize;
 import com.alienlab.wa17.entity.main.MainTbSizetype;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface SizeService {
 
     ClientTbSizeCus addSize(int account_id, ClientTbSizeCus size) throws Exception;
     boolean delSize(int account_id,int size_id) throws Exception;
+
+    MainTbSize addMainSize(MainTbSize size) throws Exception;
+    boolean delMainSize(int sizeId) throws Exception;
 }
