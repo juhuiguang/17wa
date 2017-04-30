@@ -12,6 +12,9 @@ import java.util.List;
  */
 public interface SizeService {
     List<MainTbSizetype> getSizeType() throws Exception;
+    MainTbSizetype addSizeType(MainTbSizetype type) throws Exception;
+    MainTbSizetype updateSizeType(MainTbSizetype type) throws Exception;
+    boolean delSizeType(int typeid)throws Exception;
     List<SizeDto> getMainSizes()throws Exception;
     List<SizeDto> getSizes(int account_id)throws Exception;
 

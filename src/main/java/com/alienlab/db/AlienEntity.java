@@ -163,6 +163,7 @@ public class AlienEntity<T> {
                 column=getMethod.getAnnotation(Column.class);
                 logicField=getMethod.getAnnotation(LogicField.class);
             }
+            if(column==null)continue;
             if(logicField!=null)continue;
             //如果不是主键字段
             if(!field.getName().equals(idfield.getName())){

@@ -31,6 +31,21 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
+    public MainTbSizetype addSizeType(MainTbSizetype type) throws Exception {
+        return daoTool.saveOne(type,0);
+    }
+
+    @Override
+    public MainTbSizetype updateSizeType(MainTbSizetype type) throws Exception {
+        return daoTool.updateOne(0,type);
+    }
+
+    @Override
+    public boolean delSizeType(int typeid) throws Exception {
+        return daoTool.deleteOne(MainTbSizetype.class,0,typeid);
+    }
+
+    @Override
     public List<SizeDto> getMainSizes() throws Exception {
         List<MainTbSizetype> sizetypes=getSizeType();
         String sql="select * from tb_size";

@@ -23,7 +23,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public MainTbTags addTag(MainTbTags tag) throws Exception {
-        MainTbTags result=daoTool.updateOne(0,tag);
+        MainTbTags result=daoTool.saveOne(tag,0);
         return result;
     }
 

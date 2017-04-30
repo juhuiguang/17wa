@@ -28,6 +28,21 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
+    public MainTbColorSeries addColorSeries(MainTbColorSeries series) throws Exception {
+        return daoTool.saveOne(series,0);
+    }
+
+    @Override
+    public MainTbColorSeries updateColorSeries(MainTbColorSeries series) throws Exception {
+        return daoTool.updateOne(0,series);
+    }
+
+    @Override
+    public boolean delColorSeries(int seriesid) throws Exception {
+        return daoTool.deleteOne(MainTbColorSeries.class,0,seriesid);
+    }
+
+    @Override
     public List<ColorDto> getMainColors() throws Exception {
         List<MainTbColorSeries> series=getColorSeries();
         String sql="select * from tb_colors";
@@ -94,11 +109,11 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public MainTbColors addMainColor(MainTbColors color) throws Exception {
-        return null;
+        return daoTool.saveOne(color,0);
     }
 
     @Override
     public boolean delMainColor(int color_id) throws Exception {
-        return false;
+        return daoTool.deleteOne(MainTbColors.class,0,color_id);
     }
 }

@@ -12,6 +12,10 @@ import java.util.List;
  */
 public interface ColorService {
     List<MainTbColorSeries> getColorSeries() throws Exception;
+    MainTbColorSeries addColorSeries(MainTbColorSeries series) throws Exception;
+    MainTbColorSeries updateColorSeries(MainTbColorSeries series) throws Exception;
+    boolean delColorSeries(int seriesid) throws Exception;
+
     List<ColorDto> getMainColors()throws Exception;
     List<ColorDto> getColors(int account_id)throws Exception;
 

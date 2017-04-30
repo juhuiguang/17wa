@@ -8,10 +8,7 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,6 +32,40 @@ public class TagController {
         try {
             List<MainTbTags> result=tagService.getTags(typeName);
             return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="添加系统标签")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = MainTbTags.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PostMapping(value="/17wa-tag")
+    public ResponseEntity addMainTags(@ApiParam @RequestBody MainTbTags tag){
+        try{
+            tag=tagService.addTag(tag);
+            return ResponseEntity.ok().body(tag);
+        }catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+    @ApiOperation(value="删除系统标签")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ExecResult.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @DeleteMapping(value="/17wa-tag/{tagid}")
+    public ResponseEntity delMainTags(@PathVariable int tagid){
+        try {
+            boolean result=tagService.delTag(tagid);
+            ExecResult er=new ExecResult(true,"删除成功");
+            return ResponseEntity.ok().body(er);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
