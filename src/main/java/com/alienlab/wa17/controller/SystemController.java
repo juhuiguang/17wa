@@ -1,6 +1,7 @@
 package com.alienlab.wa17.controller;
 
 import com.alienlab.wa17.controller.util.ExecResult;
+import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.main.MainTbColorSeries;
 import com.alienlab.wa17.entity.main.MainTbColors;
 import com.alienlab.wa17.entity.main.MainTbSize;
@@ -98,7 +99,23 @@ public class SystemController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+    @ApiOperation(value="获取系统颜色列表")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ColorDto.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class)
+    })
+    @PostMapping(value="/17wa-system/color")
+    public ResponseEntity getColors(){
+        try {
+            List<ColorDto> result=colorService.getMainColors();
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
 
+    }
 
     @ApiOperation(value="添加系统颜色")
     @ApiResponses({
