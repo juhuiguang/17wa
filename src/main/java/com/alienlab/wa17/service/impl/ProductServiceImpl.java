@@ -10,6 +10,7 @@ import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
+import org.hibernate.annotations.Synchronize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -208,8 +209,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-
-    public boolean setPics(int account, long productId, String pic, String type) throws Exception {
+    public boolean  setPics(int account, long productId, String pic, String type) throws Exception {
         ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account,productId);
         if(product==null){
             throw new Exception("未找到编号为"+productId+"的产品");

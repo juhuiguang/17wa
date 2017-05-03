@@ -2,6 +2,7 @@ package com.alienlab.wa17.controller;
 
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
+import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.entity.main.MainTbColorSeries;
 import com.alienlab.wa17.entity.main.MainTbColors;
 import com.alienlab.wa17.entity.main.MainTbSize;
@@ -104,7 +105,7 @@ public class SystemController {
             @ApiResponse(code = 200, message = "", response = ColorDto.class),
             @ApiResponse(code = 500, message = "", response = ExecResult.class)
     })
-    @PostMapping(value="/17wa-system/color")
+    @GetMapping(value="/17wa-system/color")
     public ResponseEntity getColors(){
         try {
             List<ColorDto> result=colorService.getMainColors();
@@ -114,7 +115,6 @@ public class SystemController {
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
-
     }
 
     @ApiOperation(value="添加系统颜色")
@@ -217,6 +217,18 @@ public class SystemController {
             ExecResult er=new ExecResult(true,"删除尺码类型成功");
             return ResponseEntity.ok().body(er);
         }catch(Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+    @ApiOperation(value="获取系统尺码")
+    @GetMapping(value="/17wa-system/size")
+    public ResponseEntity getSizes(){
+        try {
+            List<SizeDto> result=sizeService.getMainSizes();
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
