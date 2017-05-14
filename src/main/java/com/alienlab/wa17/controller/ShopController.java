@@ -89,6 +89,22 @@ public class ShopController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+    @GetMapping(value="/17wa-shop/{account}/{shopId}")
+    public ResponseEntity getShop(int account,int shopId){
+        try {
+            ClientTbShop shop=shopService.getShop(account,shopId);
+            if(shop==null){
+                ExecResult er=new ExecResult(false,"未查询到门店编码为"+shopId+"的门店");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+            return ResponseEntity.ok().body(shop);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
 
     @ApiOperation(value="根据账户获得所有门店账户列表")
     @ApiImplicitParams({

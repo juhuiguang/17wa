@@ -6,6 +6,7 @@ import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.client.dto.ShopAccountDto;
 import com.alienlab.wa17.service.ShopService;
+import com.sun.deploy.util.SessionState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,11 @@ public class ShopServiceImpl implements ShopService {
     public List<ClientTbShop> getShopes(int account_id) throws Exception {
         String sql="select * from tb_shop";
         return daoTool.getAllList(sql,account_id,ClientTbShop.class);
+    }
+
+    @Override
+    public ClientTbShop getShop(int account, int shop) throws Exception {
+        return (ClientTbShop)daoTool.getOne(ClientTbShop.class,account,shop);
     }
 
     @Override

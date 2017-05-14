@@ -110,11 +110,17 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public MainTbSize addMainSize(MainTbSize size) throws Exception {
-        return null;
+        size.setSizeType("系统");
+        size=daoTool.saveOne(size,0);
+        if(size.getSizeId()>0){
+            return size;
+        }else{
+            throw new Exception("保存尺码失败了。");
+        }
     }
 
     @Override
     public boolean delMainSize(int sizeId) throws Exception {
-        return false;
+        return daoTool.deleteOne(MainTbSize.class,0,sizeId);
     }
 }

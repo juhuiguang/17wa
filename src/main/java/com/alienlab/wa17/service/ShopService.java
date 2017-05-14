@@ -14,6 +14,8 @@ public interface ShopService {
     //获取当前用户的门店列表
     List<ClientTbShop> getShopes(int account_id) throws Exception;
 
+    ClientTbShop getShop(int account,int shop) throws Exception;;
+
     ClientTbShop addShop(int account_id,ClientTbShop shop) throws Exception;
 
     ClientTbShop updateShop(int account_id,ClientTbShop shop) throws Exception;
