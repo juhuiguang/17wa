@@ -89,7 +89,7 @@ public class ShopController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
-    @GetMapping(value="/17wa-shop/{account}/{shopId}")
+    @GetMapping(value="/17wa-shop/detail/{account}/{shopId}")
     public ResponseEntity getShop(int account,int shopId){
         try {
             ClientTbShop shop=shopService.getShop(account,shopId);

@@ -17,6 +17,16 @@ public class InventoryDto {
     private Long id;
     @ApiModelProperty(value="产品id")
     private Long productId;
+
+    private String productName;
+
+    private String productCode;
+
+    private String productCode2;
+
+    private Integer productPrice1;
+    private Integer productPrice2;
+
     @ApiModelProperty(value="颜色编码")
     private Long colorId;
     @ApiModelProperty(value="颜色名称")
@@ -182,4 +192,55 @@ public class InventoryDto {
     public void setInventoryCountTime(Timestamp inventoryCountTime) {
         this.inventoryCountTime = inventoryCountTime;
     }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    @Basic
+    @Column(name = "product_name")
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    @Basic
+    @Column(name = "product_code")
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    @Basic
+    @Column(name = "product_code2")
+    public String getProductCode2() {
+        return productCode2;
+    }
+
+    public void setProductCode2(String productCode2) {
+        this.productCode2 = productCode2;
+    }
+
+    @Basic
+    @Column(name = "product_price1")
+    public Integer getProductPrice1() {
+        return productPrice1;
+    }
+
+    public void setProductPrice1(Integer productPrice1) {
+        this.productPrice1 = productPrice1;
+    }
+
+    @Basic
+    @Column(name = "product_price2")
+    public Integer getProductPrice2() {
+        return productPrice2;
+    }
+
+    public void setProductPrice2(Integer productPrice2) {
+        this.productPrice2 = productPrice2;
+    }
+
 }

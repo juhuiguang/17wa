@@ -33,10 +33,33 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     DaoTool daoTool;
 
+    public Page<InventoryDto> loadInventory(int account,long shopId){
+
+        return null;
+    }
+
     @Override
     public List<InventoryDto> loadInventory(int account, long shopId, long productId) throws Exception {
-        String sql="select a.*,lj.id inventory_id,lj.sku_id,lj.shop_id,lj.inventory_amount,lj.inventory_count_status,lj.inventory_count_time from tb_product_sku a left join tb_inventory lj on a.`id`=lj.`sku_id` and lj.`shop_id`=" +shopId+" "+
-                "where a.`product_id`="+productId;
+        String sql="SELECT " +
+                "  a.*, " +
+                "  lj.id inventory_id, " +
+                "  lj.sku_id, " +
+                "  lj.shop_id, " +
+                "  lj.inventory_amount, " +
+                "  lj.inventory_count_status, " +
+                "  lj.inventory_count_time, " +
+                "  lj2.`product_code`, " +
+                "  lj2.`product_code2`, " +
+                "  lj2.`product_name`, " +
+                "  lj2.`product_price1`, " +
+                "  lj2.`product_price2` " +
+                "FROM " +
+                "  tb_product_sku a " +
+                "  LEFT JOIN tb_inventory lj " +
+                "    ON a.`id` = lj.`sku_id` " +
+                "    AND lj.`shop_id` = "+shopId+" " +
+                "  LEFT JOIN tb_product lj2 ON lj2.`product_id`=a.`product_id` " +
+                "WHERE a.`product_id` = "+productId;
         return daoTool.getAllList(sql,account,InventoryDto.class);
     }
 
@@ -86,6 +109,38 @@ public class InventoryServiceImpl implements InventoryService {
         }else{
             throw new Exception("库存主记录保存失败。");
         }
+    }
+
+
+    public Page<InventoryDetailDto> loadDetails(int account,long shopId,String status,String isall,String startDate, String endDate, Pageable page) throws Exception{
+        String sql="SELECT " +
+                "  a.*, " +
+                "  b.sku_id, " +
+                "  b.shop_id, " +
+                "  b.`inventory_amount`, " +
+                "  b.`inventory_count_status`, " +
+                "  b.`inventory_count_time`, " +
+                "  c.`color_name`, " +
+                "  c.`size_name`, " +
+                "  d.product_id, " +
+                "  d.`product_code`, " +
+                "  d.`product_code2`, " +
+                "  d.`product_name`, " +
+                "  d.`product_price1`, " +
+                "  d.`product_price2` " +
+                "FROM " +
+                "  `tb_inventory_detail` a, " +
+                "  `tb_inventory` b, " +
+                "  `tb_product_sku` c, " +
+                "  tb_product d " +
+                "WHERE a.`inventory_id` = b.`id` " +
+                "  AND b.`sku_id` = c.`id` " +
+                "  AND b.`shop_id` = "+shopId+" " +
+                "  AND (1="+isall+" OR a.detail_type = '"+status+"') " +
+                "  AND d.`product_id`=c.`product_id` " +
+                "  AND a.`detail_time` >= '"+startDate+"' " +
+                "  AND a.`detail_time` <= '"+endDate+"' ";
+        return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
 
     @Override
@@ -169,9 +224,29 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
+    public JSONArray getInventoryStat(int account, long shopId, String status, String isall, String startDate, String endDate) throws Exception {
+        String sql="SELECT " +
+                "  detail_type,SUM(detail_amount) detail_amount " +
+                "FROM " +
+                "  `tb_inventory_detail` a, " +
+                "  `tb_inventory` b, " +
+                "  `tb_product_sku` c, " +
+                "  tb_product d " +
+                "WHERE a.`inventory_id` = b.`id` " +
+                "  AND b.`sku_id` = c.`id` " +
+                "  AND b.`shop_id` = "+shopId+" " +
+                "  AND (1="+isall+" OR a.detail_type = '"+status+"') " +
+                "  AND d.`product_id`=c.`product_id` " +
+                "  AND a.`detail_time` >= '"+startDate+"' " +
+                "  AND a.`detail_time` <= '"+endDate+"' " +
+                "   GROUP BY detail_type ";
+        return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
+    }
+
+    @Override
     public ClientTbProductInventoryStatus setProductInventoryStatus(int account, long productid, long shopid, String status) throws Exception {
-        if("异常，正常".indexOf(status)<0){
-            throw new Exception("状态值传入错误。请传入[正常、异常]");
+        if("异常，正常，未盘点".indexOf(status)<0){
+            throw new Exception("状态值传入错误。请传入[正常、异常、未盘点]");
         }
         String sql="select * from tb_product_inventory_status where product_id="+productid+" and shop_id="+shopid;
         ClientTbProductInventoryStatus inventoryStatus=(ClientTbProductInventoryStatus)daoTool.getObject(sql,account,ClientTbProductInventoryStatus.class);

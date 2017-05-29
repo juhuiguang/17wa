@@ -239,6 +239,11 @@ public class OrderServiceImpl implements OrderService {
         String sql="select * from tb_order where order_time>='"+startdate+"' and order_time<='"+enddate+"' and shop_id="+shopId;
         return daoTool.getPageList(sql,page,account,ClientTbOrder.class);
     }
+    @Override
+    public Page<ClientTbOrder> getCustomOrders(int account,Long shopId,int custom,Pageable page) throws Exception{
+        String sql="select * from tb_order where  shop_id="+shopId+" and cus_id="+custom+" order by order_time desc";
+        return daoTool.getPageList(sql,page,account,ClientTbOrder.class);
+    }
 
     @Override
     public OrderPrintDto doPrint(int account, Long shopId, OrderDto order, ClientTbCustom custom) throws Exception {
@@ -272,7 +277,7 @@ public class OrderServiceImpl implements OrderService {
         if(order==null){
             throw new Exception("未找到订单编号为："+orderId+"的订单");
         }
-        String sql="SELECT a.*,b.`color_name`,b.`size_name`,c.`product_code2`,c.`product_code` FROM `tb_order_detail` a " +
+        String sql="SELECT a.*,b.`color_name`,b.`size_name`,c.`product_code2`,c.`product_code`,c.product_pic FROM `tb_order_detail` a " +
                 "LEFT JOIN tb_product_sku b ON a.`sku_id`=b.`id` " +
                 "LEFT JOIN tb_product c ON c.`product_id`=b.`product_id` " +
                 " WHERE a.`order_id`='"+order.getOrderCode()+"'";
@@ -289,6 +294,7 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrderId(TypeUtils.castToString(detail.get("ORDER_ID")));
             orderDetail.setProductCode(TypeUtils.castToString(detail.get("PRODUCT_CODE")));
             orderDetail.setProductCode2(TypeUtils.castToString(detail.get("PRODUCT_CODE2")));
+            orderDetail.setProductPic(TypeUtils.castToString(detail.get("PRODUCT_PIC")));
             orderDetail.setSizeName(TypeUtils.castToString(detail.get("SIZE_NAME")));
             orderDetail.setSkuId(TypeUtils.castToLong(detail.get("SKU_ID")));
             result.add(orderDetail);

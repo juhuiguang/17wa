@@ -6,6 +6,8 @@ import com.alienlab.wa17.entity.main.MainTbTags;
 import com.alienlab.wa17.service.TagService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,28 @@ import java.util.List;
 public class TagController {
     @Autowired
     TagService tagService;
+
+    @ApiOperation(value="获取全部系统标签")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="index",value="页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="长度",paramType = "query")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = MainTbTags.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @GetMapping(value="/17wa-tag/all")
+    public ResponseEntity getTags(int index,int size){
+        try {
+            Page<MainTbTags> result=tagService.getTags(new PageRequest(index,size));
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
     @ApiOperation(value="根据标签类型，获取系统库中标签信息")
     @ApiImplicitParam(name="typeName",value="标签类型",paramType = "path")
     @ApiResponses({

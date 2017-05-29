@@ -77,13 +77,13 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public List<ClientTbShopAccount> getShopAccountList(int account_id, int shop_id) throws Exception {
-        String sql="select * from tb_shop_account where shop_id="+shop_id;
+        String sql="select * from tb_shop_account where shop_id="+shop_id+" or account_type='管理员'";
         return daoTool.getAllList(sql,account_id,ClientTbShopAccount.class);
     }
 
     @Override
     public ClientTbShopAccount getShopAccount(int account_id, int shop_id, String username) throws Exception {
-        String sql="select * from tb_shop_account where shop_id="+shop_id+" and account_name='"+username+"'";
+        String sql="select * from tb_shop_account where (shop_id="+shop_id+" or account_type='管理员') and account_name='"+username+"'";
         return (ClientTbShopAccount)daoTool.getObject(sql,account_id,ClientTbShopAccount.class);
     }
 
@@ -117,6 +117,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public boolean delAccount(int account_id, int shopaccount) throws Exception {
+        ClientTbShopAccount a=(ClientTbShopAccount)daoTool.getOne(ClientTbShopAccount.class,account_id,shopaccount);
+        if(a!=null&&a.getAccountType().equals("管理员")){
+            throw new Exception("管理员账户不能被删除");
+        }
         return daoTool.deleteOne(ClientTbShopAccount.class,account_id,(long)shopaccount);
     }
 }

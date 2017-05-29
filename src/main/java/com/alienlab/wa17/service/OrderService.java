@@ -20,4 +20,5 @@ public interface OrderService {
     OrderPrintDto doPrint(int account,Long orderId) throws Exception;
 
     Page<ClientTbOrder> getOrders(int account,Long shopId, String startdate, String enddate, Pageable page) throws Exception;
+    Page<ClientTbOrder> getCustomOrders(int account,Long shopId,int custom,Pageable page) throws Exception;
 }

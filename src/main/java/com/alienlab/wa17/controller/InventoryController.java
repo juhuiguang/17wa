@@ -188,12 +188,45 @@ public class InventoryController {
         }
     }
 
-    @ApiOperation(value="设置产品库存状态:正常，异常")
+
+    @ApiOperation(value="获取门店的全部库存记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="门店id",paramType = "path"),
+            @ApiImplicitParam(name="status",value="库存类型",paramType = "query"),
+            @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
+            @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+    })
+    @GetMapping("/17wa-inventory/product/{account}/{shopId}")
+    public ResponseEntity getInventoryDetails(@PathVariable int account,@PathVariable long shopId,
+                                              @RequestParam String status,
+                                              @RequestParam String startDate, @RequestParam String endDate,
+                                              @RequestParam int index,@RequestParam int size){
+        try {
+            String isall="0";
+            if(status.equals("全部"))isall="1";
+            Page<InventoryDetailDto> details=inventoryService.loadDetails(account,shopId,status,isall,startDate,endDate,new PageRequest(index,size));
+            JSONArray stat=inventoryService.getInventoryStat(account,shopId,status,isall,startDate,endDate);
+            JSONObject result=new JSONObject();
+            result.put("details",details);
+            result.put("stat",stat);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
+    @ApiOperation(value="设置产品库存状态:正常，异常,未盘点")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="productid",value="产品编码",paramType = "query"),
             @ApiImplicitParam(name="shopid",value="店铺编码",paramType = "query"),
-            @ApiImplicitParam(name="status",value="状态值：正常、异常",paramType = "query")
+            @ApiImplicitParam(name="status",value="状态值：正常、异常、未盘点",paramType = "query")
     })
     @PostMapping("/17wa-inventory/error/{account}")
     public ResponseEntity setProductInventoryStatus(@PathVariable int account,@RequestParam long productid,@RequestParam long shopid,@RequestParam String status){

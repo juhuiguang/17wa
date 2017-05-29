@@ -62,6 +62,9 @@ public class OrderController {
     @GetMapping("/17wa-order/custom/{account}/{keyword}")
     public ResponseEntity getSaleCustom(@PathVariable int account,@PathVariable String keyword){
         try {
+            if(keyword.equalsIgnoreCase("all")){
+                keyword="";
+            }
             List<ClientTbCustom> results=customService.findCustom(account,keyword);
             return ResponseEntity.ok().body(results);
         } catch (Exception e) {
@@ -139,6 +142,52 @@ public class OrderController {
         }
 
     }
+
+    @ApiOperation(value="查询指定客户的订单记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="店铺id",paramType = "query"),
+            @ApiImplicitParam(name="custom",value="客户id",paramType = "query"),
+            @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+    })
+    @GetMapping("/17wa-order/{account}/custom")
+    public ResponseEntity getCustomOrders(@PathVariable int account,@RequestParam Long shopId,
+                                    @RequestParam int custom,
+                                    @RequestParam int index,@RequestParam int size){
+        try {
+            Page<ClientTbOrder> orders=orderService.getCustomOrders(account,shopId,custom,new PageRequest(index,size));
+            return ResponseEntity.ok().body(orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
+
+    @ApiOperation(value="订单打印")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="orderId",value="订单Id",paramType = "path")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = OrderPrintDto.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class)
+    })
+    @GetMapping("/17wa-order/detail/{account}/{orderId}")
+    public ResponseEntity getOrderDetail(@PathVariable int account,@PathVariable long orderId){
+        try {
+            OrderPrintDto orderDto=orderService.doPrint(account,orderId);
+            return ResponseEntity.ok().body(orderDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
 
 
 }

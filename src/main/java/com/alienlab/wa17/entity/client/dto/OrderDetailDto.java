@@ -12,6 +12,7 @@ public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，
     private String sizeName;
     private String productCode;
     private String productCode2;
+    private String productPic;
     private String detailProductName;
     private String orderId;
     private Integer detailAmount;
@@ -117,5 +118,17 @@ public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，
     @Override
     public void setDetailTotalPrice(Float detailTotalPrice) {
         this.detailTotalPrice = detailTotalPrice;
+    }
+
+    public void setSkuId(long skuId) {
+        this.skuId = skuId;
+    }
+
+    public String getProductPic() {
+        return productPic;
+    }
+
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
     }
 }
