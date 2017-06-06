@@ -8,6 +8,7 @@ import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
+import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import org.hibernate.annotations.Synchronize;
@@ -31,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
     DaoTool daoTool;
     @Autowired
     SkuService skuService;
+
     @Override
     public Page<ClientTbProduct> getProducts(int account_id, String keyword, Pageable page) throws Exception {
         String sql="SELECT product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes " +
@@ -218,11 +220,28 @@ public class ProductServiceImpl implements ProductService {
             product.setProductPic(pic);
         }else{
             String desc=product.getProductDesc();
-            if(desc!=null&&desc.length()>0){
-                desc+=","+pic;
+            if(type.equals("尺码图")){//增加尺码图的兼容
+                if(desc!=null&&desc.length()>0){
+                    //判断第一张是否是尺码图
+                    String temp=desc.split(",")[0];
+                    if(temp.indexOf("_include")>=0){
+                        System.out.println("pic desc pictures is not null>>>"+temp+">>>>"+desc);
+                        desc=desc.replace(temp,pic);
+                        System.out.println("pic desc replaced >>>"+pic+">>>>"+desc);
+                    }else{
+                        desc=pic+","+desc;
+                    }
+                }else{
+                    desc+=pic;
+                }
             }else{
-                desc+=pic;
+                if(desc!=null&&desc.length()>0){
+                    desc+=","+pic;
+                }else{
+                    desc+=pic;
+                }
             }
+
             product.setProductDesc(desc);
         }
         daoTool.updateOne(account,product);
@@ -246,7 +265,12 @@ public class ProductServiceImpl implements ProductService {
             int pos=pic.lastIndexOf(".");
             String fileName=pic.substring(0,pos);
             String ext=pic.substring(pos+1);
-            fileName+="_750";
+            if(fileName.indexOf("_include")>0){
+
+            }else{
+                fileName+="_750";
+            }
+
             result.add(fileName+"."+ext);
         }
         return result;

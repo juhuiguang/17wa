@@ -1,20 +1,26 @@
 package com.alienlab.wa17.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbProductInclude;
 import com.alienlab.wa17.entity.main.MainTbInclude;
+import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.IncludeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by 橘 on 2017/5/21.
@@ -25,12 +31,18 @@ import java.util.List;
 public class IncludeController {
     @Autowired
     IncludeService includeService;
+
+    @Autowired
+    ImageService imageService;
+
     @ApiOperation("获取系统尺码标签类型")
     @GetMapping("/17wa-include/type")
     public ResponseEntity getIncludeType(){
         try {
             List result=includeService.getIncludeType();
-            return ResponseEntity.ok().body(result);
+            JSONObject r=new JSONObject();
+            r.put("result",result);
+            return ResponseEntity.ok().body(r);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
@@ -42,7 +54,9 @@ public class IncludeController {
     public ResponseEntity getAllInclude(){
         try {
             List result=includeService.getAllInclude();
-            return ResponseEntity.ok().body(result);
+            JSONObject r=new JSONObject();
+            r.put("result",result);
+            return ResponseEntity.ok().body(r);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
@@ -104,18 +118,34 @@ public class IncludeController {
         }
     }
 
+    @Value("${alienlab.upload.path}")
+    String upload_path;
+
+
     @ApiOperation("新增产品尺码详细，一组同时提交")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户id号",paramType = "query"),
             @ApiImplicitParam(name="productId",value="产品id号",paramType = "query"),
-            @ApiImplicitParam(name="includes",value="尺码详细表单[{sizeName:'M',includeName:'胸围',includeValue:'90A'}]")
+            @ApiImplicitParam(name="includes",value="尺码详细表单[{sizeName:'M',includeName:'胸围',includeValue:'90A'}]",paramType="body")
     })
     @PostMapping("/17wa-include/product")
     public ResponseEntity addProductIncludes(
-            @RequestParam int account,@RequestParam int productId,@RequestParam String includes){
-        JSONArray array=JSONArray.parseArray(includes);
+            @RequestParam int account, @RequestParam int productId, @RequestBody String includes, HttpServletRequest request){
+        //System.out.println(includes);
+        JSONObject jo=JSONObject.parseObject(includes);
+        JSONArray array=jo.getJSONArray("includes");
+
         try {
             List<ClientTbProductInclude> result=includeService.addProductIncludes(account,productId,array);
+
+            String path=request.getSession().getServletContext().getRealPath(upload_path);
+            String exName="jpg";
+            String fileName= UUID.randomUUID().toString();
+            try {
+                String s=imageService.createSizeIncludeImage(account,productId,(path+ File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();

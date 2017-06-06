@@ -49,12 +49,18 @@ public class IncludeServiceImpl implements IncludeService {
 
     @Override
     public List<ClientTbProductInclude> getProductIncluedes(int account, int productId) throws Exception {
-        String sql="select * from tb_product_include where product_id="+productId;
+        String sql="select * from tb_product_include where product_id="+productId+" order by size_name,include_name";
         return daoTool.getAllList(sql,account,ClientTbProductInclude.class);
     }
 
     @Override
     public List<ClientTbProductInclude> addProductIncludes(int account, int productId, JSONArray includes) {
+        String sql="delete from tb_product_include where product_id="+productId;
+        try {
+            daoTool.exec(sql,account);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         List<ClientTbProductInclude> result=new ArrayList<>();
         if(includes!=null&&includes.size()>0){
             for(int i=0;i<includes.size();i++){
@@ -62,7 +68,7 @@ public class IncludeServiceImpl implements IncludeService {
                 ClientTbProductInclude ci=new ClientTbProductInclude();
                 ci.setIncludeName(include.getString("includeName"));
                 ci.setIncludeValue(include.getIntValue("includeValue"));
-                ci.setProductId(include.getInteger("productId"));
+                ci.setProductId(productId);
                 ci.setSizeName(include.getString("sizeName"));
                 try {
                     ci=daoTool.saveOne(ci,account);

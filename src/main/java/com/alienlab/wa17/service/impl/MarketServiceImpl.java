@@ -24,13 +24,13 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public MarketDto addMarket(MarketDto market) throws Exception {
-        return null;
+    public MainTbMarket addMarket(MainTbMarket market) throws Exception {
+        return daoTool.saveOne(market,0);
     }
 
     @Override
-    public MarketDto updateMarket(MarketDto market) throws Exception {
-        return null;
+    public MainTbMarket updateMarket(MainTbMarket market) throws Exception {
+        return daoTool.updateOne(0,market);
     }
 
     @Override

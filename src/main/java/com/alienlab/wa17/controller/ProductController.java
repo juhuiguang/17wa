@@ -13,9 +13,11 @@ import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.entity.main.MainTbTags;
+import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.spring.web.json.Json;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -36,6 +41,12 @@ import java.util.List;
 public class ProductController {
     @Autowired
     ProductService productService;
+
+    @Autowired
+    ImageService imageService;
+
+    @Value("${alienlab.upload.path}")
+    String upload_path;
 
     @ApiOperation(value="新增产品")
     @ApiImplicitParams({
@@ -76,7 +87,7 @@ public class ProductController {
             @ApiResponse(code = 500, message = "", response = ExecResult.class)
     })
     @PostMapping("/17wa-product/{account}")
-    public ResponseEntity addProduct(@PathVariable int account,@RequestBody String product){
+    public ResponseEntity addProduct(@PathVariable int account, @RequestBody String product, HttpServletRequest request){
         JSONObject productbase=JSONObject.parseObject(product);
         JSONArray colors=productbase.getJSONArray("colors");
         JSONArray sizes=productbase.getJSONArray("sizes");
@@ -117,6 +128,14 @@ public class ProductController {
         }
         try {
             p=productService.addProduct(account,p,skus);
+            String path=request.getSession().getServletContext().getRealPath(upload_path);
+            String exName="jpg";
+            String fileName= UUID.randomUUID().toString();
+//            try {
+//                String s=imageService.createSizeIncludeImage(account,(int)p.getProductId(),(path+ File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             return ResponseEntity.ok().body(p);
         } catch (Exception e) {
             e.printStackTrace();

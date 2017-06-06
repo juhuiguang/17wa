@@ -11,7 +11,7 @@ import java.util.List;
 public interface MarketService {
     List<MarketDto> getMarkets() throws Exception ;
 
-    MarketDto addMarket(MarketDto market) throws Exception;
-    MarketDto updateMarket(MarketDto market) throws Exception;
+    MainTbMarket addMarket(MainTbMarket market) throws Exception;
+    MainTbMarket updateMarket(MainTbMarket market) throws Exception;
     boolean delMarket(int marketId) throws Exception;
 }

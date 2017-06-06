@@ -1,9 +1,6 @@
 package com.alienlab.wa17.entity.client;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by 橘 on 2017/2/21.
@@ -17,6 +14,7 @@ public class ClientTbProductInclude {
     private String includeName;
     private Integer includeValue;
 
+    @Id
     @Basic
     @Column(name = "include_id")
     public Long getIncludeId() {

@@ -49,6 +49,37 @@ public class ShopController {
         }
     }
 
+    @ApiOperation(value="添加或更新市场")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = MainTbMarket.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PostMapping(value="/17wa-shop/market")
+    public ResponseEntity addMarkets(@RequestBody MainTbMarket market){
+        if(market==null){
+            ExecResult er=new ExecResult(false,"市场参数传入错误");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+        if(market.getMkId()>0){
+            try {
+                market=marketService.updateMarket(market);
+            } catch (Exception e) {
+                e.printStackTrace();
+                ExecResult er=new ExecResult(false,e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }else{
+            try {
+                market=marketService.addMarket(market);
+            } catch (Exception e) {
+                e.printStackTrace();
+                ExecResult er=new ExecResult(false,e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }
+        return ResponseEntity.ok().body(market);
+    }
+
 
     @ApiOperation(value="根据账户获得门店列表")
     @ApiImplicitParam(name="account",value="账户id",paramType = "path")
