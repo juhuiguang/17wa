@@ -12,7 +12,9 @@ import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
+import com.alienlab.wa17.entity.main.MainTbProducttype;
 import com.alienlab.wa17.entity.main.MainTbTags;
+import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.*;
@@ -293,6 +295,59 @@ public class ProductController {
         } catch (Exception e) {
             ExecResult er=new ExecResult(false,e.getMessage());
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获得全部产品分类")
+    @GetMapping("/17wa-produt/types")
+    public ResponseEntity loadTypes(){
+        try {
+            List<ProductTypeDto> types=productService.getAllProductType();
+            return ResponseEntity.ok().body(types);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="新增或修改产品类型")
+    @PostMapping("/17wa-produt/types")
+    public ResponseEntity addOrUpdateTypes(@RequestBody MainTbProducttype type){
+        try{
+            if(type.getProducttypeId()>0){
+                type=productService.updateType(type);
+            }else{
+                type=productService.addType(type);
+            }
+            return ResponseEntity.ok().body(type);
+        }catch (Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="删除产品类型")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ExecResult.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class)
+    })
+    @DeleteMapping(value="/17wa-produt/types/{typeId}")
+    public ResponseEntity delType(@PathVariable long typeId){
+        try {
+            boolean result=productService.delType(typeId);
+            if(result){
+                ExecResult er=new ExecResult(true,"类型删除成功。");
+                return ResponseEntity.ok().body(er);
+            }else{
+                ExecResult er=new ExecResult(false,"类型删除失败了。");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }

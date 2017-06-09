@@ -35,7 +35,7 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public boolean delMarket(int marketId) throws Exception {
-        return false;
+        return daoTool.deleteOne(MainTbMarket.class,0,marketId);
     }
 
     private List<MarketDto> getSubMarkets(String pid) throws Exception{

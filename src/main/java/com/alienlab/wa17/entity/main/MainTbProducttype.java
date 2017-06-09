@@ -12,6 +12,7 @@ public class MainTbProducttype {
     private String producttypeName;
     private Integer producttypeLevel;
     private Long producttypePid;
+    private Integer leaf;
 
     @Id
     @Column(name = "producttype_id")
@@ -51,6 +52,16 @@ public class MainTbProducttype {
 
     public void setProducttypePid(Long producttypePid) {
         this.producttypePid = producttypePid;
+    }
+
+    @Basic
+    @Column(name = "leaf")
+    public Integer getLeaf() {
+        return leaf;
+    }
+
+    public void setLeaf(Integer leaf) {
+        this.leaf = leaf;
     }
 
     @Override

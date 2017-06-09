@@ -7,6 +7,8 @@ import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
+import com.alienlab.wa17.entity.main.MainTbProducttype;
+import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -47,6 +49,14 @@ public interface ProductService {
 
     boolean delPic(int account,long productId,String pic,String type) throws Exception;
 
+
+    List<ProductTypeDto> getAllProductType()throws Exception;
+
+    MainTbProducttype addType(MainTbProducttype type)throws Exception;
+
+    boolean delType(long typeId)throws Exception;
+
+    MainTbProducttype updateType(MainTbProducttype type)throws Exception;
 
 
 

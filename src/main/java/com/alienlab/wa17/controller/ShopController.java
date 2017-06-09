@@ -79,6 +79,28 @@ public class ShopController {
         }
         return ResponseEntity.ok().body(market);
     }
+    @ApiOperation(value="删除市场")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ExecResult.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class)
+    })
+    @DeleteMapping(value="/17wa-shop/market/{marketId}")
+    public ResponseEntity delMarket(@PathVariable int marketId){
+        try {
+            boolean result=marketService.delMarket(marketId);
+            if(result){
+                ExecResult er=new ExecResult(true,"市场删除成功。");
+                return ResponseEntity.ok().body(er);
+            }else{
+                ExecResult er=new ExecResult(false,"市场删除失败了。");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 
 
     @ApiOperation(value="根据账户获得门店列表")

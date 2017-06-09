@@ -305,6 +305,9 @@ public class AlienEntity<T> {
 
                             }
                         }else{
+                            if(field.get(entity)==null||field.get(entity).equals("null")){
+                                continue;
+                            }
                             if(updatebuffer.length()>0){
                                 updatebuffer.append(",").append(column.name()).append("=").append(field.get(entity));
                             }else{

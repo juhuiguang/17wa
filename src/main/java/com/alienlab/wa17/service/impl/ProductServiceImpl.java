@@ -8,6 +8,10 @@ import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
+import com.alienlab.wa17.entity.main.MainTbMarket;
+import com.alienlab.wa17.entity.main.MainTbProducttype;
+import com.alienlab.wa17.entity.main.dto.MarketDto;
+import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
@@ -291,5 +295,44 @@ public class ProductServiceImpl implements ProductService {
         }
         daoTool.updateOne(account,product);
         return true;
+    }
+
+    @Override
+    public List<ProductTypeDto> getAllProductType() throws Exception {
+        return getSubTypes("0");
+    }
+
+    private List<ProductTypeDto> getSubTypes(String pid) throws Exception{
+        String sql="select a.*,(select count(1) from tb_producttype b where b.producttype_pid=a.producttype_id) as leaf from tb_producttype a where a.producttype_pid="+pid;
+        List<MainTbProducttype> subtypes=daoTool.getAllList(sql,MainTbProducttype.class);
+        List<ProductTypeDto> result=new ArrayList<ProductTypeDto>();
+        for(MainTbProducttype type:subtypes){
+            ProductTypeDto p=new ProductTypeDto();
+            p.setProducttypeId(type.getProducttypeId());
+            p.setProducttypeLevel(type.getProducttypeLevel());
+            p.setProducttypeName(type.getProducttypeName());
+            p.setProducttypePid(type.getProducttypePid());
+            p.setLeaf(type.getLeaf());
+            if(p.getLeaf()>0){
+                p.setSubTypes(getSubTypes(String.valueOf(type.getProducttypeId())));
+            }
+            result.add(p);
+        }
+        return result;
+    }
+
+    @Override
+    public MainTbProducttype addType(MainTbProducttype type) throws Exception {
+        return daoTool.saveOne(type,0);
+    }
+
+    @Override
+    public boolean delType(long typeId) throws Exception {
+        return daoTool.deleteOne(MainTbProducttype.class,0,typeId);
+    }
+
+    @Override
+    public MainTbProducttype updateType(MainTbProducttype type) throws Exception{
+        return daoTool.updateOne(0,type);
     }
 }
