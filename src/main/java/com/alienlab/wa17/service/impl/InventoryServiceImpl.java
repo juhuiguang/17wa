@@ -2,17 +2,17 @@ package com.alienlab.wa17.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.wa17.dao.DaoTool;
-import com.alienlab.wa17.entity.client.ClientTbDispatch;
-import com.alienlab.wa17.entity.client.ClientTbInventory;
-import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
-import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
 import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.OrderService;
+import com.alienlab.wa17.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 橘 on 2017/3/23.
@@ -32,6 +33,8 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
     @Autowired
     DaoTool daoTool;
+    @Autowired
+    ProductService productService;
 
     public Page<InventoryDto> loadInventory(int account,long shopId){
 
@@ -340,6 +343,53 @@ public class InventoryServiceImpl implements InventoryService {
                 "WHERE a.`sku_id`=c.id AND c.id="+skuId+" AND a.shop_id=b.shop_id";
         List<SkuShopInventoryDto> result=daoTool.getAllList(sql,account,SkuShopInventoryDto.class);
         return result;
+    }
+
+    @Override
+    public void checkInventoryStatus(int account, long shopid, long skuid, int amount) throws Exception {
+        String sql="SELECT inventory_amount amount FROM `tb_inventory` WHERE sku_id="+skuid+" AND shop_id="+shopid;
+        Map amountMap=daoTool.getMap(sql,account);
+        if(amountMap==null){//当前sku没有库存;
+            sql="insert into tb_inventory(sku_id,shop_id,inventory_amount,status) values("+skuid+","+shopid+","+amount+",'正常')";
+            daoTool.exec(sql,account);
+        }else{
+            String status="";
+            int inv_amount=TypeUtils.castToInt(amountMap.get("inventory_amount".toUpperCase()));
+            if(amount==inv_amount){//库存正常
+                status="正常";
+            }else{//库存异常
+                status="异常";
+            }
+            sql="update tb_inventory set inventory_count_status='"+status+"' WHERE sku_id="+skuid+" AND shop_id="+shopid;
+            daoTool.exec(sql,account);
+        }
+
+    }
+
+    @Override
+    public boolean resetShopInventoryStatus(int account, long shopid) throws Exception {
+        String sql="delete from tb_product_inventory_status where shopid="+shopid;
+        return daoTool.exec(sql,account);
+    }
+
+    @Override
+    public List<ClientTbProduct> checkShopInventory(int account, long shopid, JSONArray details) throws Exception {
+        resetShopInventoryStatus(account,shopid);
+        for(int i=0;i<details.size();i++){
+            JSONObject item=details.getJSONObject(i);
+            long skuId=item.getLong("skuId");
+            int amount=item.getInteger("amount");
+            checkInventoryStatus(account,shopid,skuId,amount);
+        }
+
+        String sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
+                "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
+        daoTool.exec(sql,account);
+
+        sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
+                "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='正常' and not exists(select 1 from tb_product_inventory_status where tb_product_inventory_status.product_id=b.product_id)";
+        daoTool.exec(sql,account);
+        return productService.getAllProducts(account,shopid,new PageRequest(0,99)).getContent();
     }
 
 

@@ -1,14 +1,18 @@
 package com.alienlab.wa17.controller;
 
 import com.alienlab.wa17.controller.util.ExecResult;
+import com.alienlab.wa17.entity.client.ClientTbGradeOption;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.main.MainTbAccount;
 import com.alienlab.wa17.service.AccountService;
+import com.alienlab.wa17.service.GradeOptionService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Created by 橘 on 2017/2/21.
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     @Autowired
     AccountService accountService;
+    @Autowired
+    GradeOptionService gradeOptionService;
 
     @ApiOperation(value="获取账户信息",notes="根据当前登录者输入的手机号码，获取该手机号对应的账户信息。")
     @ApiImplicitParam(name="loginname",value="账户登录名，即手机号码",paramType = "path")
@@ -61,4 +67,58 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="获取积分规则",notes="获取账户积分规则")
+    @GetMapping(value="/17wa-account/grade/{account}")
+    public ResponseEntity loadGradeGroup(@PathVariable  int account){
+        try {
+            List<ClientTbGradeOption> result=gradeOptionService.getOptions(account);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="新增积分规则",notes="新增积分规则")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path"),
+            @ApiImplicitParam(name="grade",value="抵扣积分",paramType = "query"),
+            @ApiImplicitParam(name="money",value="抵扣金额",paramType = "query")
+    })
+    @PostMapping(value="/17wa-account/grade/{account}")
+    public ResponseEntity addGradegroup(@PathVariable int account,@RequestParam int grade,@RequestParam int money){
+        try {
+            ClientTbGradeOption option=new ClientTbGradeOption();
+            option.setGradeMoney(money);
+            option.setGradeValue(grade);
+            option=gradeOptionService.addOption(option,account);
+            return ResponseEntity.ok().body(option);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+    @DeleteMapping(value="/17wa-account/grade/{account}/{groupId}")
+    public ResponseEntity delGradeGroup(@PathVariable int account,@PathVariable int groupId){
+        try {
+            boolean result=gradeOptionService.delOption(groupId,account);
+            if(result){
+                ExecResult er=new ExecResult(true,"删除成功");
+                return ResponseEntity.ok().body(er);
+            }else{
+                ExecResult er=new ExecResult(false,"删除发生错误");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
 }

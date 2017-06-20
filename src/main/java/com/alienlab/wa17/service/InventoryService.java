@@ -1,10 +1,7 @@
 package com.alienlab.wa17.service;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alienlab.wa17.entity.client.ClientTbDispatch;
-import com.alienlab.wa17.entity.client.ClientTbInventory;
-import com.alienlab.wa17.entity.client.ClientTbInventoryDetail;
-import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
@@ -53,4 +50,10 @@ public interface InventoryService {
     Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception;
 
     List<SkuShopInventoryDto> getSkuShopList(int account,long productId) throws Exception;
+
+    void checkInventoryStatus(int account,long shopid,long skuid,int amount) throws Exception;
+
+    boolean resetShopInventoryStatus(int account,long shopid) throws Exception;
+
+    List<ClientTbProduct> checkShopInventory(int account,long shopid,JSONArray details) throws Exception;
 }

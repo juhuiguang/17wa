@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbDispatch;
 import com.alienlab.wa17.entity.client.ClientTbInventory;
+import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
 import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
@@ -314,5 +315,77 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+    @ApiOperation(value="重置门店盘点状态")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="门店编码",paramType = "path")
+    })
+    @GetMapping("/17wa-inventory/resetcheck/{account}/{shopId}")
+    public ResponseEntity resetInventoryCheck(@PathVariable int account, @PathVariable long shopId){
+        try{
+            boolean result=inventoryService.resetShopInventoryStatus(account,shopId);
+            if(result){
+                ExecResult er=new ExecResult(result,"盘点状态已重置");
+                return ResponseEntity.ok().body(er);
+            }else{
+                ExecResult er=new ExecResult(result,"盘点状态重置错误");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="手动盘点")
+    @PostMapping("/17wa-inventory/check")
+    public ResponseEntity checkInventory(@RequestBody String body){
+        JSONObject param=JSONObject.parseObject(body);
+        try{
+            if(param.containsKey("account")){
+                if(param.containsKey("shopId")){
+                    int account=param.getInteger("account");
+                    long shopId=param.getLong("shopId");
+                    if(param.containsKey("details")){
+                        JSONArray array=param.getJSONArray("details");
+                        List<ClientTbProduct> products=inventoryService.checkShopInventory(account,shopId,array);
+                        JSONObject result=new JSONObject();
+                        JSONArray normal=new JSONArray();
+                        JSONArray error=new JSONArray();
+                        for(ClientTbProduct p:products){
+                            if(p.getInventroyStatus().equals("正常")){
+                                normal.add(p);
+                            }
+                        }
+                        for(ClientTbProduct p:products){
+                            if(p.getInventroyStatus().equals("异常")){
+                                error.add(p);
+                            }
+                        }
+                        result.put("normal",normal);
+                        result.put("error",error);
+                        return ResponseEntity.ok().body(result);
+                    }else{
+                        ExecResult er=new ExecResult(false,"未正确指定details参数");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                    }
+
+                }else{
+                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"未正确指定account参数");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+
+        }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
+
 
 }
