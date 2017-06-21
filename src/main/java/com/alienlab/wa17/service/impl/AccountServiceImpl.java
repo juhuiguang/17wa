@@ -52,4 +52,19 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Override
+    public MainTbAccount addAccount(MainTbAccount account) {
+        return null;
+    }
+
+    @Override
+    public MainTbAccount stopAccount(int account) {
+        return null;
+    }
+
+    @Override
+    public MainTbAccount changePwd(String phone, String newPwd) {
+        return null;
+    }
+
 }

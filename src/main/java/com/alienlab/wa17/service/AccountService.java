@@ -14,6 +14,9 @@ public interface AccountService{
     //根据登录名查找账户信息
     MainTbAccount getAccount(String account_loginname) throws Exception ;
     ClientTbShopAccount shopLogin(int account_id,int shop_id,String username,String pwd) throws Exception;
+    MainTbAccount addAccount(MainTbAccount account);
+    MainTbAccount stopAccount(int account);
 
+    MainTbAccount changePwd(String phone,String newPwd);
 
 }
