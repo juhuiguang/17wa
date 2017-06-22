@@ -350,11 +350,12 @@ public class InventoryServiceImpl implements InventoryService {
         String sql="SELECT inventory_amount amount FROM `tb_inventory` WHERE sku_id="+skuid+" AND shop_id="+shopid;
         Map amountMap=daoTool.getMap(sql,account);
         if(amountMap==null){//当前sku没有库存;
-            sql="insert into tb_inventory(sku_id,shop_id,inventory_amount,status) values("+skuid+","+shopid+","+amount+",'正常')";
+            sql="insert into tb_inventory(sku_id,shop_id,inventory_amount,inventory_count_status) values("+skuid+","+shopid+","+amount+",'正常')";
             daoTool.exec(sql,account);
         }else{
             String status="";
-            int inv_amount=TypeUtils.castToInt(amountMap.get("inventory_amount".toUpperCase()));
+            Object tmp=amountMap.get("AMOUNT");
+            int inv_amount=TypeUtils.castToInt(tmp);
             if(amount==inv_amount){//库存正常
                 status="正常";
             }else{//库存异常
@@ -368,19 +369,24 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public boolean resetShopInventoryStatus(int account, long shopid) throws Exception {
-        String sql="delete from tb_product_inventory_status where shopid="+shopid;
+        String sql="delete from tb_product_inventory_status where shop_id="+shopid;
         return daoTool.exec(sql,account);
     }
 
     @Override
     public List<ClientTbProduct> checkShopInventory(int account, long shopid, JSONArray details) throws Exception {
         resetShopInventoryStatus(account,shopid);
-        for(int i=0;i<details.size();i++){
-            JSONObject item=details.getJSONObject(i);
-            long skuId=item.getLong("skuId");
-            int amount=item.getInteger("amount");
-            checkInventoryStatus(account,shopid,skuId,amount);
+        for(int j=0;j<details.size();j++){
+            JSONObject item=details.getJSONObject(j);
+            JSONArray array=item.getJSONArray("skus");
+            for(int i=0;i<array.size();i++){
+                JSONObject jo=array.getJSONObject(i);
+                long skuId=jo.getLong("skuId");
+                int amount=jo.getInteger("amount");
+                checkInventoryStatus(account,shopid,skuId,amount);
+            }
         }
+
 
         String sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
                 "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
