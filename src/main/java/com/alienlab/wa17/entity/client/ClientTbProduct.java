@@ -136,7 +136,9 @@ public class ClientTbProduct {
     @Column(name = "product_pic")
     public String getProductPic() {
         if(productPic!=null&&!productPic.equals("")){
-            return productPic;
+            int pos=productPic.lastIndexOf(".");
+            String s=productPic.substring(0,pos)+"_750"+productPic.substring(pos);
+            return s;
         }else{
             WaImageProp waImageProp=SpringUtil.getBean(WaImageProp.class);
             return waImageProp.getPath()+"/product.png";
