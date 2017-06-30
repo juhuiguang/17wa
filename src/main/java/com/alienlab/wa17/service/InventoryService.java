@@ -20,7 +20,7 @@ public interface InventoryService {
     //设置产品sku库存记录
     ClientTbInventory setInventory(int account,long shopId, long skuid, int amount,String type) throws Exception;
 
-    Page<InventoryDetailDto> loadDetails(int account,long shopId,String status,String isall,String startDate, String endDate, Pageable page) throws Exception;
+    Page<InventoryDetailDto> loadDetails(int account,long shopId,String status,String isall,String startDate, String endDate, Pageable page,String keyword) throws Exception;
 
     //加载sku库存明细
     Page<InventoryDetailDto> loadDetails(int account, long skuId,String startDate,String endDate,Pageable page) throws Exception;
@@ -37,7 +37,7 @@ public interface InventoryService {
     JSONArray getInventoryStatByStatus(int account, long skuId,String startDate,String endDate,String status) throws Exception;
     JSONArray getInventoryStatByStatusAndProd(int account, long productId, long shopId,String startDate,String endDate,String status) throws Exception;
 
-    JSONArray getInventoryStat(int account,long shopId,String status,String isall,String startDate,String endDate) throws Exception;
+    JSONArray getInventoryStat(int account,long shopId,String status,String isall,String startDate,String endDate,String keyword) throws Exception;
 
     ClientTbProductInventoryStatus setProductInventoryStatus(int account,long productid,long shopid,String status)throws Exception;
 

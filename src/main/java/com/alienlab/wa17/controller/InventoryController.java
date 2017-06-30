@@ -198,18 +198,19 @@ public class InventoryController {
             @ApiImplicitParam(name="startDate",value="开始日期(2017-03-05)",paramType = "query"),
             @ApiImplicitParam(name="endDate",value="截止日期(2017-03-25)",paramType = "query"),
             @ApiImplicitParam(name="index",value="分页页码(0开始)",paramType = "query"),
-            @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
+            @ApiImplicitParam(name="size",value="分页长度",paramType = "query"),
+            @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query")
     })
     @GetMapping("/17wa-inventory/product/{account}/{shopId}")
     public ResponseEntity getInventoryDetails(@PathVariable int account,@PathVariable long shopId,
                                               @RequestParam String status,
                                               @RequestParam String startDate, @RequestParam String endDate,
-                                              @RequestParam int index,@RequestParam int size){
+                                              @RequestParam int index,@RequestParam int size,@RequestParam(required = false) String keyword){
         try {
             String isall="0";
             if(status.equals("全部"))isall="1";
-            Page<InventoryDetailDto> details=inventoryService.loadDetails(account,shopId,status,isall,startDate,endDate,new PageRequest(index,size));
-            JSONArray stat=inventoryService.getInventoryStat(account,shopId,status,isall,startDate,endDate);
+            Page<InventoryDetailDto> details=inventoryService.loadDetails(account,shopId,status,isall,startDate,endDate,new PageRequest(index,size),keyword);
+            JSONArray stat=inventoryService.getInventoryStat(account,shopId,status,isall,startDate,endDate,keyword);
             JSONObject result=new JSONObject();
             result.put("details",details);
             result.put("stat",stat);

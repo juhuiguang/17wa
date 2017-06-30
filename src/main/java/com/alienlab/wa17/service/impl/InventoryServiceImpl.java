@@ -115,7 +115,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
 
-    public Page<InventoryDetailDto> loadDetails(int account,long shopId,String status,String isall,String startDate, String endDate, Pageable page) throws Exception{
+    public Page<InventoryDetailDto> loadDetails(int account,long shopId,String status,String isall,String startDate, String endDate, Pageable page,String keyword) throws Exception{
         String sql="SELECT " +
                 "  a.*, " +
                 "  b.sku_id, " +
@@ -143,6 +143,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "  AND d.`product_id`=c.`product_id` " +
                 "  AND a.`detail_time` >= '"+startDate+"' " +
                 "  AND a.`detail_time` <= '"+endDate+"' ";
+        sql+=(keyword==null?"":" AND ( d.product_code like '%"+keyword+"%' or d.product_code2 like '%"+keyword+"%' or d.product_name like '%"+keyword+"%')");
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }
 
@@ -227,7 +228,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public JSONArray getInventoryStat(int account, long shopId, String status, String isall, String startDate, String endDate) throws Exception {
+    public JSONArray getInventoryStat(int account, long shopId, String status, String isall, String startDate, String endDate,String keyword) throws Exception {
         String sql="SELECT " +
                 "  detail_type,SUM(detail_amount) detail_amount " +
                 "FROM " +
@@ -242,6 +243,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "  AND d.`product_id`=c.`product_id` " +
                 "  AND a.`detail_time` >= '"+startDate+"' " +
                 "  AND a.`detail_time` <= '"+endDate+"' " +
+                (keyword==null?"":" AND ( d.product_code like '%"+keyword+"%' or d.product_code2 like '%"+keyword+"%' or d.product_name like '%"+keyword+"%')")+
                 "   GROUP BY detail_type ";
         return JSONArray.parseArray(JSON.toJSONString(daoTool.getAllList(sql,account)));
     }

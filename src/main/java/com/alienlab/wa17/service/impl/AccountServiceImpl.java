@@ -3,8 +3,10 @@ package com.alienlab.wa17.service.impl;
 import com.alienlab.db.AlienEntity;
 import com.alienlab.db.Dao;
 import com.alienlab.utils.DesUtil;
+import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.main.MainTbAccount;
+import com.alienlab.wa17.entity.main.MainTbAccountSetting;
 import com.alienlab.wa17.service.AccountService;
 import com.alienlab.wa17.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class AccountServiceImpl implements AccountService {
     Dao maindao;
     @Autowired
     AlienEntity<MainTbAccount> accountAlienEntity;
+
+    @Autowired
+    DaoTool daoTool;
 
     @Override
     public MainTbAccount getAccount(String account_loginname) throws Exception {
@@ -66,5 +71,40 @@ public class AccountServiceImpl implements AccountService {
     public MainTbAccount changePwd(String phone, String newPwd) {
         return null;
     }
+
+    @Override
+    public MainTbAccountSetting saveSetting(int account, String setting) throws Exception {
+        MainTbAccountSetting accountSetting=getSetting(account);
+        if(accountSetting==null){
+            accountSetting=new MainTbAccountSetting();
+            accountSetting.setAccountId(account);
+            accountSetting.setSetting(setting);
+            return daoTool.saveOne(accountSetting,0);
+        }else{
+            accountSetting.setAccountId(account);
+            accountSetting.setSetting(setting);
+            return daoTool.updateOne(0,accountSetting);
+        }
+
+    }
+
+    @Override
+    public MainTbAccountSetting getSetting(int account) throws Exception {
+        String sql="select * from tb_account_settings where account_id="+account;
+        try{
+            MainTbAccountSetting result=(MainTbAccountSetting)daoTool.getObject(sql,0,MainTbAccountSetting.class);
+            if(result!=null){
+                return result;
+            }else{
+                return null;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+
+    }
+
 
 }

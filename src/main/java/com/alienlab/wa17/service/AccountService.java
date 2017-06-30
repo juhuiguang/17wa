@@ -3,6 +3,7 @@ package com.alienlab.wa17.service;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.main.MainTbAccount;
+import com.alienlab.wa17.entity.main.MainTbAccountSetting;
 import com.alienlab.wa17.entity.main.MainTbDatabase;
 
 import java.util.List;
@@ -18,5 +19,9 @@ public interface AccountService{
     MainTbAccount stopAccount(int account);
 
     MainTbAccount changePwd(String phone,String newPwd);
+
+    MainTbAccountSetting saveSetting(int account,String setting) throws Exception;
+
+    MainTbAccountSetting getSetting(int account) throws Exception;
 
 }

@@ -1,9 +1,11 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbGradeOption;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
 import com.alienlab.wa17.entity.main.MainTbAccount;
+import com.alienlab.wa17.entity.main.MainTbAccountSetting;
 import com.alienlab.wa17.service.AccountService;
 import com.alienlab.wa17.service.GradeOptionService;
 import io.swagger.annotations.*;
@@ -115,6 +117,43 @@ public class AccountController {
 
         } catch (Exception e) {
             e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="保存账户设置，如果已经存在直接更新，如果不存在，创建设置数据")
+    @PostMapping(value="/17wa-account/settings")
+    public ResponseEntity saveSettings(@RequestBody String post){
+        try{
+            JSONObject param=JSONObject.parseObject(post);
+            if(param.containsKey("account")){
+                try {
+                    MainTbAccountSetting settings=accountService.saveSetting(param.getInteger("account"),post);
+                    return ResponseEntity.ok().body(settings);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ExecResult er=new ExecResult(false,e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"请传入account参数");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+
+        }catch (Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="获取账户配置")
+    @PostMapping(value="/17wa-account/settings/{account}")
+    public ResponseEntity saveSettings(@PathVariable int account){
+        try{
+            MainTbAccountSetting settings=accountService.getSetting(account);
+            return ResponseEntity.ok().body(settings);
+        }catch (Exception e){
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
