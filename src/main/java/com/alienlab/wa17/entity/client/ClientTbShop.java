@@ -39,6 +39,14 @@ public class ClientTbShop {
     private String marketName;
     @ApiModelProperty(value="店铺标签")
     private String shopTags;
+    @ApiModelProperty(value="银行卡开户行")
+    private String shopBank;
+    @ApiModelProperty(value="银行卡号")
+    private String shopCard;
+    @ApiModelProperty(value="银行卡开卡人")
+    private String cardName;
+    @ApiModelProperty(value="微信支付账号")
+    private String shopWechatpay;
 
     @Id
     @Column(name = "shop_id")
@@ -180,5 +188,42 @@ public class ClientTbShop {
         this.shopTags = shopTags;
     }
 
+    @Basic
+    @Column(name = "shop_bank")
+    public String getShopBank() {
+        return shopBank;
+    }
 
+    public void setShopBank(String shopBank) {
+        this.shopBank = shopBank;
+    }
+    @Basic
+    @Column(name = "shop_card")
+    public String getShopCard() {
+        return shopCard;
+    }
+
+    public void setShopCard(String shopCard) {
+        this.shopCard = shopCard;
+    }
+
+    @Basic
+    @Column(name = "shop_card_name")
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    @Basic
+    @Column(name = "shop_wechatpay")
+    public String getShopWechatpay() {
+        return shopWechatpay;
+    }
+
+    public void setShopWechatpay(String shopWechatpay) {
+        this.shopWechatpay = shopWechatpay;
+    }
 }
