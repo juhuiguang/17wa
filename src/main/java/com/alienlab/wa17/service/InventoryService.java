@@ -56,4 +56,10 @@ public interface InventoryService {
     boolean resetShopInventoryStatus(int account,long shopid) throws Exception;
 
     List<ClientTbProduct> checkShopInventory(int account,long shopid,JSONArray details) throws Exception;
+
+    ClientTbInventoryTemp saveTempInventory(int account,long shopid,long skuid,int amount) throws Exception;
+
+    ClientTbInventoryTemp addTempInventoryAmount(int account,long shopid,long skuid,int amount) throws Exception;
+
+    List<ClientTbProduct> getCheckResult(int account,long shopid) throws Exception;
 }

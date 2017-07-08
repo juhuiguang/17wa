@@ -372,6 +372,8 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public boolean resetShopInventoryStatus(int account, long shopid) throws Exception {
         String sql="delete from tb_product_inventory_status where shop_id="+shopid;
+        daoTool.exec(sql,account);
+        sql="delete from tb_inventory_temp where shop_id="+shopid;
         return daoTool.exec(sql,account);
     }
 
@@ -385,11 +387,65 @@ public class InventoryServiceImpl implements InventoryService {
                 JSONObject jo=array.getJSONObject(i);
                 long skuId=jo.getLong("skuId");
                 int amount=jo.getInteger("amount");
-                checkInventoryStatus(account,shopid,skuId,amount);
+                //插入临时库存表，用于记录盘点数字
+                saveTempInventory(account,shopid,skuId,amount);
             }
         }
 
+        return getCheckResult(account,shopid);
 
+    }
+
+    @Override
+    public ClientTbInventoryTemp saveTempInventory(int account, long shopid, long skuid, int amount) throws Exception {
+        String sql="delete from tb_inventory_temp where shopid="+shopid+" and skuid="+skuid;
+        boolean delflag=daoTool.exec(sql,account);
+        ClientTbInventoryTemp temp=new ClientTbInventoryTemp();
+        temp.setInventoryAmount(amount);
+        temp.setInventoryCountTime(Timestamp.from(new Date().toInstant()));
+        temp.setShopId(shopid);
+        temp.setSkuId(skuid);
+        temp=daoTool.saveOne(temp,account);
+        return temp;
+    }
+
+    @Override
+    public ClientTbInventoryTemp addTempInventoryAmount(int account, long shopid, long skuid, int amount) throws Exception {
+        String existssql="select * from tb_inventory_temp where shop+id="+shopid+" and sku_id="+skuid;
+        ClientTbInventoryTemp temp=(ClientTbInventoryTemp)daoTool.getObject(existssql,account,ClientTbInventoryTemp.class);
+        if(temp==null){
+            temp=new ClientTbInventoryTemp();
+            temp.setSkuId(skuid);
+            temp.setShopId(shopid);
+            temp.setInventoryAmount(amount);
+            temp.setInventoryCountTime(Timestamp.from(new Date().toInstant()));
+            return daoTool.saveOne(temp,account);
+        }else{
+            int n=temp.getInventoryAmount();
+            n+=amount;
+            temp.setInventoryAmount(n);
+            temp.setInventoryCountTime(Timestamp.from(new Date().toInstant()));
+            return daoTool.updateOne(account,temp);
+        }
+    }
+
+
+    /**
+     * 进行盘点，将临时库存表中数据与库存表里库存比对
+     * @param account
+     * @param shopid
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<ClientTbProduct> getCheckResult(int account, long shopid) throws Exception {
+        String basesql="select * from tb_inventory_temp where shop_id="+shopid;
+        List<ClientTbInventoryTemp> tempList=daoTool.getAllList(basesql,account,ClientTbInventoryTemp.class);
+        if(tempList!=null){
+            for(ClientTbInventoryTemp temp:tempList){
+                checkInventoryStatus(account,temp.getShopId(),temp.getSkuId(),temp.getInventoryAmount());
+            }
+        }
         String sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
                 "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
         daoTool.exec(sql,account);

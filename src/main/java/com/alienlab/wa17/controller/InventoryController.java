@@ -3,10 +3,7 @@ package com.alienlab.wa17.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
-import com.alienlab.wa17.entity.client.ClientTbDispatch;
-import com.alienlab.wa17.entity.client.ClientTbInventory;
-import com.alienlab.wa17.entity.client.ClientTbProduct;
-import com.alienlab.wa17.entity.client.ClientTbProductInventoryStatus;
+import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.DispatchDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
@@ -386,6 +383,27 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
 
+    }
+    @ApiOperation(value="扫码盘点提交数据")
+    @PostMapping("/17wa-inventory/scan")
+    public ResponseEntity scanInventory(@RequestBody String body){
+        JSONObject param=JSONObject.parseObject(body);
+        try {
+            if (param.containsKey("account")&&param.containsKey("shopId")&&param.containsKey("skuId")&&param.containsKey("amount")) {
+                int account=param.getInteger("account");
+                long shopId=param.getLong("shopId");
+                long skuId=param.getLong("skuId");
+                int amount=param.getInteger("amount");
+                ClientTbInventoryTemp temp=inventoryService.addTempInventoryAmount(account,shopId, skuId,amount);
+                return ResponseEntity.ok(temp);
+            } else {
+                ExecResult er = new ExecResult(false, "需指定参数：account,shopId,skuId,amount");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
     }
 
 
