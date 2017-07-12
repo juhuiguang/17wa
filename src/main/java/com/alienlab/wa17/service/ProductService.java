@@ -24,6 +24,8 @@ public interface ProductService {
 
     Page<ClientTbProduct> getProducts(int account_id,String keyword,long shopId,Pageable page) throws Exception;
 
+    ProductSkuDto getProductByCode(int account,String code,long shopId) throws Exception;
+
     Page<ClientTbProduct> getAllProducts(int account_id,long shopId,Pageable page) throws Exception;
 
     Page<ClientTbProduct> getErrorProducts(int account_id,long shopId,Pageable page) throws Exception;

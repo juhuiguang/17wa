@@ -11,16 +11,18 @@ import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import gui.ava.html.image.generator.HtmlImageGenerator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,6 +145,35 @@ public class ImageServiceImpl implements ImageService {
         createImage(path, image);
         productService.setPics(account,productId,(image_path+fileName),"尺码图");
         return image_path+fileName;
+    }
+
+    @Override
+    public String createCustomShareImage(int account, Long customid) throws Exception {
+        HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+        imageGenerator.setSize(new Dimension(800,800));
+//        imageGenerator.loadUrl(new URL("http://localhost:8080/17wa/custable/1"));
+        try {
+            URL url = new URL("http://localhost:8080/17wa/custable/1");
+            InputStream in =url.openStream();
+            InputStreamReader isr = new InputStreamReader(in,"UTF8");
+            BufferedReader bufr = new BufferedReader(isr);
+            String str;
+            String html="";
+
+            while ((str = bufr.readLine()) != null) {
+                html+=str;
+            }
+            bufr.close();
+            isr.close();
+            in.close();
+
+            imageGenerator.loadHtml(html);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        imageGenerator.getBufferedImage();
+        imageGenerator.saveAsImage("d:/customtable.png");
+        return "success";
     }
 
     private static void createImage(String fileLocation, BufferedImage image) {

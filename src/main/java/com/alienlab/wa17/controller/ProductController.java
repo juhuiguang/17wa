@@ -351,4 +351,17 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="根据货号查询产品信息")
+    @GetMapping(value="/17wa-produt/code/{account}/{shopId}/{code}")
+    public ResponseEntity getProductByCode(@PathVariable int account,@PathVariable long shopId,@PathVariable String code){
+        try {
+            ProductSkuDto product=productService.getProductByCode(account,code,shopId);
+            return ResponseEntity.ok().body(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 }

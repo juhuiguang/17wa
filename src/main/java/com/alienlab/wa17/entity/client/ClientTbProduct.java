@@ -58,6 +58,11 @@ public class ClientTbProduct {
     @ApiModelProperty(value="产品库存总量")
     @LogicField
     private Integer amount;
+
+    @ApiModelProperty(value="产品临时清点库存总量")
+    @LogicField
+    private Integer tempAmount;
+
     @ApiModelProperty(value="产品库存状态")
     @LogicField
     private String inventroyStatus;
@@ -268,6 +273,14 @@ public class ClientTbProduct {
 
     public void setUpdatetime(Timestamp updatetime) {
         this.updatetime = updatetime;
+    }
+
+    public Integer getTempAmount() {
+        return tempAmount;
+    }
+
+    public void setTempAmount(Integer tempAmount) {
+        this.tempAmount = tempAmount;
     }
 
     @Override
