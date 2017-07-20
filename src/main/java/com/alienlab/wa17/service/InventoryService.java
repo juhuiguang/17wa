@@ -61,5 +61,7 @@ public interface InventoryService {
 
     ClientTbInventoryTemp addTempInventoryAmount(int account,long shopid,long skuid,int amount) throws Exception;
 
+
+
     List<ClientTbProduct> getCheckResult(int account,long shopid) throws Exception;
 }

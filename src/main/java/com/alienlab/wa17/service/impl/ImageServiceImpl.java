@@ -53,13 +53,11 @@ public class ImageServiceImpl implements ImageService {
         logger.info("convert image>>"+filePath+",to>>>"+f1);
         ImageHelper.scaleImageWithParams(filePath,f1,width,width,true,format);
     }
-
     @Override
-    public String createSizeIncludeImage(int account, int productId,String path,String fileName) throws Exception {
-        //List<ClientTbProductSku> skus=skuService.loadSku(account,productId);
+    public JSONObject getIncludesPrintObj(int account, int productId)throws Exception{
         List<ClientTbProductInclude> includes=includeService.getProductIncluedes(account,productId);
         if(includes==null||includes.size()==0){
-                throw new Exception("产品没有设置尺码明细");
+            throw new Exception("产品没有设置尺码明细");
         }
         JSONObject includesPrintObj=new JSONObject();
         for(ClientTbProductInclude include:includes){
@@ -74,7 +72,12 @@ public class ImageServiceImpl implements ImageService {
                 includesPrintObj.put(sizeName,detail);
             }
         }
+        return includesPrintObj;
+    }
 
+    @Override
+    public String createSizeIncludeImage(int account, int productId,String path,String fileName) throws Exception {
+        JSONObject includesPrintObj=getIncludesPrintObj(account,productId);
         int imageWidth = 750;// 图片的宽度
         int imageHeight = includesPrintObj.size()*50+50;// 图片的高度
         BufferedImage image = new BufferedImage(imageWidth, imageHeight,

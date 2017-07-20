@@ -1,5 +1,7 @@
 package com.alienlab.wa17.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * Created by juhuiguang on 2017/2/24.
  */
@@ -8,4 +10,6 @@ public interface ImageService {
     String createSizeIncludeImage(int account,int productId,String path,String filename) throws Exception;
 
     String createCustomShareImage(int account,Long customid) throws Exception;
+
+    JSONObject getIncludesPrintObj(int account, int productId)throws Exception;
 }

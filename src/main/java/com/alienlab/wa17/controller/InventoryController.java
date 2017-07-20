@@ -405,6 +405,35 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+    @ApiOperation(value="扫码盘点,完成盘点")
+    @GetMapping("/17wa-inventory/scan")
+    public ResponseEntity scanFinish(int account,Long shopId){
+        List<ClientTbProduct> products= null;
+        try {
+            products = inventoryService.getCheckResult(account,shopId);
+            JSONObject result=new JSONObject();
+            JSONArray normal=new JSONArray();
+            JSONArray error=new JSONArray();
+            for(ClientTbProduct p:products){
+                if(p.getInventroyStatus().equals("正常")){
+                    normal.add(p);
+                }
+            }
+            for(ClientTbProduct p:products){
+                if(p.getInventroyStatus().equals("异常")){
+                    error.add(p);
+                }
+            }
+            result.put("normal",normal);
+            result.put("error",error);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
 
 
 }

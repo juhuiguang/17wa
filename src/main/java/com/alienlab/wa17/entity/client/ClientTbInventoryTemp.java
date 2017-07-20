@@ -1,13 +1,13 @@
 package com.alienlab.wa17.entity.client;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
  * Created by 橘 on 2017/7/4.
  */
+@Entity
+@Table(name = "tb_inventory_temp", schema = "17wa_client")
 public class ClientTbInventoryTemp {
     private long id;
     private Long skuId;

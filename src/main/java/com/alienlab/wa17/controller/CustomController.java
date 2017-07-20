@@ -19,11 +19,7 @@ public class CustomController {
     @Autowired
     ImageService imageService;
 
-    @RequestMapping("/custable/{cusid}")
-    public String table(Model model){
-        model.addAttribute("hello","from TemplateController.helloHtml");
-        return "customTable";
-    }
+
 
     @GetMapping(value="/api/custom/{account}/{cusid}")
     @ResponseBody

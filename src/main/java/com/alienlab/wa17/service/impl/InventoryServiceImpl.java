@@ -411,7 +411,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ClientTbInventoryTemp addTempInventoryAmount(int account, long shopid, long skuid, int amount) throws Exception {
-        String existssql="select * from tb_inventory_temp where shop+id="+shopid+" and sku_id="+skuid;
+        String existssql="select * from tb_inventory_temp where shop_id="+shopid+" and sku_id="+skuid;
         ClientTbInventoryTemp temp=(ClientTbInventoryTemp)daoTool.getObject(existssql,account,ClientTbInventoryTemp.class);
         if(temp==null){
             temp=new ClientTbInventoryTemp();
