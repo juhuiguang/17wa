@@ -11,6 +11,7 @@ import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.dto.OrderDetailDto;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
 import com.alienlab.wa17.entity.client.dto.OrderPrintDto;
+import com.alienlab.wa17.service.CustomService;
 import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.OrderService;
 import javassist.bytecode.ExceptionsAttribute;
@@ -35,6 +36,10 @@ import java.util.Map;
 public class OrderServiceImpl implements OrderService {
     @Autowired
     DaoTool daoTool;
+
+    @Autowired
+    CustomService customService;
+
     @Override
     public OrderPrintDto addOrder(int account,long shopId,JSONObject orderinfo) throws Exception {
         JSONArray details=orderinfo.getJSONArray("details");
@@ -243,6 +248,39 @@ public class OrderServiceImpl implements OrderService {
     public Page<ClientTbOrder> getCustomOrders(int account,Long shopId,int custom,Pageable page) throws Exception{
         String sql="select * from tb_order where  shop_id="+shopId+" and cus_id="+custom+" order by order_time desc";
         return daoTool.getPageList(sql,page,account,ClientTbOrder.class);
+    }
+
+    @Override
+    public ClientTbOrder turnbackOrder(int account, String orderno, Long skuid, int amount) throws Exception {
+        String sql="select * from tb_order_detail where order_id='"+orderno+"' and sku_id="+skuid;
+        ClientTbOrderDetail detail=(ClientTbOrderDetail)daoTool.getObject(sql,account,ClientTbOrderDetail.class);
+        sql="select * from tb_order where order_code='"+orderno+"'";
+        ClientTbOrder order=(ClientTbOrder)daoTool.getObject(sql,account,ClientTbOrder.class);
+        if(detail!=null){
+            if(amount>detail.getDetailAmount()){
+                throw new Exception("退货数量大于购买数量！");
+            }
+            detail.setDetailReturnamount(amount);
+            detail.setDetailReturntime(Timestamp.from(new Date().toInstant()));
+            detail=daoTool.updateOne(account,detail);
+            Float returnmoney=detail.getDetailReturnamount()*detail.getDetailPrice();
+            if(returnmoney==null)returnmoney=0f;
+            if(order!=null){//更新订单主表
+                Float rtn=order.getOrderTurnback();
+                order.setOrderTurnback(rtn+returnmoney);
+                daoTool.updateOne(account,order);
+                inventoryService.setInventory(account,order.getShopId(),skuid,detail.getDetailReturnamount(),"退货");
+                ClientTbCustom custom=(ClientTbCustom)daoTool.getOne(ClientTbCustom.class,account,order.getCusId());
+                if(custom!=null){//更新客户余款
+                    Float remainMoney=custom.getCustomRemainMoney();
+                    if(remainMoney==null)remainMoney=0f;
+                    remainMoney+=returnmoney;
+                    custom.setCustomRemainMoney(remainMoney);
+                    daoTool.updateOne(account,custom);
+                }
+            }
+        }
+        return order;
     }
 
     @Override

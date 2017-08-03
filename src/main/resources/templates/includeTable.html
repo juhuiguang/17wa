@@ -5,57 +5,27 @@
     <meta charset="UTF-8"/>
     <title>尺码表</title>
 </head>
-<body>
-    <table style="border:1px solid #000;">
+<body style="margin:0;padding:0;">
+    <table cellpadding="0" border="1" align="center" cellspacing="0" style="width:600px;text-align:center;">
         <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+            <td th:attrappend="colspan=${columns.size()}"  align="center">
+                <strong>尺码明细表</strong>
+            </td>
         </tr>
         <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+            <td th:attrappend="colspan=${columns.size()}" align="center">
+                <strong th:text="${'产品货号：'+product.productName+' '+product.productCode2}"></strong>
+            </td>
         </tr>
         <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+            <td th:each="colunm:${columns}" align="center">
+                <strong th:text="${colunm.toString()}"></strong>
+            </td>
         </tr>
-        <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
-        </tr>
-        <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+        <tr th:each="row:${rows}">
+            <td th:each="cell:${row}" align="center">
+                <div th:text="${cell}"></div>
+            </td>
         </tr>
     </table>
 </body>

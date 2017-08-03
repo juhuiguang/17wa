@@ -21,4 +21,6 @@ public interface OrderService {
 
     Page<ClientTbOrder> getOrders(int account,Long shopId, String startdate, String enddate, Pageable page) throws Exception;
     Page<ClientTbOrder> getCustomOrders(int account,Long shopId,int custom,Pageable page) throws Exception;
+
+    ClientTbOrder turnbackOrder(int account,String orderno,Long skuid,int amount) throws Exception;
 }

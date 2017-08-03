@@ -39,6 +39,11 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    public ClientTbProduct getProduct(int account_id, long productid) throws Exception {
+        return (ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account_id,productid);
+    }
+
+    @Override
     public Page<ClientTbProduct> getProducts(int account_id, String keyword, Pageable page) throws Exception {
         String sql="SELECT product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes " +
                 "product_colors,product_status,product_tags FROM tb_product where product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%' or product_code like '%"+keyword+"%'";

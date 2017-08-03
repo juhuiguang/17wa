@@ -39,6 +39,10 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     ProductService productService;
 
+
+    @Value("${17wa.basepath}")
+    String base_path;
+
     @Value("${17wa.image.path}")
     String image_path;
 
@@ -77,86 +81,86 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public String createSizeIncludeImage(int account, int productId,String path,String fileName) throws Exception {
-        JSONObject includesPrintObj=getIncludesPrintObj(account,productId);
-        int imageWidth = 750;// 图片的宽度
-        int imageHeight = includesPrintObj.size()*50+50;// 图片的高度
-        BufferedImage image = new BufferedImage(imageWidth, imageHeight,
-                BufferedImage.TYPE_INT_RGB);
-        Graphics graphics = image.getGraphics();
-        graphics.setColor(Color.white);
-        graphics.fillRect(0, 0, imageWidth, imageHeight);
-        graphics.setColor(Color.black);
-        graphics.setFont(new Font("宋体", Font.BOLD, 20));
-        //绘制外框
-        graphics.drawLine(0,0,imageWidth,0);
-        graphics.drawLine(0,0,0,imageHeight);
-        graphics.drawLine(imageWidth,0,imageWidth,imageHeight);
-        graphics.drawLine(imageWidth,0,imageWidth,imageHeight);
-
-        int rowHeight=50;
-        List<String> sizeTitles=new ArrayList<String>();
-        for(String sizeTitle:includesPrintObj.keySet()){
-            if(sizeTitles.size()==0){
-                sizeTitles.add(sizeTitle);
-                sizeTitles.add(sizeTitle);
-            }else{
-                sizeTitles.add(sizeTitle);
-            }
-
-        }
-        //画每行
-        for(int i=0;i<sizeTitles.size();i++){
-            String sizeName=sizeTitles.get(i);
-
-            JSONObject printObj=includesPrintObj.getJSONObject(sizeName);
-            int columnSize=printObj.keySet().size()+1;
-            int columnWidth=imageWidth/columnSize;
-
-            List<String> titles=new ArrayList<String>();
-            titles.add("尺码");
-            for(String title:printObj.keySet()){
-                titles.add(title);
-            }
-
-            for(int j=0;j<columnSize;j++){
-                //画竖线
-                graphics.drawLine(columnWidth*(j),0,columnWidth*(j),rowHeight*(i+1));
-                if(i>0&&j==0){
-                    String sizecolumn=sizeTitles.get(i);
-                    int sizeWidth=sizecolumn.length()*20;
-                    int sizex=(columnWidth-sizeWidth)/2;
-                    int sizey=(rowHeight-20);
-                    graphics.drawString(sizecolumn,sizex,(rowHeight*i+sizey));
-                }else{
-                    String text=titles.get(j);
-                    //填文字
-                    if(i>0){
-                        text=printObj.getString(text);
-                    }
-                    int wordWidth=text.length()*20;
-                    int wordx=(columnWidth-wordWidth)/2;
-                    int wordy=(rowHeight-20);
-                    graphics.drawString(text,(columnWidth*j+wordx),(rowHeight*i+wordy));
-                }
-            }
-//            //分割线
+//        JSONObject includesPrintObj=getIncludesPrintObj(account,productId);
+//        int imageWidth = 750;// 图片的宽度
+//        int imageHeight = includesPrintObj.size()*50+50;// 图片的高度
+//        BufferedImage image = new BufferedImage(imageWidth, imageHeight,
+//                BufferedImage.TYPE_INT_RGB);
+//        Graphics graphics = image.getGraphics();
+//        graphics.setColor(Color.white);
+//        graphics.fillRect(0, 0, imageWidth, imageHeight);
+//        graphics.setColor(Color.black);
+//        graphics.setFont(new Font("宋体", Font.BOLD, 20));
+//        //绘制外框
+//        graphics.drawLine(0,0,imageWidth,0);
+//        graphics.drawLine(0,0,0,imageHeight);
+//        graphics.drawLine(imageWidth,0,imageWidth,imageHeight);
+//        graphics.drawLine(imageWidth,0,imageWidth,imageHeight);
+//
+//        int rowHeight=50;
+//        List<String> sizeTitles=new ArrayList<String>();
+//        for(String sizeTitle:includesPrintObj.keySet()){
+//            if(sizeTitles.size()==0){
+//                sizeTitles.add(sizeTitle);
+//                sizeTitles.add(sizeTitle);
+//            }else{
+//                sizeTitles.add(sizeTitle);
+//            }
+//
+//        }
+//        //画每行
+//        for(int i=0;i<sizeTitles.size();i++){
+//            String sizeName=sizeTitles.get(i);
+//
+//            JSONObject printObj=includesPrintObj.getJSONObject(sizeName);
+//            int columnSize=printObj.keySet().size()+1;
+//            int columnWidth=imageWidth/columnSize;
+//
+//            List<String> titles=new ArrayList<String>();
+//            titles.add("尺码");
+//            for(String title:printObj.keySet()){
+//                titles.add(title);
+//            }
+//
+//            for(int j=0;j<columnSize;j++){
+//                //画竖线
+//                graphics.drawLine(columnWidth*(j),0,columnWidth*(j),rowHeight*(i+1));
+//                if(i>0&&j==0){
+//                    String sizecolumn=sizeTitles.get(i);
+//                    int sizeWidth=sizecolumn.length()*20;
+//                    int sizex=(columnWidth-sizeWidth)/2;
+//                    int sizey=(rowHeight-20);
+//                    graphics.drawString(sizecolumn,sizex,(rowHeight*i+sizey));
+//                }else{
+//                    String text=titles.get(j);
+//                    //填文字
+//                    if(i>0){
+//                        text=printObj.getString(text);
+//                    }
+//                    int wordWidth=text.length()*20;
+//                    int wordx=(columnWidth-wordWidth)/2;
+//                    int wordy=(rowHeight-20);
+//                    graphics.drawString(text,(columnWidth*j+wordx),(rowHeight*i+wordy));
+//                }
+//            }
+////            //分割线
+////            graphics.drawLine(0,rowHeight*(i+1),imageWidth,rowHeight*(i+1));
+//            //行线
 //            graphics.drawLine(0,rowHeight*(i+1),imageWidth,rowHeight*(i+1));
-            //行线
-            graphics.drawLine(0,rowHeight*(i+1),imageWidth,rowHeight*(i+1));
+//
+//        }
+//        createImage(path, image);
+//        productService.setPics(account,productId,(image_path+fileName),"尺码图");
 
-        }
-        createImage(path, image);
-        productService.setPics(account,productId,(image_path+fileName),"尺码图");
+        html2Img(base_path+"includetable/"+account+"/"+productId,path);
         return image_path+fileName;
     }
 
-    @Override
-    public String createCustomShareImage(int account, Long customid) throws Exception {
+    private String html2Img(String urlStr,String path){
         HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-        imageGenerator.setSize(new Dimension(800,800));
-//        imageGenerator.loadUrl(new URL("http://localhost:8080/17wa/custable/1"));
+        imageGenerator.setSize(new Dimension(1000,1000));
         try {
-            URL url = new URL("http://localhost:8080/17wa/custable/1");
+            URL url = new URL(urlStr);
             InputStream in =url.openStream();
             InputStreamReader isr = new InputStreamReader(in,"UTF8");
             BufferedReader bufr = new BufferedReader(isr);
@@ -175,8 +179,15 @@ public class ImageServiceImpl implements ImageService {
             e.printStackTrace();
         }
         imageGenerator.getBufferedImage();
-        imageGenerator.saveAsImage("d:/customtable.png");
-        return "success";
+        imageGenerator.saveAsImage(path);
+        return path;
+    }
+
+    @Override
+    public String createCustomShareImage(int account, Long customid,String path,String fileName) throws Exception {
+        String url=base_path+"custable/"+account+"/"+customid;
+        html2Img(url,path);
+        return image_path+fileName;
     }
 
     private static void createImage(String fileLocation, BufferedImage image) {

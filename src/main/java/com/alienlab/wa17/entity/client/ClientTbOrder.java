@@ -27,6 +27,7 @@ public class ClientTbOrder {
     private String orderMemo;
     private Integer orderSort;
     private Long shopId;
+    private Float orderTurnback;
 
     @Basic
     @Column(name = "shop_id")
@@ -40,11 +41,11 @@ public class ClientTbOrder {
 
     @Id
     @Column(name = "order_id")
-    public long getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(long orderId) {
+    public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 
@@ -206,6 +207,16 @@ public class ClientTbOrder {
 
     public void setOrderSort(Integer orderSort) {
         this.orderSort = orderSort;
+    }
+
+    @Basic
+    @Column(name = "order_turnback")
+    public Float getOrderTurnback() {
+        return orderTurnback;
+    }
+
+    public void setOrderTurnback(Float orderTurnback) {
+        this.orderTurnback = orderTurnback;
     }
 
     @Override

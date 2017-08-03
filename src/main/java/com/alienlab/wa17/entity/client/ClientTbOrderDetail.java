@@ -1,6 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by 橘 on 2017/2/21.
@@ -15,6 +16,26 @@ public class ClientTbOrderDetail {
     private Integer detailAmount;
     private Float detailPrice;
     private Float detailTotalPrice;
+    private int detailReturnamount;
+    private Timestamp detailReturntime;
+    @Basic
+    @Column(name = "detail_returnamount")
+    public int getDetailReturnamount() {
+        return detailReturnamount;
+    }
+
+    public void setDetailReturnamount(int detailReturnamount) {
+        this.detailReturnamount = detailReturnamount;
+    }
+    @Basic
+    @Column(name = "detail_return_time")
+    public Timestamp getDetailReturntime() {
+        return detailReturntime;
+    }
+
+    public void setDetailReturntime(Timestamp detailReturntime) {
+        this.detailReturntime = detailReturntime;
+    }
 
     @Id
     @Column(name = "detail_id")

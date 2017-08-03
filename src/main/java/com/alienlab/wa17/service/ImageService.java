@@ -9,7 +9,7 @@ public interface ImageService {
     void convertImageAuto(String path,String fileName, String format,int width) throws Exception;
     String createSizeIncludeImage(int account,int productId,String path,String filename) throws Exception;
 
-    String createCustomShareImage(int account,Long customid) throws Exception;
+    String createCustomShareImage(int account, Long customid,String path,String fileName) throws Exception;
 
     JSONObject getIncludesPrintObj(int account, int productId)throws Exception;
 }

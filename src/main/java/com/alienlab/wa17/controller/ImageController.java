@@ -95,10 +95,24 @@ public class ImageController {
     @GetMapping("/17wa-image/include")
     public ResponseEntity getIncludeImage(@RequestParam int account,@RequestParam int product,HttpServletRequest request){
         String path=request.getSession().getServletContext().getRealPath(upload_path);
-        String exName="jpg";
+        String exName="png";
         String fileName= UUID.randomUUID().toString();
         try {
             String s=imageService.createSizeIncludeImage(account,product,(path+File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
+            return ResponseEntity.ok().body(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    @GetMapping("/17wa-image/custom")
+    public ResponseEntity getIncludeImage(@RequestParam int account,@RequestParam Long cusid,HttpServletRequest request){
+        String path=request.getSession().getServletContext().getRealPath(upload_path);
+        String exName="png";
+        String fileName= UUID.randomUUID().toString();
+        try {
+            String s=imageService.createCustomShareImage(account,cusid,(path+File.separator+fileName+"."+exName),(fileName+"."+exName));
             return ResponseEntity.ok().body(s);
         } catch (Exception e) {
             e.printStackTrace();

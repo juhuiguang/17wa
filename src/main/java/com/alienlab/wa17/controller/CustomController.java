@@ -16,20 +16,5 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class CustomController {
-    @Autowired
-    ImageService imageService;
 
-
-
-    @GetMapping(value="/api/custom/{account}/{cusid}")
-    @ResponseBody
-    public ResponseEntity getSharePic(@PathVariable int account,@PathVariable Long cusid){
-        try {
-            String result=imageService.createCustomShareImage(account,cusid);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
 }

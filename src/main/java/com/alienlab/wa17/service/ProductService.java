@@ -18,6 +18,8 @@ import java.util.List;
  * Created by juhuiguang on 2017/2/24.
  */
 public interface ProductService {
+    ClientTbProduct getProduct(int account_id,long productid) throws Exception;
+
     Page<ClientTbProduct> getProducts(int account_id,String keyword,Pageable page) throws Exception;
 
     Page<ClientTbProduct> getAllProducts(int account_id,Pageable page) throws Exception;

@@ -1,5 +1,6 @@
 package com.alienlab.wa17.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 
@@ -13,6 +14,7 @@ public interface CustomService {
 
     ClientTbCustom addCustom(int account,ClientTbCustom custom) throws Exception;
 
+    JSONObject getCustomPaper(int account, Long cusid, String startdate, String enddate) throws Exception;
 
 
 }

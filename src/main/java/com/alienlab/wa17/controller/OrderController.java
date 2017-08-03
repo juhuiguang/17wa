@@ -1,6 +1,7 @@
 package com.alienlab.wa17.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.ClientTbOrder;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.xml.ws.Response;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 橘 on 2017/2/21.
@@ -184,6 +186,30 @@ public class OrderController {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
+    @ApiOperation(value="订单退货")
+    @PostMapping("/17wa-order/turnback")
+    public ResponseEntity turnbackOrder(@RequestBody Map turnBack){
+        if(turnBack.containsKey("account")&&turnBack.containsKey("skuid")
+                &&turnBack.containsKey("orderno")&&turnBack.containsKey("amount")){
+            int account= TypeUtils.castToInt(turnBack.get("account"));
+            Long skuid=TypeUtils.castToLong(turnBack.get("skuid"));
+            String orderno=TypeUtils.castToString(turnBack.get("orderno"));
+            int amount=TypeUtils.castToInt(turnBack.get("amount"));
+            try {
+                ClientTbOrder order=orderService.turnbackOrder(account,orderno,skuid,amount);
+                return ResponseEntity.ok(order);
+            } catch (Exception e) {
+                e.printStackTrace();
+                ExecResult er=new ExecResult(false,e.getMessage());
+                return ResponseEntity.status(500).body(er);
+            }
+        }else{
+            ExecResult er=new ExecResult(false,"传入参数有误，参数列表：account,skuid,orderno,amount");
+            return ResponseEntity.status(500).body(er);
         }
     }
 

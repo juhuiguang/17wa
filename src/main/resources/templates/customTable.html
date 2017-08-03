@@ -6,57 +6,60 @@
     <title>客户账单</title>
 </head>
 <body>
-    <table style="border:1px solid #000;">
+<h3 th:text="${custom.getCustomName()+'客户对账单'}" style="width:800px;text-align:center;"></h3>
+<p th:text="${'账单周期：'+startdate+'~'+enddate}" style="width:800px;text-align:center;"></p>
+    <table align="center" border="1" cellpadding="0" cellspacing="0" style="width:800px;text-align:center;">
         <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+            <td align="center">客户姓名</td>
+            <td align="center">联系方式</td>
+            <td align="center">消费总额</td>
+            <td align="center">当前余额</td>
         </tr>
         <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
-        </tr>
-        <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
-        </tr>
-        <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
-        </tr>
-        <tr>
-            <td>客户姓名：</td>
-            <td>张三</td>
-            <td>联系方式：</td>
-            <td>13013013000</td>
-            <td>账户余额：</td>
-            <td>¥16,000</td>
-            <td>积分余额：</td>
-            <td>15000</td>
+            <td th:text="${custom.getCustomName()}" style="border:1px solid rgba(0,0,0,0.3);"></td>
+            <td th:text="${custom.getCustomPhone()}" style="border:1px solid rgba(0,0,0,0.3);"></td>
+            <td th:text="${custom.getCustomTotalMoney()}" style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+            <td th:text="${custom.getCustomRemainMoney()}" style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
         </tr>
     </table>
+<h4 style="width:800px;text-align:center;">期间消费汇总</h4>
+<table cellpadding="0" border="1" cellspacing="0" style="width:800px;text-align:center;">
+    <tr>
+        <td align="center">订单数量</td>
+        <td align="center">购买件数</td>
+        <td align="center">抹零总额</td>
+        <td align="center">核销总额</td>
+        <td align="center">消费总额</td>
+    </tr>
+    <tr>
+        <td  th:text='${total.get("ORDERCOUNT")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td  th:text='${total.get("AMOUNT")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td  th:text='${total.get("ODD")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td  th:text='${total.get("RECHARGE")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td  th:text='${total.get("MONEY")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+    </tr>
+</table>
+<h4 style="width:800px;text-align:center;">期间消费明细</h4>
+<table cellpadding="0" border="1" cellspacing="0" style="width:800px;text-align:center;">
+    <tr>
+        <td align="center">订单时间</td>
+        <td align="center">订单编号</td>
+        <td align="center">订单总额</td>
+        <td align="center">抹零总额</td>
+        <td align="center">支付金额</td>
+        <td align="center">核销总额</td>
+        <td align="center">账户余额</td>
+    </tr>
+    <tr th:each="order:${orders}">
+        <td align="center" th:text='${order.get("ORDER_TIME").substring(0,16)}' style="border:1px solid rgba(0,0,0,0.3);"></td>
+        <td align="center" th:text='${order.get("ORDER_CODE")}' style="border:1px solid rgba(0,0,0,0.3);"></td>
+        <td align="right" th:text='${order.get("ORDER_MONEY")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td align="right" th:text='${order.get("ORDER_ODD")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td align="right" th:text='${order.get("ORDER_PAYMENT")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td align="right" th:text='${order.get("ORDER_RECHARGE")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+        <td align="right" th:text='${order.get("CUS_REMAIN")}' style="border:1px solid rgba(0,0,0,0.3);text-align:right;"></td>
+    </tr>
+</table>
+
 </body>
 </html>
