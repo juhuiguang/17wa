@@ -114,7 +114,6 @@ public class AccountController {
                 ExecResult er=new ExecResult(false,"删除发生错误");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());

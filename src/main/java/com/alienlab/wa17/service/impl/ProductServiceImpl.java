@@ -146,6 +146,7 @@ public class ProductServiceImpl implements ProductService {
             for(ClientTbProductSku sku:clientTbProductSkus){
                 skuService.addSku(account_id,productid,sku);
             }
+
         }else{
             throw new Exception("产品保存过程中出错了。");
         }
