@@ -28,7 +28,7 @@ public class SqlFileExcutor {
      * @return List<sql> 返回所有 SQL 语句的 List
      * @throws Exception
      */
-    private List<String> loadSql(String sqlFile) throws Exception {
+    private List<String> loadSql(String sqlFile,String dbname) throws Exception {
         List<String> sqlList = new ArrayList<String>();
 
         try {
@@ -40,9 +40,12 @@ public class SqlFileExcutor {
             while ((byteRead = sqlFileIn.read(buff)) != -1) {
                 sqlSb.append(new String(buff, 0, byteRead));
             }
-
+            if(dbname==null||dbname.equalsIgnoreCase("")){
+                dbname="17wa_client";
+            }
+            String sqlscript= sqlSb.toString().replace("$(17wa_client)","17wa_client_"+dbname);
             // Windows 下换行是 /r/n, Linux 下是 /n
-            String[] sqlArr = sqlSb.toString().split("(;//s*//r//n)|(;//s*//n)");
+            String[] sqlArr = sqlscript.split("(;//s*//r//n)|(;//s*//n)");
             for (int i = 0; i < sqlArr.length; i++) {
                 String sql = sqlArr[i].replaceAll("--.*", "").trim();
                 if (!sql.equals("")) {
@@ -63,7 +66,7 @@ public class SqlFileExcutor {
      */
     public void execute(Connection conn, String sqlFile) throws Exception {
         Statement stmt = null;
-        List<String> sqlList = loadSql(sqlFile);
+        List<String> sqlList = loadSql(sqlFile,"");
         stmt = conn.createStatement();
         for (String sql : sqlList) {
             stmt.addBatch(sql);
@@ -77,10 +80,10 @@ public class SqlFileExcutor {
      * @param sqlFile SQL 脚本文件
      * @throws Exception
      */
-    public void execute(String sqlFile) throws Exception {
+    public void execute(String sqlFile,String dbname) throws Exception {
         Connection conn =daoTool.getConnectByAccount(0).getDataSource().getConnection() ;
         Statement stmt = null;
-        List<String> sqlList = loadSql(sqlFile);
+        List<String> sqlList = loadSql(sqlFile,dbname);
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
@@ -98,11 +101,16 @@ public class SqlFileExcutor {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        List<String> sqlList = new SqlFileExcutor().loadSql("d:\\17wa.sql");
-        System.out.println("size:" + sqlList.size());
-        for (String sql : sqlList) {
-            System.out.println(sql);
-        }
+    public void createNewAccountDb(String dbname) throws Exception{
+        new SqlFileExcutor().execute("d:\\17wa.sql",dbname);
     }
+
+//    public static void main(String[] args) throws Exception {
+////        List<String> sqlList = new SqlFileExcutor().loadSql("d:\\17wa.sql","temp1");
+////        System.out.println("size:" + sqlList.size());
+////        for (String sql : sqlList) {
+////            System.out.println(sql);
+////        }
+//        new SqlFileExcutor().createNewAccountDb("temp1");
+//    }
 }

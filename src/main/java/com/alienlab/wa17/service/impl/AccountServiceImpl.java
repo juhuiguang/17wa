@@ -10,6 +10,7 @@ import com.alienlab.wa17.entity.main.MainTbAccountSetting;
 import com.alienlab.wa17.service.AccountService;
 import com.alienlab.wa17.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,6 +24,8 @@ public class AccountServiceImpl implements AccountService {
     Dao maindao;
     @Autowired
     AlienEntity<MainTbAccount> accountAlienEntity;
+    @Value("${17wa.sqlpath}")
+    String sqlpath;
 
     @Autowired
     DaoTool daoTool;
