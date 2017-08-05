@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
+import com.alienlab.wa17.entity.LogicField;
+
 import javax.persistence.*;
 
 /**
@@ -17,6 +19,17 @@ public class ClientTbProductSku {
     private String sizeName;
     private String sizeType;
     private String skuStatus;
+    private int amount=0;
+
+    @LogicField
+    @Column(name = "amount")
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 
     @Id
     @Column(name = "id")

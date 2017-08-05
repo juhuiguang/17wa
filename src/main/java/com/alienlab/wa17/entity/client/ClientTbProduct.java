@@ -60,7 +60,6 @@ public class ClientTbProduct {
     private Integer amount;
 
     @ApiModelProperty(value="产品临时清点库存总量")
-    @LogicField
     private Integer tempAmount;
 
     @ApiModelProperty(value="产品库存状态")
@@ -275,6 +274,8 @@ public class ClientTbProduct {
         this.updatetime = updatetime;
     }
 
+    @LogicField
+    @Column(name = "tempamount")
     public Integer getTempAmount() {
         return tempAmount;
     }

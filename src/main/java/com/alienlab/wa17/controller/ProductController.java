@@ -8,15 +8,13 @@ import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbSizeCus;
-import com.alienlab.wa17.entity.client.dto.ColorDto;
-import com.alienlab.wa17.entity.client.dto.ProductDto;
-import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
-import com.alienlab.wa17.entity.client.dto.SizeDto;
+import com.alienlab.wa17.entity.client.dto.*;
 import com.alienlab.wa17.entity.main.MainTbProducttype;
 import com.alienlab.wa17.entity.main.MainTbTags;
 import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import com.alienlab.wa17.service.ImageService;
 import com.alienlab.wa17.service.ProductService;
+import com.alienlab.wa17.service.SkuService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +44,9 @@ public class ProductController {
 
     @Autowired
     ImageService imageService;
+
+    @Autowired
+    SkuService skuService;
 
     @Value("${alienlab.upload.path}")
     String upload_path;
@@ -358,6 +359,20 @@ public class ProductController {
         try {
             ProductSkuDto product=productService.getProductByCode(account,code,shopId);
             return ResponseEntity.ok().body(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
+    @ApiOperation(value="获取所有SKU数据（用于门店调货）")
+    @GetMapping(value="/17wa-produt/allsku/{account}/{shopId}/{code}")
+    public ResponseEntity getAllSkusByCode(@PathVariable int account,@PathVariable long shopId,@PathVariable String code){
+        try {
+            List<InventoryDto> skus=skuService.getAllSku(account,shopId,code);
+            return ResponseEntity.ok().body(skus);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());

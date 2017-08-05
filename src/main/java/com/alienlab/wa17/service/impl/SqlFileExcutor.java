@@ -3,6 +3,7 @@ package com.alienlab.wa17.service.impl;
 import com.alienlab.db.AlienEntity;
 import com.alienlab.db.Dao;
 import com.alienlab.wa17.dao.DaoTool;
+import com.alienlab.wa17.dao.impl.CreateDbConn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ import java.util.List;
 @Service
 public class SqlFileExcutor {
     @Autowired
-    DaoTool daoTool;
+    CreateDbConn createDbConn;
 
     /**
      * 读取 SQL 文件，获取 SQL 语句
@@ -38,14 +39,15 @@ public class SqlFileExcutor {
             byte[] buff = new byte[1024];
             int byteRead = 0;
             while ((byteRead = sqlFileIn.read(buff)) != -1) {
-                sqlSb.append(new String(buff, 0, byteRead));
+                sqlSb.append(new String(buff, 0, byteRead,"utf8"));
             }
             if(dbname==null||dbname.equalsIgnoreCase("")){
                 dbname="17wa_client";
             }
             String sqlscript= sqlSb.toString().replace("$(17wa_client)","17wa_client_"+dbname);
+            sqlscript=sqlscript.replaceAll("\\r|\\n","");
             // Windows 下换行是 /r/n, Linux 下是 /n
-            String[] sqlArr = sqlscript.split("(;//s*//r//n)|(;//s*//n)");
+            String[] sqlArr = sqlscript.split(";");
             for (int i = 0; i < sqlArr.length; i++) {
                 String sql = sqlArr[i].replaceAll("--.*", "").trim();
                 if (!sql.equals("")) {
@@ -81,7 +83,7 @@ public class SqlFileExcutor {
      * @throws Exception
      */
     public void execute(String sqlFile,String dbname) throws Exception {
-        Connection conn =daoTool.getConnectByAccount(0).getDataSource().getConnection() ;
+        Connection conn =createDbConn.getConnection();
         Statement stmt = null;
         List<String> sqlList = loadSql(sqlFile,dbname);
         try {
@@ -102,9 +104,9 @@ public class SqlFileExcutor {
     }
 
     public void createNewAccountDb(String dbname) throws Exception{
-        new SqlFileExcutor().execute("d:\\17wa.sql",dbname);
+        execute("d:\\17wa.sql",dbname);
     }
-
+//
 //    public static void main(String[] args) throws Exception {
 ////        List<String> sqlList = new SqlFileExcutor().loadSql("d:\\17wa.sql","temp1");
 ////        System.out.println("size:" + sqlList.size());

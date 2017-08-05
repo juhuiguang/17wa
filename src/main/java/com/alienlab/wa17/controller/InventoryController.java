@@ -260,7 +260,7 @@ public class InventoryController {
         }
     }
 
-    @ApiOperation(value="确认调货库存")
+    @ApiOperation(value="确认调货完成")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="dispatchId",value="调货编码",paramType = "query"),
@@ -336,7 +336,7 @@ public class InventoryController {
         }
     }
 
-    @ApiOperation(value="手动盘点")
+    @ApiOperation(value="手动盘点（老版本，整体提交）")
     @PostMapping("/17wa-inventory/check")
     public ResponseEntity checkInventory(@RequestBody String body){
         JSONObject param=JSONObject.parseObject(body);
@@ -384,6 +384,43 @@ public class InventoryController {
         }
 
     }
+
+
+    @ApiOperation(value="手动盘点（新版本，单个产品提交）")
+    @PostMapping("/17wa-inventory/singlecheck")
+    public ResponseEntity checkSingleInventory(@RequestBody String body){
+        JSONObject param=JSONObject.parseObject(body);
+        try{
+            if(param.containsKey("account")){
+                if(param.containsKey("shopId")){
+                    int account=param.getInteger("account");
+                    long shopId=param.getLong("shopId");
+                    if(param.containsKey("details")){
+                        JSONArray array=param.getJSONArray("details");
+                        boolean result=inventoryService.checkSingleShopInventory(account,shopId,array);
+                        ExecResult er=new ExecResult(result,result?"保存成功":"保存失败");
+                        return ResponseEntity.ok().body(er);
+                    }else{
+                        ExecResult er=new ExecResult(false,"未正确指定details参数");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                    }
+
+                }else{
+                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"未正确指定account参数");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+
+        }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
+
     @ApiOperation(value="扫码盘点提交数据")
     @PostMapping("/17wa-inventory/scan")
     public ResponseEntity scanInventory(@RequestBody String body){
@@ -405,6 +442,9 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+
+
     @ApiOperation(value="扫码盘点,完成盘点")
     @GetMapping("/17wa-inventory/scan")
     public ResponseEntity scanFinish(int account,Long shopId){

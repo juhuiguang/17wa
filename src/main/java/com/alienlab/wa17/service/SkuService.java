@@ -1,6 +1,7 @@
 package com.alienlab.wa17.service;
 
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.client.dto.InventoryDto;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface SkuService {
     boolean delSku(int account_id,int product_id) throws Exception;
 
     ClientTbProductSku setStatus(int account_id,long sku_id,String status) throws Exception;
+
+    List<InventoryDto> getAllSku(int account, long shopId, String code) throws Exception;
 }

@@ -334,7 +334,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception {
         String sql="SELECT a.*,b.`color_name`,b.`product_id`,b.`size_name`,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_pic` FROM tb_dispatch a,tb_product_sku b,tb_product c " +
-                " WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`='1' OR a.`dispatch_from_shop`='1')";
+                " WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`='"+shopId+"' OR a.`dispatch_from_shop`='"+shopId+"')";
         Page<DispatchDto> result=daoTool.getPageList(sql,new PageRequest(index,size),account,DispatchDto.class);
         return result;
     }
@@ -391,9 +391,36 @@ public class InventoryServiceImpl implements InventoryService {
                 saveTempInventory(account,shopid,skuId,amount);
             }
         }
-
         return getCheckResult(account,shopid);
+    }
 
+    /**
+     * 手动盘点单个产品提交
+     * @param account
+     * @param shopid
+     * @param details
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean checkSingleShopInventory(int account, long shopid, JSONArray details) throws Exception {
+        try{
+            for(int j=0;j<details.size();j++){
+                JSONObject item=details.getJSONObject(j);
+                JSONArray array=item.getJSONArray("skus");
+                for(int i=0;i<array.size();i++){
+                    JSONObject jo=array.getJSONObject(i);
+                    long skuId=jo.getLong("skuId");
+                    int amount=jo.getInteger("amount");
+                    //插入临时库存表，用于记录盘点数字
+                    saveTempInventory(account,shopid,skuId,amount);
+                }
+            }
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -446,7 +473,10 @@ public class InventoryServiceImpl implements InventoryService {
                 checkInventoryStatus(account,temp.getShopId(),temp.getSkuId(),temp.getInventoryAmount());
             }
         }
-        String sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
+        String sql="delete from tb_product_inventory_status where shop_id="+shopid;
+        daoTool.exec(sql,account);
+
+        sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
                 "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
         daoTool.exec(sql,account);
 
