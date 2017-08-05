@@ -1,5 +1,6 @@
 package com.alienlab.sms;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -7,10 +8,10 @@ import java.util.Map;
  */
 public class SmsCodePool
 {
-    public static Map<String,String> CodePool;
+    public static Map<String,String> CodePool=new HashMap<>();
 
     public static String getRandomCode(int length){
-        return String.valueOf((Math.random()*9+1)*100000);
+        return String.valueOf(((Math.random()*9+1)*100000)).substring(0,6);
     }
     public static void setPhoneCode(String phone,String code){
         CodePool.put(phone,code);

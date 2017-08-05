@@ -46,7 +46,7 @@ public class TestController {
     @GetMapping(value="/17wa-test/ctdb")
     public ResponseEntity createDb(){
         try {
-            //sqlFileExcutor.createNewAccountDb("test1");
+            sqlFileExcutor.createNewAccountDb("test1");
             return ResponseEntity.ok("test1");
         } catch (Exception e) {
             e.printStackTrace();
