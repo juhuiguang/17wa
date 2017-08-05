@@ -1,5 +1,6 @@
 package com.alienlab.wa17.entity.client.dto;
 
+import com.alienlab.wa17.entity.LogicField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -35,6 +36,16 @@ public class DispatchDto {
     @ApiModelProperty(value="调入方")
     @Column(name = "dispatch_to_shop")
     private Long dispatchToShop;
+
+    @ApiModelProperty(value="调出方名称")
+    @LogicField
+    @Column(name = "dispatch_from_shopname")
+    private String dispatchFromShopName;
+    @ApiModelProperty(value="调入方名称")
+    @LogicField
+    @Column(name = "dispatch_to_shopname")
+    private String dispatchToShopName;
+
     @ApiModelProperty(value="调出是否完成")
     @Column(name = "dispatch_from_isok")
     private String dispatchFromIsok;
@@ -209,5 +220,21 @@ public class DispatchDto {
 
     public void setProductPic(String productPic) {
         this.productPic = productPic;
+    }
+
+    public String getDispatchFromShopName() {
+        return dispatchFromShopName;
+    }
+
+    public void setDispatchFromShopName(String dispatchFromShopName) {
+        this.dispatchFromShopName = dispatchFromShopName;
+    }
+
+    public String getDispatchToShopName() {
+        return dispatchToShopName;
+    }
+
+    public void setDispatchToShopName(String dispatchToShopName) {
+        this.dispatchToShopName = dispatchToShopName;
     }
 }

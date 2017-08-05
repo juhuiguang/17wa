@@ -1,10 +1,12 @@
 package com.alienlab.wa17.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.db.AlienEntity;
 import com.alienlab.db.Dao;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.dao.impl.CreateDbConn;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -22,7 +24,12 @@ import java.util.List;
 public class SqlFileExcutor {
     @Autowired
     CreateDbConn createDbConn;
-
+    @Value("$(alienlab.db.default.username)")
+    String username;
+    @Value("$(alienlab.db.default.password)")
+    String password;
+    @Value("${17wa.sqlpath}")
+    String sqlpath;
     /**
      * 读取 SQL 文件，获取 SQL 语句
      * @param sqlFile SQL 脚本文件
@@ -82,8 +89,12 @@ public class SqlFileExcutor {
      * @param sqlFile SQL 脚本文件
      * @throws Exception
      */
-    public void execute(String sqlFile,String dbname) throws Exception {
+    public JSONObject execute(String sqlFile, String dbname) throws Exception {
         Connection conn =createDbConn.getConnection();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("url",conn.getMetaData().getURL());
+        jsonObject.put("user",username);
+        jsonObject.put("password",password);
         Statement stmt = null;
         List<String> sqlList = loadSql(sqlFile,dbname);
         try {
@@ -101,10 +112,11 @@ public class SqlFileExcutor {
         } finally {
             conn.close();
         }
+        return jsonObject;
     }
 
-    public void createNewAccountDb(String dbname) throws Exception{
-        execute("d:\\17wa.sql",dbname);
+    public JSONObject createNewAccountDb(String dbname) throws Exception{
+        return execute(sqlpath,dbname);
     }
 //
 //    public static void main(String[] args) throws Exception {

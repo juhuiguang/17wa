@@ -475,5 +475,54 @@ public class InventoryController {
 
     }
 
+    @ApiOperation(value="库存核对一键处理")
+    @GetMapping("/17wa-inventory/allconfirm")
+    public ResponseEntity confirmAllInventory(int account,Long shopId){
+        try{
+            boolean flag=inventoryService.confirmAllProduct(account,shopId);
+            ExecResult er=new ExecResult(flag,flag?"处理成功":"处理失败");
+            return ResponseEntity.ok(er);
+        }catch (Exception e){
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="单个商品库存核对")
+    @GetMapping("/17wa-inventory/singleconfirm")
+    public ResponseEntity confirmSingleInventory(@RequestBody String body){
+        JSONObject param=JSONObject.parseObject(body);
+        try{
+            if(param.containsKey("account")){
+                if(param.containsKey("shopId")){
+                    int account=param.getInteger("account");
+                    long shopId=param.getLong("shopId");
+                    if(param.containsKey("details")){
+                        JSONArray array=param.getJSONArray("details");
+                        boolean flag=inventoryService.confirmSingleProduct(account,shopId,array);
+                        ExecResult er=new ExecResult(flag,flag?"处理成功":"处理失败");
+                        return ResponseEntity.ok(er);
+                    }else{
+                        ExecResult er=new ExecResult(false,"未正确指定details参数");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                    }
+
+                }else{
+                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"未正确指定account参数");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
+
 
 }

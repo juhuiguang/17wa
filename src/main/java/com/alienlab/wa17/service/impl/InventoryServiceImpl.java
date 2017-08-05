@@ -102,7 +102,7 @@ public class InventoryServiceImpl implements InventoryService {
                     amount=-amount;
                 }
             }
-            if(amount!=inventory.getInventoryAmount()){
+            if(type.equalsIgnoreCase("重置")||type.equalsIgnoreCase("初始")&&amount!=inventory.getInventoryAmount()){
                 detail.setDetailAmount(amount);
                 detail.setDetailTime(new Timestamp(new Date().getTime()));
                 detail.setDetailType(type);
@@ -346,8 +346,13 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception {
-        String sql="SELECT a.*,b.`color_name`,b.`product_id`,b.`size_name`,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_pic` FROM tb_dispatch a,tb_product_sku b,tb_product c " +
-                " WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`='"+shopId+"' OR a.`dispatch_from_shop`='"+shopId+"')";
+        String sql="SELECT tb1.*,ljfrom.shop_name dispatch_from_shopname,ljto.shop_name dispatch_to_shopname FROM ( " +
+                "SELECT a.*,b.`color_name`,b.`product_id`,b.`size_name`,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_pic` FROM tb_dispatch a,tb_product_sku b,tb_product c " +
+                "WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`="+shopId+" OR a.`dispatch_from_shop`="+shopId+") " +
+                ") tb1  " +
+                "LEFT JOIN tb_shop ljfrom ON ljfrom.`shop_id`=tb1.dispatch_from_shop " +
+                "LEFT JOIN tb_shop ljto ON ljto.`shop_id`=tb1.dispatch_to_shop " +
+                " order by tb1.dispatch_time1";
         Page<DispatchDto> result=daoTool.getPageList(sql,new PageRequest(index,size),account,DispatchDto.class);
         return result;
     }

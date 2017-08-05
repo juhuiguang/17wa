@@ -22,6 +22,19 @@ public class MainTbAccount {
     @ApiModelProperty(value="账户状态")
     private String accountStatus;
 
+    @Basic
+    @Column(name = "account_loginname")
+    public String getAccountLoginname() {
+        return accountLoginname;
+    }
+
+    public void setAccountLoginname(String accountLoginname) {
+        this.accountLoginname = accountLoginname;
+    }
+
+    @ApiModelProperty(value="登录名=手机号码")
+    private String accountLoginname;
+
 
     @Id
     @Column(name = "account_id")
