@@ -68,14 +68,17 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ClientTbInventory setInventory(int account,long shopId, long skuid, int amount,String type) throws Exception {
-        if("入库、出库、销售、退货、盘点加、盘点减、调入、调出".indexOf(type)<0){
-            throw new Exception("type参数传递错误，参考值：入库、出库、销售、退货、盘点加、盘点减、调入、调出");
+        if("入库、出库、销售、退货、盘点加、盘点减、调入、调出、重置、初始".indexOf(type)<0){
+            throw new Exception("type参数传递错误，参考值：入库、出库、销售、退货、盘点加、盘点减、调入、调出、重置、初始");
         }
         String sql="select * from tb_inventory where shop_id="+shopId+" and sku_id="+skuid;
         ClientTbInventory inventory=(ClientTbInventory)daoTool.getObject(sql,account,ClientTbInventory.class);
         if(inventory==null){
             inventory=new ClientTbInventory();
             inventory.setInventoryAmount(0);
+            if(type.equalsIgnoreCase("重置")||type.equalsIgnoreCase("初始")){
+                inventory.setInventoryAmount(amount);
+            }
             inventory.setInventoryCountTime(new Timestamp(new Date().getTime()));
             inventory.setInventoryCountStatus("正常");
             inventory.setShopId(shopId);
@@ -89,6 +92,8 @@ public class InventoryServiceImpl implements InventoryService {
                 case "退货":
                 case "调入":
                 case "盘点加":
+                case "重置":
+                case "初始":
                 {
                     amount=amount;
                     break;
@@ -97,17 +102,25 @@ public class InventoryServiceImpl implements InventoryService {
                     amount=-amount;
                 }
             }
-            detail.setDetailAmount(amount);
-            detail.setDetailTime(new Timestamp(new Date().getTime()));
-            detail.setDetailType(type);
-            detail.setInventoryId(inventory.getId());
-            detail=daoTool.saveOne(detail,account);
-            if(detail.getDetailId()>0){
-                inventory.setInventoryAmount(inventory.getInventoryAmount()+amount);
-                inventory=daoTool.updateOne(account,inventory);
-                return inventory;
+            if(amount!=inventory.getInventoryAmount()){
+                detail.setDetailAmount(amount);
+                detail.setDetailTime(new Timestamp(new Date().getTime()));
+                detail.setDetailType(type);
+                detail.setInventoryId(inventory.getId());
+                detail=daoTool.saveOne(detail,account);
+                if(detail.getDetailId()>0){
+                    if(type.equalsIgnoreCase("重置")||type.equalsIgnoreCase("初始")){
+                        inventory.setInventoryAmount(amount);
+                    }else{
+                        inventory.setInventoryAmount(inventory.getInventoryAmount()+amount);
+                    }
+                    inventory=daoTool.updateOne(account,inventory);
+                    return inventory;
+                }else{
+                    throw  new Exception("保存库存明细记录失败。");
+                }
             }else{
-                throw  new Exception("保存库存明细记录失败。");
+                return inventory;
             }
         }else{
             throw new Exception("库存主记录保存失败。");
@@ -377,22 +390,22 @@ public class InventoryServiceImpl implements InventoryService {
         return daoTool.exec(sql,account);
     }
 
-    @Override
-    public List<ClientTbProduct> checkShopInventory(int account, long shopid, JSONArray details) throws Exception {
-        resetShopInventoryStatus(account,shopid);
-        for(int j=0;j<details.size();j++){
-            JSONObject item=details.getJSONObject(j);
-            JSONArray array=item.getJSONArray("skus");
-            for(int i=0;i<array.size();i++){
-                JSONObject jo=array.getJSONObject(i);
-                long skuId=jo.getLong("skuId");
-                int amount=jo.getInteger("amount");
-                //插入临时库存表，用于记录盘点数字
-                saveTempInventory(account,shopid,skuId,amount);
-            }
-        }
-        return getCheckResult(account,shopid);
-    }
+//    @Override
+//    public List<ClientTbProduct> checkShopInventory(int account, long shopid, JSONArray details) throws Exception {
+//        resetShopInventoryStatus(account,shopid);
+//        for(int j=0;j<details.size();j++){
+//            JSONObject item=details.getJSONObject(j);
+//            JSONArray array=item.getJSONArray("skus");
+//            for(int i=0;i<array.size();i++){
+//                JSONObject jo=array.getJSONObject(i);
+//                long skuId=jo.getLong("skuId");
+//                int amount=jo.getInteger("amount");
+//                //插入临时库存表，用于记录盘点数字
+//                saveTempInventory(account,shopid,skuId,amount);
+//            }
+//        }
+//        return getCheckResult(account,shopid);
+//    }
 
     /**
      * 手动盘点单个产品提交
@@ -485,6 +498,54 @@ public class InventoryServiceImpl implements InventoryService {
         daoTool.exec(sql,account);
         return productService.getAllProducts(account,shopid,new PageRequest(0,99)).getContent();
     }
+
+    /**
+     * 20170805新增，库存清点完成后，核对单个产品库存，覆盖原有库存
+     * @param account
+     * @param shopid
+     * @param details
+     * @return
+     */
+    @Override
+    public boolean confirmSingleProduct(int account, long shopid, JSONArray details){
+        try{
+            for(int j=0;j<details.size();j++){
+                JSONObject item=details.getJSONObject(j);
+                JSONArray array=item.getJSONArray("skus");
+                for(int i=0;i<array.size();i++){
+                    JSONObject jo=array.getJSONObject(i);
+                    long skuId=jo.getLong("skuId");
+                    int amount=jo.getInteger("amount");
+                    //进行库存对比
+                    setInventory(account,shopid,skuId,amount,"重置");
+                }
+            }
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 一键核对库存
+     * @param account
+     * @param shopid
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean confirmAllProduct(int account,long shopid) throws Exception {
+        String sql="select * from tb_inventory_temp where shop_id="+shopid;
+        List<ClientTbInventoryTemp> tempinvs=daoTool.getAllList(sql,account,ClientTbInventoryTemp.class);
+        for (ClientTbInventoryTemp tempinv : tempinvs) {
+            //进行库存对比
+            setInventory(account,shopid,tempinv.getSkuId(),tempinv.getInventoryAmount(),"重置");
+        }
+        return true;
+    }
+
+
 
 
 }

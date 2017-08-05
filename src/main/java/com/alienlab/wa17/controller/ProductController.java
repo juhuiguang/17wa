@@ -368,9 +368,12 @@ public class ProductController {
 
 
     @ApiOperation(value="获取所有SKU数据（用于门店调货）")
-    @GetMapping(value="/17wa-produt/allsku/{account}/{shopId}/{code}")
-    public ResponseEntity getAllSkusByCode(@PathVariable int account,@PathVariable long shopId,@PathVariable String code){
+    @GetMapping(value="/17wa-produt/allsku")
+    public ResponseEntity getAllSkusByCode(@RequestParam int account,@RequestParam long shopId,@RequestParam(required = false) String code){
         try {
+            if(code==null){
+                code="";
+            }
             List<InventoryDto> skus=skuService.getAllSku(account,shopId,code);
             return ResponseEntity.ok().body(skus);
         } catch (Exception e) {

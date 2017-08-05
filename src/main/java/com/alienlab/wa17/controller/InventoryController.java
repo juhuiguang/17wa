@@ -336,54 +336,54 @@ public class InventoryController {
         }
     }
 
-    @ApiOperation(value="手动盘点（老版本，整体提交）")
-    @PostMapping("/17wa-inventory/check")
-    public ResponseEntity checkInventory(@RequestBody String body){
-        JSONObject param=JSONObject.parseObject(body);
-        try{
-            if(param.containsKey("account")){
-                if(param.containsKey("shopId")){
-                    int account=param.getInteger("account");
-                    long shopId=param.getLong("shopId");
-                    if(param.containsKey("details")){
-                        JSONArray array=param.getJSONArray("details");
-                        List<ClientTbProduct> products=inventoryService.checkShopInventory(account,shopId,array);
-                        JSONObject result=new JSONObject();
-                        JSONArray normal=new JSONArray();
-                        JSONArray error=new JSONArray();
-                        for(ClientTbProduct p:products){
-                            if(p.getInventroyStatus().equals("正常")){
-                                normal.add(p);
-                            }
-                        }
-                        for(ClientTbProduct p:products){
-                            if(p.getInventroyStatus().equals("异常")){
-                                error.add(p);
-                            }
-                        }
-                        result.put("normal",normal);
-                        result.put("error",error);
-                        return ResponseEntity.ok().body(result);
-                    }else{
-                        ExecResult er=new ExecResult(false,"未正确指定details参数");
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-                    }
-
-                }else{
-                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-                }
-            }else{
-                ExecResult er=new ExecResult(false,"未正确指定account参数");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-            }
-
-        }catch(Exception e){
-            ExecResult er=new ExecResult(false,e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-        }
-
-    }
+//    @ApiOperation(value="手动盘点（老版本，整体提交）")
+//    @PostMapping("/17wa-inventory/check")
+//    public ResponseEntity checkInventory(@RequestBody String body){
+//        JSONObject param=JSONObject.parseObject(body);
+//        try{
+//            if(param.containsKey("account")){
+//                if(param.containsKey("shopId")){
+//                    int account=param.getInteger("account");
+//                    long shopId=param.getLong("shopId");
+//                    if(param.containsKey("details")){
+//                        JSONArray array=param.getJSONArray("details");
+//                        List<ClientTbProduct> products=inventoryService.checkShopInventory(account,shopId,array);
+//                        JSONObject result=new JSONObject();
+//                        JSONArray normal=new JSONArray();
+//                        JSONArray error=new JSONArray();
+//                        for(ClientTbProduct p:products){
+//                            if(p.getInventroyStatus().equals("正常")){
+//                                normal.add(p);
+//                            }
+//                        }
+//                        for(ClientTbProduct p:products){
+//                            if(p.getInventroyStatus().equals("异常")){
+//                                error.add(p);
+//                            }
+//                        }
+//                        result.put("normal",normal);
+//                        result.put("error",error);
+//                        return ResponseEntity.ok().body(result);
+//                    }else{
+//                        ExecResult er=new ExecResult(false,"未正确指定details参数");
+//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+//                    }
+//
+//                }else{
+//                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
+//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+//                }
+//            }else{
+//                ExecResult er=new ExecResult(false,"未正确指定account参数");
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+//            }
+//
+//        }catch(Exception e){
+//            ExecResult er=new ExecResult(false,e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+//        }
+//
+//    }
 
 
     @ApiOperation(value="手动盘点（新版本，单个产品提交）")
