@@ -490,7 +490,7 @@ public class InventoryController {
     }
 
     @ApiOperation(value="单个商品库存核对")
-    @GetMapping("/17wa-inventory/singleconfirm")
+    @PostMapping("/17wa-inventory/singleconfirm")
     public ResponseEntity confirmSingleInventory(@RequestBody String body){
         JSONObject param=JSONObject.parseObject(body);
         try{
