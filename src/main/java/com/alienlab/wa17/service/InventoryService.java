@@ -69,5 +69,7 @@ public interface InventoryService {
 
     boolean confirmSingleProduct(int account, long shopid, JSONArray details);
 
+    List<InventoryDto> getInventoryByProduct(int account,long shopid,long productid) throws Exception;
+
 
 }

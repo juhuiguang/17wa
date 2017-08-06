@@ -1,6 +1,8 @@
 package com.alienlab.wa17.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alienlab.sms.SmsCodePool;
+import com.alienlab.utils.TypeUtils;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbGradeOption;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 橘 on 2017/2/21.
@@ -45,6 +48,32 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="注册账户")
+    @PostMapping("/17wa-account/reg")
+    public ResponseEntity addAccount(@RequestBody Map body){
+        String phone= com.alibaba.fastjson.util.TypeUtils.castToString(body.get("phone"));
+        String code=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("code"));
+        if(SmsCodePool.CodePool.containsKey(phone)){
+            if(SmsCodePool.CodePool.get("phone").equalsIgnoreCase(code)){
+                MainTbAccount account=new MainTbAccount();
+                account.setAccountCode(phone);
+                account.setAccountLoginname(phone);
+                account.setAccountStatus("1");
+                account=accountService.addAccount(account);
+                return ResponseEntity.ok(account);
+            }else{
+                ExecResult er=new ExecResult(false,"验证码错误");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }else{
+            ExecResult er=new ExecResult(false,"未查询到您的短信验证码");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
+
+
 
     @ApiOperation(value="用户登录",notes="输入账户，选择门店后，选择门店用户名，输入登录密码进行登录")
     @ApiImplicitParams({

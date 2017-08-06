@@ -476,8 +476,8 @@ public class InventoryController {
     }
 
     @ApiOperation(value="库存核对一键处理")
-    @GetMapping("/17wa-inventory/allconfirm")
-    public ResponseEntity confirmAllInventory(int account,Long shopId){
+    @PostMapping("/17wa-inventory/allconfirm")
+    public ResponseEntity confirmAllInventory(@RequestParam int account,@RequestParam Long shopId){
         try{
             boolean flag=inventoryService.confirmAllProduct(account,shopId);
             ExecResult er=new ExecResult(flag,flag?"处理成功":"处理失败");
@@ -517,6 +517,19 @@ public class InventoryController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
             }
         }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @ApiOperation(value="加载单个产品的库存详情")
+    @GetMapping("/17wa-inventory/single/{account}/{shopId}/{productId}")
+    public ResponseEntity loadProductInventory(@PathVariable int account,@PathVariable Long shopId,@PathVariable Long productId){
+        try {
+            List<InventoryDto> results=inventoryService.loadInventory(account,shopId,productId);
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }

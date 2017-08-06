@@ -1,6 +1,7 @@
 package com.alienlab.wa17.entity.client.dto;
 
 import com.alienlab.wa17.entity.client.ClientTbProduct;
+import com.alienlab.wa17.entity.client.ClientTbProductInclude;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 public class ProductSkuDto {
     ClientTbProduct product;
     List<ClientTbProductSku> skus;
+    List<ClientTbProductInclude> includes;
 
     public ClientTbProduct getProduct() {
         return product;
@@ -26,5 +28,13 @@ public class ProductSkuDto {
 
     public void setSkus(List<ClientTbProductSku> skus) {
         this.skus = skus;
+    }
+
+    public List<ClientTbProductInclude> getIncludes() {
+        return includes;
+    }
+
+    public void setIncludes(List<ClientTbProductInclude> includes) {
+        this.includes = includes;
     }
 }

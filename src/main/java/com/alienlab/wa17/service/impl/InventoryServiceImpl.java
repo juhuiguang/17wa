@@ -532,6 +532,19 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
 
+    @Override
+    public List<InventoryDto> getInventoryByProduct(int account, long shopid, long productid) throws Exception {
+        String sql="select b.*,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_id`,c.`product_price1`,c.`product_price2`,c.`product_pic`, " +
+                "a.`inventory_amount`,a.`inventory_count_status`,a.`inventory_count_time`,a.`shop_id`,d.`amount` temp_amount " +
+                "from `tb_product_sku` b " +
+                "left join `tb_inventory` a on a.`sku_id`=b.`id` and a.`shop_id`="+shopid+" " +
+                "left join `tb_product` c on c.`product_id`=b.`product_id` and c.`product_id`="+productid+" " +
+                "left join `tb_inventory_temp` d on d.`sku_id`=b.id and d.`shop_id`="+shopid+" " +
+                "where b.`product_id`="+productid;
+        List<InventoryDto> result=daoTool.getAllList(sql,account,InventoryDto.class);
+        return result;
+    }
+
     /**
      * 一键核对库存
      * @param account
@@ -549,6 +562,8 @@ public class InventoryServiceImpl implements InventoryService {
         }
         return true;
     }
+
+
 
 
 

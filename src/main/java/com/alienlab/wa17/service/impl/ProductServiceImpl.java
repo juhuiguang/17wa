@@ -4,6 +4,7 @@ import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
+import com.alienlab.wa17.entity.client.ClientTbProductInclude;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
@@ -13,6 +14,7 @@ import com.alienlab.wa17.entity.main.MainTbProducttype;
 import com.alienlab.wa17.entity.main.dto.MarketDto;
 import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import com.alienlab.wa17.service.ImageService;
+import com.alienlab.wa17.service.IncludeService;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import org.hibernate.annotations.Synchronize;
@@ -36,6 +38,8 @@ public class ProductServiceImpl implements ProductService {
     DaoTool daoTool;
     @Autowired
     SkuService skuService;
+    @Autowired
+    IncludeService includeService;
 
 
     @Override
@@ -206,6 +210,11 @@ public class ProductServiceImpl implements ProductService {
         ProductSkuDto skuDto=new ProductSkuDto();
         skuDto.setProduct(product);
         skuDto.setSkus(skus);
+
+        //20170806增加加载详情时
+        List<ClientTbProductInclude> includes=includeService.getProductIncluedes(account_id,(int)product_id);
+        skuDto.setIncludes(includes);
+
         return skuDto;
 
     }

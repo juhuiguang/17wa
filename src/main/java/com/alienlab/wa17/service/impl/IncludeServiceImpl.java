@@ -85,7 +85,7 @@ public class IncludeServiceImpl implements IncludeService {
     }
 
     @Override
-    public boolean delProductInclude(int account, int includeId) throws Exception {
-        return daoTool.deleteOne(ClientTbProductInclude.class,account,includeId);
+    public boolean delProductInclude(int account, Long productId) throws Exception {
+        return daoTool.deleteOne(ClientTbProductInclude.class,account,productId);
     }
 }

@@ -159,9 +159,9 @@ public class IncludeController {
             @ApiImplicitParam(name="includeId",value="产品尺码标签id",paramType = "query")
     })
     @DeleteMapping("/17wa-include/product")
-    public ResponseEntity delProductInclude(@RequestParam int account,@RequestParam int includeId){
+    public ResponseEntity delProductInclude(@RequestParam int account,@RequestParam long productId){
         try {
-            boolean flag=includeService.delProductInclude(account,includeId);
+            boolean flag=includeService.delProductInclude(account,productId);
             if(flag){
                 ExecResult er=new ExecResult(true,"删除尺码明细成功");
                 return ResponseEntity.ok().body(er);

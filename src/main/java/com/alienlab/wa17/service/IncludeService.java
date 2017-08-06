@@ -18,7 +18,7 @@ public interface IncludeService {
 
     List<ClientTbProductInclude> getProductIncluedes(int account,int productId) throws Exception;
     List<ClientTbProductInclude> addProductIncludes(int account, int productId, JSONArray includes) throws Exception;
-    boolean delProductInclude(int account,int includeId) throws Exception;
+    boolean delProductInclude(int account,Long productId) throws Exception;
 
 
 

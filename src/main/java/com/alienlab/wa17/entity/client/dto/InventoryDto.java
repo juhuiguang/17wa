@@ -53,6 +53,17 @@ public class InventoryDto {
     private String inventoryCountStatus;
     @ApiModelProperty(value="此店铺该单品的库存清点时间")
     private Timestamp inventoryCountTime;
+    @ApiModelProperty(value="此店铺的单品当前清点数量")
+    private Integer inventoryTempAmount;
+
+    @Column(name = "temp_amount")
+    public Integer getInventoryTempAmount() {
+        return inventoryTempAmount;
+    }
+
+    public void setInventoryTempAmount(Integer inventoryTempAmount) {
+        this.inventoryTempAmount = inventoryTempAmount;
+    }
 
     @Column(name = "inventory_id")
     public Long getInventoryId() {
