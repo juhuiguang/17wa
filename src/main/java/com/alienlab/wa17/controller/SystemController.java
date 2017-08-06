@@ -3,12 +3,10 @@ package com.alienlab.wa17.controller;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
-import com.alienlab.wa17.entity.main.MainTbColorSeries;
-import com.alienlab.wa17.entity.main.MainTbColors;
-import com.alienlab.wa17.entity.main.MainTbSize;
-import com.alienlab.wa17.entity.main.MainTbSizetype;
+import com.alienlab.wa17.entity.main.*;
 import com.alienlab.wa17.service.ColorService;
 import com.alienlab.wa17.service.SizeService;
+import com.alienlab.wa17.service.SystemService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -31,6 +29,8 @@ public class SystemController {
     ColorService colorService;
     @Autowired
     SizeService sizeService;
+    @Autowired
+    SystemService systemService;
 
     @ApiOperation(value="获取系统色系")
     @ApiResponses({
@@ -270,6 +270,40 @@ public class SystemController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @GetMapping(value="/17wa-system/imageserver")
+    public ResponseEntity getEnableImageServer(){
+        try {
+            MainTbImageserver result=systemService.getEnableImageServer();
+            if(result==null){
+                ExecResult er=new ExecResult(false,"无可用的图片服务器");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+    @GetMapping(value="/17wa-system/dbserver")
+    public ResponseEntity getEnableDBServer(){
+        try {
+            MainTbDatabaseServer result=systemService.getEnableDatabaseServer();
+            if(result==null){
+                ExecResult er=new ExecResult(false,"无可用的数据库服务器");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
 
 
 }

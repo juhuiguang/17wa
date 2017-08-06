@@ -18,7 +18,11 @@ public interface SystemService {
     boolean deleteDatabaseServer(long serverId) throws Exception;
 
 
-    MainTbDatabase addDatabase(MainTbDatabase database);
+    MainTbDatabase addDatabase(MainTbDatabase database) throws Exception;
+
+    MainTbImageserver getEnableImageServer() throws Exception;
+
+    MainTbDatabaseServer getEnableDatabaseServer() throws Exception;
 
 
 
