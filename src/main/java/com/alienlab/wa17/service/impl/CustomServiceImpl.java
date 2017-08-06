@@ -29,7 +29,6 @@ public class CustomServiceImpl implements CustomService {
     public ClientTbCustom addCustom(int account, ClientTbCustom custom) throws Exception {
         return daoTool.saveOne(custom,account);
     }
-
     @Override
     public JSONObject getCustomPaper(int account, Long cusid, String startdate, String enddate) throws Exception {
         JSONObject result=new JSONObject();
