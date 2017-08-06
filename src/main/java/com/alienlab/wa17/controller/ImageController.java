@@ -99,7 +99,9 @@ public class ImageController {
         String fileName= UUID.randomUUID().toString();
         try {
             String s=imageService.createSizeIncludeImage(account,product,(path+File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
-            return ResponseEntity.ok().body(s);
+            JSONObject jo=new JSONObject();
+            jo.put("url",s);
+            return ResponseEntity.ok().body(jo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
@@ -113,7 +115,9 @@ public class ImageController {
         String fileName= UUID.randomUUID().toString();
         try {
             String s=imageService.createCustomShareImage(account,cusid,(path+File.separator+fileName+"."+exName),(fileName+"."+exName));
-            return ResponseEntity.ok().body(s);
+               JSONObject jo=new JSONObject();
+               jo.put("url",s);
+            return ResponseEntity.ok().body(jo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);

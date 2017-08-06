@@ -383,4 +383,23 @@ public class ProductServiceImpl implements ProductService {
     public MainTbProducttype updateType(MainTbProducttype type) throws Exception{
         return daoTool.updateOne(0,type);
     }
+
+    @Override
+    public boolean delProduct(int account, long productId) throws Exception {
+        String validatesql="SELECT * FROM tb_product WHERE EXISTS(SELECT 1 FROM tb_order_detail a,tb_product_sku b WHERE a.`sku_id`=b.id AND tb_product.`product_id`=b.`product_id`) " +
+                "AND product_id="+productId;
+        List r=daoTool.getAllList(validatesql,account);
+        if(r!=null&&r.size()>0){
+            throw new Exception("此产品已产生订单，不可删除。");
+        }
+        String delSql="INSERT INTO `tb_product_sku_del` SELECT * FROM tb_product_sku WHERE tb_product_sku.`product_id`="+productId;
+        daoTool.exec(delSql,account);
+        delSql="delete from tb_product_sku where product_id="+productId;
+        daoTool.exec(delSql,account);
+        delSql="INSERT INTO `tb_product_del` SELECT * FROM tb_product WHERE tb_product.`product_id`="+productId;
+        daoTool.exec(delSql,account);
+        delSql="delete from tb_product where product_id="+productId;
+        daoTool.exec(delSql,account);
+        return true;
+    }
 }

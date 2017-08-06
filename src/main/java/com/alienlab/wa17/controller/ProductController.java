@@ -382,4 +382,18 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="删除产品")
+    @DeleteMapping("/17wa-produt")
+    public ResponseEntity delProduct(@RequestParam int account,@RequestParam long productId){
+        try {
+            boolean result=productService.delProduct(account,productId);
+            ExecResult er=new ExecResult(result,result?"删除成功":"删除失败");
+            return ResponseEntity.ok().body(er);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 }

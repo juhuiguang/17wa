@@ -62,8 +62,7 @@ public interface ProductService {
 
     MainTbProducttype updateType(MainTbProducttype type)throws Exception;
 
-
-
+    boolean delProduct(int account,long productId) throws Exception;
 
 
 }
