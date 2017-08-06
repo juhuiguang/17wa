@@ -384,7 +384,7 @@ public class ProductController {
     }
 
     @ApiOperation(value="删除产品")
-    @DeleteMapping("/17wa-produt")
+    @DeleteMapping("/17wa-product")
     public ResponseEntity delProduct(@RequestParam int account,@RequestParam long productId){
         try {
             boolean result=productService.delProduct(account,productId);
