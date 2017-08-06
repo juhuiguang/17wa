@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.sql.Timestamp;
@@ -20,7 +22,7 @@ public class ClientTbCustom {
     private Float customRemainMoney=0f;
     private String customPhone;
     private Long customGrade;
-    private Date customBirth;
+    private String customBirth;
     private String customCard;
 
     @Id
@@ -130,11 +132,11 @@ public class ClientTbCustom {
 
     @Basic
     @Column(name = "custom_birth")
-    public Date getCustomBirth() {
+    public String getCustomBirth() {
         return customBirth;
     }
 
-    public void setCustomBirth(Date customBirth) {
+    public void setCustomBirth(String customBirth) {
         this.customBirth = customBirth;
     }
 
