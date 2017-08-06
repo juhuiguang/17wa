@@ -24,7 +24,7 @@ public class CustomController {
     CustomService customService;
 
     @ApiOperation(value="新增客户")
-    @PostMapping("/17wa-custom")
+    @PostMapping("/17wa-custom/{account}")
     public ResponseEntity addCustom(@PathVariable int account, @RequestBody ClientTbCustom custom){
         try {
             custom=customService.addCustom(account,custom);
