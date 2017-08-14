@@ -45,9 +45,9 @@ public class OrderController {
             @ApiImplicitParam(name="shopId",value="店铺编码",paramType = "path")
     })
     @GetMapping("/17wa-order/onsale/{account}/{shopId}")
-    public ResponseEntity getOnSaleProduct(@PathVariable int account,@PathVariable long shopId){
+    public ResponseEntity getOnSaleProduct(@PathVariable int account,@PathVariable long shopId,@RequestParam(required = false) String keyword){
         try {
-            List<InventoryDetailDto> results=productService.getOnSaleProducts(account,shopId);
+            List<InventoryDetailDto> results=productService.getOnSaleProducts(account,shopId,keyword);
             return ResponseEntity.ok().body(results);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,6 +55,20 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
     }
+
+    @ApiOperation(value="获取当前门店的单品可售明细列表用于下单功能中的加号下单的模式")
+    @GetMapping("/17wa-order/onsale/{account}/{shopId}/{productId}")
+    public ResponseEntity getOnSaleProduct(@PathVariable int account,@PathVariable long shopId,@PathVariable long productId){
+        try {
+            List<InventoryDetailDto> results=productService.getOnSaleByProduct(account,shopId,productId);
+            return ResponseEntity.ok().body(results);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
 
     @ApiOperation(value="获取当前账户的客户列表，用于下单功能中的客户查询")
     @ApiImplicitParams({

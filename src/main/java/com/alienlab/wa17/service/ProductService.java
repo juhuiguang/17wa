@@ -32,7 +32,9 @@ public interface ProductService {
 
     Page<ClientTbProduct> getErrorProducts(int account_id,long shopId,Pageable page) throws Exception;
 
-    List<InventoryDetailDto> getOnSaleProducts(int account, long shopId) throws Exception;
+    List<InventoryDetailDto> getOnSaleProducts(int account, long shopId,String keyword) throws Exception;
+
+    List<InventoryDetailDto> getOnSaleByProduct(int account, long shopId,long productId) throws Exception;
 
     //添加商品
     ClientTbProduct addProduct(int account_id,ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception;

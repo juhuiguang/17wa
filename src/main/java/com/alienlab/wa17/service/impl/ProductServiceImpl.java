@@ -6,11 +6,14 @@ import com.alienlab.wa17.entity.client.ClientTbColorCus;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductInclude;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.ProductDto;
 import com.alienlab.wa17.entity.client.dto.ProductSkuDto;
+import com.alienlab.wa17.entity.main.MainTbColors;
 import com.alienlab.wa17.entity.main.MainTbMarket;
 import com.alienlab.wa17.entity.main.MainTbProducttype;
+import com.alienlab.wa17.entity.main.MainTbSize;
 import com.alienlab.wa17.entity.main.dto.MarketDto;
 import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
 import com.alienlab.wa17.service.ImageService;
@@ -24,10 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by 橘 on 2017/2/6.
@@ -129,13 +129,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<InventoryDetailDto> getOnSaleProducts(int account, long shopId) throws Exception {
+    public List<InventoryDetailDto> getOnSaleProducts(int account, long shopId,String keyword) throws Exception {
+        if(keyword==null){
+            keyword="";
+        }
         String sql="select a.*,b.`id` sku_id,b.`color_name`,b.`size_name`,b.`sku_status`,c.`id` inventory_id,c.`inventory_amount`,c.`shop_id` " +
                 " from tb_product a,tb_product_sku b,tb_inventory c " +
                 " where b.`product_id`=a.`product_id` AND b.`sku_status` ='上架' " +
-                " and c.`shop_id`=1 " +
+                " and c.`shop_id`=" +shopId+" "+
                 " and b.`id`=c.`sku_id` and c.`inventory_amount`>0 " +
-                " and (product_code2 like '%%' or product_name like '%%' )";
+                " and (product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%' )";
+        List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
+        return results;
+    }
+
+    @Override
+    public List<InventoryDetailDto> getOnSaleByProduct(int account, long shopId,long productId) throws Exception {
+        String sql="SELECT a.*,b.`id` sku_id,b.`color_name`,b.`size_name`,b.`sku_status`,c.`id` inventory_id,c.`inventory_amount`,c.`shop_id` " +
+                "                FROM tb_product a,tb_product_sku b,tb_inventory c " +
+                "                WHERE b.`product_id`=a.`product_id` AND b.`sku_status` ='上架' " +
+                "                AND c.`shop_id`= " +shopId+" "+
+                "                AND b.`id`=c.`sku_id` AND c.`inventory_amount`>0 " +
+                "                AND (a.product_id="+productId+")";
         List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
         return results;
     }
@@ -210,6 +225,30 @@ public class ProductServiceImpl implements ProductService {
         ProductSkuDto skuDto=new ProductSkuDto();
         skuDto.setProduct(product);
         skuDto.setSkus(skus);
+        Map colorMap=new HashMap();
+        Map sizeMap=new HashMap();
+        List<MainTbColors> colors=new ArrayList<>();
+        List<MainTbSize> sizes=new ArrayList<>();
+        for (ClientTbProductSku clientTbProductSku : skus) {
+            String colorName=clientTbProductSku.getColorName();
+            if(!colorMap.containsKey(colorName)){
+                colorMap.put(colorName,clientTbProductSku);
+                MainTbColors c=new MainTbColors();
+                c.setColorId(clientTbProductSku.getColorId());
+                c.setColorName(clientTbProductSku.getColorName());
+                colors.add(c);
+            }
+            String sizeName=clientTbProductSku.getSizeName();
+            if(!sizeMap.containsKey(sizeName)){
+                sizeMap.put(sizeName,clientTbProductSku);
+                MainTbSize s=new MainTbSize();
+                s.setSizeId(clientTbProductSku.getSizeId());
+                s.setSizeName(clientTbProductSku.getSizeName());
+                sizes.add(s);
+            }
+        }
+        skuDto.setColors(colors);
+        skuDto.setSizes(sizes);
 
         //20170806增加加载详情时
         List<ClientTbProductInclude> includes=includeService.getProductIncluedes(account_id,(int)product_id);

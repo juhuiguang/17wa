@@ -3,6 +3,8 @@ package com.alienlab.wa17.entity.client.dto;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductInclude;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
+import com.alienlab.wa17.entity.main.MainTbColors;
+import com.alienlab.wa17.entity.main.MainTbSize;
 
 import java.util.List;
 
@@ -13,6 +15,24 @@ public class ProductSkuDto {
     ClientTbProduct product;
     List<ClientTbProductSku> skus;
     List<ClientTbProductInclude> includes;
+    List<MainTbColors> colors;
+    List<MainTbSize> sizes;
+
+    public List<MainTbColors> getColors() {
+        return colors;
+    }
+
+    public void setColors(List<MainTbColors> colors) {
+        this.colors = colors;
+    }
+
+    public List<MainTbSize> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(List<MainTbSize> sizes) {
+        this.sizes = sizes;
+    }
 
     public ClientTbProduct getProduct() {
         return product;
