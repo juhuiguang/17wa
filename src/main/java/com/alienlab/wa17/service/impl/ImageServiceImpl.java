@@ -153,6 +153,7 @@ public class ImageServiceImpl implements ImageService {
 //        productService.setPics(account,productId,(image_path+fileName),"尺码图");
 
         html2Img(base_path+"includetable/"+account+"/"+productId,path);
+        productService.setPics(account,productId,(image_path+fileName),"尺码图");
         return image_path+fileName;
     }
 

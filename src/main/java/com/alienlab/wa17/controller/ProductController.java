@@ -92,6 +92,7 @@ public class ProductController {
     @PostMapping("/17wa-product/{account}")
     public ResponseEntity addProduct(@PathVariable int account, @RequestBody String product, HttpServletRequest request){
         JSONObject productbase=JSONObject.parseObject(product);
+
         JSONArray colors=productbase.getJSONArray("colors");
         JSONArray sizes=productbase.getJSONArray("sizes");
         ClientTbProduct p=new ClientTbProduct();
@@ -106,6 +107,7 @@ public class ProductController {
         p.setProductPrice1(productbase.getInteger("productPrice1"));
         p.setProductPrice2(productbase.getInteger("productPrice2"));
         p.setProductType(productbase.getString("productType"));
+        p.setMemo(productbase.getString("productMemo"));
 
         p.setProductStatus("上架");
         p.setProductTags(productbase.getString("productTags"));
