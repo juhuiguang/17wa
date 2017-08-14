@@ -76,6 +76,8 @@ public class ClientTbProduct {
         this.inventroyStatus = inventroyStatus;
     }
 
+    
+
     @Basic
     @Column(name = "product_amount")
     public Integer getAmount() {

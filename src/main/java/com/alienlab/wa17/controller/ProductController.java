@@ -106,6 +106,7 @@ public class ProductController {
         p.setProductPrice1(productbase.getInteger("productPrice1"));
         p.setProductPrice2(productbase.getInteger("productPrice2"));
         p.setProductType(productbase.getString("productType"));
+
         p.setProductStatus("上架");
         p.setProductTags(productbase.getString("productTags"));
         ClientTbProductSku [] skus=null;
