@@ -16,7 +16,10 @@ public interface AccountService{
     MainTbAccount getAccount(String account_loginname) throws Exception ;
     ClientTbShopAccount shopLogin(int account_id,int shop_id,String username,String pwd) throws Exception;
     MainTbAccount addAccount(MainTbAccount account);
-    MainTbAccount stopAccount(int account);
+
+    MainTbAccount activeAccount(int account) throws Exception;
+
+    MainTbAccount stopAccount(int account) throws Exception;
 
     MainTbAccount changePwd(String phone,String newPwd);
 

@@ -72,33 +72,48 @@ public class AccountServiceImpl implements AccountService {
             if(getac!=null){
                 throw new Exception("账户名已存在。");
             }
+            account.setAccountStatus("0");
             account=daoTool.saveOne(account,0);
-            String dbname="17wa_client_"+account.getAccountId();
-            JSONObject connectJson=sqlFileExcutor.createNewAccountDb(dbname);
-            MainTbDatabase db=new MainTbDatabase();
-            db.setAccountId(account.getAccountId());
-            db.setDbMaintype("mysql");
-            db.setDbPwd(connectJson.getString("password"));
-            db.setDbUrl(connectJson.getString("url"));
-            db.setDbStatus("1");
-            db.setDbSchema(dbname);
-            db.setDbUser(connectJson.getString("username"));
-            daoTool.saveOne(db,0);
+
             return account;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //导入脚本
-
-        //写入账户连接
-
         return null;
     }
 
     @Override
-    public MainTbAccount stopAccount(int account) {
-        return null;
+    public MainTbAccount activeAccount(int account) throws Exception {
+        MainTbAccount a=(MainTbAccount)daoTool.getOne(MainTbAccount.class,0,account);
+        if(a==null){
+            throw new Exception("未找到账户信息，账户编码："+account);
+        }
+        a.setAccountStatus("1");
+        a=daoTool.saveOne(a,0);
+
+        String dbname="17wa_client_"+a.getAccountId();
+        JSONObject connectJson=sqlFileExcutor.createNewAccountDb(dbname);
+        MainTbDatabase db=new MainTbDatabase();
+        db.setAccountId(a.getAccountId());
+        db.setDbMaintype("mysql");
+        db.setDbPwd(connectJson.getString("password"));
+        db.setDbUrl(connectJson.getString("url"));
+        db.setDbStatus("1");
+        db.setDbSchema(dbname);
+        db.setDbUser(connectJson.getString("username"));
+        daoTool.saveOne(db,0);
+        return a;
+    }
+
+    @Override
+    public MainTbAccount stopAccount(int account) throws Exception {
+        MainTbAccount a=(MainTbAccount)daoTool.getOne(MainTbAccount.class,0,account);
+        if(a==null){
+            throw new Exception("未找到账户信息，账户编码："+account);
+        }
+        a.setAccountStatus("0");
+        a=daoTool.saveOne(a,0);
+        return a;
     }
 
     @Override

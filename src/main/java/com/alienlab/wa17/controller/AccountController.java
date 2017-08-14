@@ -73,6 +73,19 @@ public class AccountController {
 
     }
 
+    @ApiOperation(value="激活账户")
+    @PostMapping("/17wa-account/active")
+    public ResponseEntity activeAccount(@RequestParam int accountId){
+        try {
+            MainTbAccount account=accountService.activeAccount(accountId);
+            return ResponseEntity.ok(account);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(500).body(er);
+        }
+    }
+
 
 
     @ApiOperation(value="用户登录",notes="输入账户，选择门店后，选择门店用户名，输入登录密码进行登录")
