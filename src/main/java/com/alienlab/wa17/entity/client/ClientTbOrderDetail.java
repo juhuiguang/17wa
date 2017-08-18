@@ -16,15 +16,15 @@ public class ClientTbOrderDetail {
     private Integer detailAmount;
     private Float detailPrice;
     private Float detailTotalPrice;
-    private int detailReturnamount;
+    private Integer detailReturnamount;
     private Timestamp detailReturntime;
     @Basic
     @Column(name = "detail_returnamount")
-    public int getDetailReturnamount() {
+    public Integer getDetailReturnamount() {
         return detailReturnamount;
     }
 
-    public void setDetailReturnamount(int detailReturnamount) {
+    public void setDetailReturnamount(Integer detailReturnamount) {
         this.detailReturnamount = detailReturnamount;
     }
     @Basic

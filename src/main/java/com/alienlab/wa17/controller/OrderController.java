@@ -207,7 +207,7 @@ public class OrderController {
     @ApiOperation(value="订单退货")
     @PostMapping("/17wa-order/turnback")
     public ResponseEntity turnbackOrder(@RequestBody Map turnBack){
-        if(turnBack.containsKey("account")&&turnBack.containsKey("skuid")
+        if(turnBack!=null&&turnBack.containsKey("account")&&turnBack.containsKey("skuid")
                 &&turnBack.containsKey("orderno")&&turnBack.containsKey("amount")){
             int account= TypeUtils.castToInt(turnBack.get("account"));
             Long skuid=TypeUtils.castToLong(turnBack.get("skuid"));

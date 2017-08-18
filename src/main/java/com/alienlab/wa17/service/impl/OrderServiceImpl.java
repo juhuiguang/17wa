@@ -252,21 +252,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ClientTbOrder turnbackOrder(int account, String orderno, Long skuid, int amount) throws Exception {
-        String sql="select * from tb_order_detail where order_id='"+orderno+"' and sku_id="+skuid;
+        String sql="select * from tb_order_detail where order_id=(select order_code from tb_order where order_id="+orderno+") and sku_id="+skuid;
         ClientTbOrderDetail detail=(ClientTbOrderDetail)daoTool.getObject(sql,account,ClientTbOrderDetail.class);
-        sql="select * from tb_order where order_code='"+orderno+"'";
+        sql="select * from tb_order where order_id='"+orderno+"'";
         ClientTbOrder order=(ClientTbOrder)daoTool.getObject(sql,account,ClientTbOrder.class);
         if(detail!=null){
-            if(amount>detail.getDetailAmount()){
+            Float returnmoney=detail.getDetailReturnamount()*detail.getDetailPrice();
+            if(returnmoney==null)returnmoney=0f;
+            Float rtn=order.getOrderTurnback();
+            if(rtn==null)rtn=0f;
+
+            if(amount>(detail.getDetailAmount()-rtn)){
                 throw new Exception("退货数量大于购买数量！");
             }
             detail.setDetailReturnamount(amount);
             detail.setDetailReturntime(Timestamp.from(new Date().toInstant()));
             detail=daoTool.updateOne(account,detail);
-            Float returnmoney=detail.getDetailReturnamount()*detail.getDetailPrice();
-            if(returnmoney==null)returnmoney=0f;
+
             if(order!=null){//更新订单主表
-                Float rtn=order.getOrderTurnback();
                 order.setOrderTurnback(rtn+returnmoney);
                 daoTool.updateOne(account,order);
                 inventoryService.setInventory(account,order.getShopId(),skuid,detail.getDetailReturnamount(),"退货");
