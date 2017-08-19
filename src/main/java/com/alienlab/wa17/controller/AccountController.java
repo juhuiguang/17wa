@@ -55,7 +55,7 @@ public class AccountController {
         String phone= com.alibaba.fastjson.util.TypeUtils.castToString(body.get("phone"));
         String code=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("code"));
         if(SmsCodePool.CodePool.containsKey(phone)){
-            if(SmsCodePool.CodePool.get("phone").equalsIgnoreCase(code)){
+            if(SmsCodePool.CodePool.get(phone).equalsIgnoreCase(code)){
                 MainTbAccount account=new MainTbAccount();
                 account.setAccountCode(phone);
                 account.setAccountLoginname(phone);
