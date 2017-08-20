@@ -59,7 +59,7 @@ public class AccountController {
                 MainTbAccount account=new MainTbAccount();
                 account.setAccountCode(phone);
                 account.setAccountLoginname(phone);
-                account.setAccountStatus("1");
+                account.setAccountStatus("0");
                 account=accountService.addAccount(account);
                 return ResponseEntity.ok(account);
             }else{
