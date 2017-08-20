@@ -176,12 +176,41 @@ public class ProductServiceImpl implements ProductService {
     public ClientTbProduct updateProduct(int account_id, ClientTbProduct product,ClientTbProductSku [] clientTbProductSkus) throws Exception {
         product=daoTool.updateOne(account_id,product);
         int productid=(int)product.getProductId();
-        //删除现有sku
-        skuService.delSku(account_id,productid);
+//        //删除现有sku
+//        skuService.delSku(account_id,productid);
         //保存新的sku
+        List<ClientTbProductSku> oldSkus=skuService.loadSku(account_id,productid);
         for(ClientTbProductSku sku:clientTbProductSkus){
             sku.setProductId((long)productid);
-            skuService.addSku(account_id,productid,sku);
+            boolean isExists=false;
+            for (ClientTbProductSku oldSku : oldSkus) {
+                //如果更新提交的sku与已有的sku相同
+                if(oldSku.getColorName().equals(sku.getColorName())&&sku.getSizeName().equals(oldSku.getSizeName())){
+                    isExists=true;
+                    break;
+                }
+            }
+            if(isExists){
+                continue;//如果已经存在，跳过保存
+            }else{//如果有新sku，进行保存
+                skuService.addSku(account_id,productid,sku);
+            }
+        }
+
+        //再找出原有sku里有，更新的sku里被删除的
+        for (ClientTbProductSku oldSku : oldSkus) {
+            boolean isExists=false;
+            for(ClientTbProductSku sku:clientTbProductSkus){
+                if(oldSku.getColorName().equals(sku.getColorName())&&sku.getSizeName().equals(oldSku.getSizeName())){
+                    isExists=true;
+                    break;
+                }
+            }
+            if(isExists){
+                continue;//如果已经存在，跳过删除
+            }else{//如果旧sku里存在，新sku里不存在，删除旧数据
+                skuService.delSkuSingle(account_id,(int)oldSku.getId());
+            }
         }
         return product;
     }

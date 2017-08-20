@@ -96,6 +96,11 @@ public class ProductController {
         JSONArray colors=productbase.getJSONArray("colors");
         JSONArray sizes=productbase.getJSONArray("sizes");
         ClientTbProduct p=new ClientTbProduct();
+
+        if(productbase.containsKey("productId")){
+            p.setProductId(productbase.getInteger("productId"));
+        }
+
         p.setAccountId((long)account);
         p.setProductCode2(productbase.getString("productCode2"));
         p.setProductCode(productbase.getString("productCode"));
@@ -133,10 +138,15 @@ public class ProductController {
             }
         }
         try {
-            p=productService.addProduct(account,p,skus);
-            String path=request.getSession().getServletContext().getRealPath(upload_path);
-            String exName="jpg";
-            String fileName= UUID.randomUUID().toString();
+            if(p.getProductId()>0){
+                p=productService.updateProduct(account,p,skus);
+            }else{
+                p=productService.addProduct(account,p,skus);
+            }
+
+//            String path=request.getSession().getServletContext().getRealPath(upload_path);
+//            String exName="jpg";
+//            String fileName= UUID.randomUUID().toString();
 //            try {
 //                String s=imageService.createSizeIncludeImage(account,(int)p.getProductId(),(path+ File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
 //            } catch (Exception e) {
