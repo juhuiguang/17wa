@@ -166,6 +166,11 @@ public class ProductServiceImpl implements ProductService {
                 skuService.addSku(account_id,productid,sku);
             }
 
+            //商品保存成功后，添加默认库存值
+            String sql="insert into tb_inventory(sku_id,shop_id,inventory_amount,inventory_count_status) " +
+                    "select a.id,b.shop_id,"+product.getProductInitAmount()+",'正常' from tb_product_sku a,tb_shop b where product_id="+productid;
+            daoTool.exec(sql,account_id);
+
         }else{
             throw new Exception("产品保存过程中出错了。");
         }

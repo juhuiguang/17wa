@@ -59,6 +59,9 @@ public class ClientTbProduct {
     @ApiModelProperty(value="产品备注")
     @Column(name="product_memo")
     private String memo;
+    @ApiModelProperty(value="初始库存")
+    @Column(name="product_initamount")
+    private Integer productInitAmount;
 
     @ApiModelProperty(value="产品库存总量")
     @LogicField
@@ -295,6 +298,14 @@ public class ClientTbProduct {
 
     public void setTempAmount(Integer tempAmount) {
         this.tempAmount = tempAmount;
+    }
+
+    public Integer getProductInitAmount() {
+        return productInitAmount;
+    }
+
+    public void setProductInitAmount(Integer productInitAmount) {
+        this.productInitAmount = productInitAmount;
     }
 
     @Override

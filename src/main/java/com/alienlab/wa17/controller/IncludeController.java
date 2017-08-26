@@ -137,14 +137,15 @@ public class IncludeController {
 
         try {
             List<ClientTbProductInclude> result=includeService.addProductIncludes(account,productId,array);
-
-            String path=request.getSession().getServletContext().getRealPath(upload_path);
-            String exName="jpg";
-            String fileName= UUID.randomUUID().toString();
-            try {
-                String s=imageService.createSizeIncludeImage(account,productId,(path+ File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
-            } catch (Exception e) {
-                e.printStackTrace();
+            if(result.size()>0){
+                String path=request.getSession().getServletContext().getRealPath(upload_path);
+                String exName="jpg";
+                String fileName= UUID.randomUUID().toString();
+                try {
+                    String s=imageService.createSizeIncludeImage(account,productId,(path+ File.separator+fileName+"_include"+"."+exName),(fileName+"_include"+"."+exName));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {

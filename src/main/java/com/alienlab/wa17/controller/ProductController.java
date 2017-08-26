@@ -63,6 +63,7 @@ public class ProductController {
                         "productName:productName," +
                         "productPrice1:productPrice1," +
                         "productPrice2:productPrice2," +
+                        "productInitAmount:300,"+
                         "productType:productType," +
                         "productTags:productTags,"+
                         "colors:[{" +
