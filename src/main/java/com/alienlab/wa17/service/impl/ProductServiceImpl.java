@@ -407,6 +407,9 @@ public class ProductServiceImpl implements ProductService {
         }else{
             String pics=product.getProductDesc();
             pics=pics.replaceAll(pic,"");
+            if(pics.startsWith(",")){
+                pics=pics.substring(1);
+            }
             product.setProductDesc(pics);
         }
         daoTool.updateOne(account,product);

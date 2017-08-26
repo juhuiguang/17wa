@@ -42,7 +42,7 @@ public class InventoryController {
     @GetMapping("/17wa-inventory/{account}/{shopId}/{productId}")
     public ResponseEntity getAllSkuInventory(@PathVariable int account, @PathVariable long shopId,@PathVariable Long productId){
         try{
-            List<InventoryDto> result= inventoryService.loadInventory(account,shopId,productId);
+            List<InventoryDto> result= inventoryService.getInventoryByProduct(account,shopId,productId);
             return ResponseEntity.ok().body(result);
         }catch(Exception e){
             ExecResult er=new ExecResult(false,e.getMessage());
