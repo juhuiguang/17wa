@@ -345,14 +345,20 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception {
+    public Page<DispatchDto> getDispatch(int account, long shopId,String keyword,int index,int size) throws Exception {
+        if(keyword==null){
+            keyword="";
+        }
+        if(keyword.indexOf("'")>=0){
+            keyword=keyword.replace("'","''");
+        }
         String sql="SELECT tb1.*,ljfrom.shop_name dispatch_from_shopname,ljto.shop_name dispatch_to_shopname FROM ( " +
                 "SELECT a.*,b.`color_name`,b.`product_id`,b.`size_name`,c.`product_code2`,c.`product_code`,c.`product_name`,c.`product_pic` FROM tb_dispatch a,tb_product_sku b,tb_product c " +
-                "WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (a.`dispatch_to_shop`="+shopId+" OR a.`dispatch_from_shop`="+shopId+") " +
+                "WHERE a.`sku_id`=b.`id` AND b.`product_id`=c.`product_id` AND (c.product_code like '%"+keyword+"%' or c.product_code2 like '%"+keyword+"%' or c.product_name like '%"+keyword+"%') AND (a.`dispatch_to_shop`="+shopId+" OR a.`dispatch_from_shop`="+shopId+") " +
                 ") tb1  " +
                 "LEFT JOIN tb_shop ljfrom ON ljfrom.`shop_id`=tb1.dispatch_from_shop " +
                 "LEFT JOIN tb_shop ljto ON ljto.`shop_id`=tb1.dispatch_to_shop " +
-                " order by tb1.dispatch_time1";
+                " order by tb1.dispatch_time1 desc";
         Page<DispatchDto> result=daoTool.getPageList(sql,new PageRequest(index,size),account,DispatchDto.class);
         return result;
     }

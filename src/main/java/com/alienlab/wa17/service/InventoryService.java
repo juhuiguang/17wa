@@ -47,7 +47,7 @@ public interface InventoryService {
 
     ClientTbDispatch confirmDispatch(int account,long dispatchId,long shopId) throws Exception;
 
-    Page<DispatchDto> getDispatch(int account, long shopId,int index,int size) throws Exception;
+    Page<DispatchDto> getDispatch(int account, long shopId,String keyword,int index,int size) throws Exception;
 
     List<SkuShopInventoryDto> getSkuShopList(int account,long productId) throws Exception;
 

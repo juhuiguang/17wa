@@ -282,13 +282,14 @@ public class InventoryController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
             @ApiImplicitParam(name="shopId",value="当前店铺编码",paramType = "query"),
+            @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query"),
             @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
             @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
     })
     @GetMapping("/17wa-inventory/dispatch/{account}")
-    public ResponseEntity getDispatch(@PathVariable int account,@RequestParam long shopId,@RequestParam int index,@RequestParam int size){
+    public ResponseEntity getDispatch(@PathVariable int account,@RequestParam long shopId,@RequestParam(required = false) String keyword,@RequestParam int index,@RequestParam int size){
         try{
-            Page<DispatchDto> result=inventoryService.getDispatch(account,shopId,index,size);
+            Page<DispatchDto> result=inventoryService.getDispatch(account,shopId,keyword,index,size);
             return ResponseEntity.ok().body(result);
         }catch (Exception e) {
             e.printStackTrace();
