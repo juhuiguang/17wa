@@ -240,8 +240,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<ClientTbOrder> getOrders(int account, Long shopId,String startdate, String enddate, Pageable page) throws Exception {
-        String sql="select * from tb_order where order_time>='"+startdate+"' and order_time<='"+enddate+"' and shop_id="+shopId;
+    public Page<ClientTbOrder> getOrders(int account, Long shopId,String startdate, String enddate, String keyword,Pageable page) throws Exception {
+        if(keyword==null){
+            keyword="";
+        }
+        if(keyword.indexOf("'")>=0){
+            keyword=keyword.replace("'","''");
+        }
+        String sql="select * from tb_order where order_time>='"+startdate+"' and order_time<='"+enddate+"' and (custom_name like '%"+keyword+"%' or order_code like '%"+keyword+"%') and  shop_id="+shopId;
         return daoTool.getPageList(sql,page,account,ClientTbOrder.class);
     }
     @Override

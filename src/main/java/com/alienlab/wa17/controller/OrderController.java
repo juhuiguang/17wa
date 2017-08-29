@@ -141,15 +141,17 @@ public class OrderController {
             @ApiImplicitParam(name="shopId",value="店铺id",paramType = "query"),
             @ApiImplicitParam(name="sdate",value="开始日期 格式:2017-04-01",paramType = "query"),
             @ApiImplicitParam(name="edate",value="结束日期 格式:2017-04-01",paramType = "query"),
+            @ApiImplicitParam(name="keyword",value="关键字(商品code1,code2,商品名称)",paramType = "query"),
             @ApiImplicitParam(name="index",value="分页页码",paramType = "query"),
             @ApiImplicitParam(name="size",value="分页长度",paramType = "query")
     })
     @GetMapping("/17wa-order/{account}")
     public ResponseEntity getOrders(@PathVariable int account,@RequestParam Long shopId,
                                     @RequestParam String sdate,@RequestParam String edate,
+                                    @RequestParam(required = false) String keyword,
                                     @RequestParam int index,@RequestParam int size){
         try {
-            Page<ClientTbOrder> orders=orderService.getOrders(account,shopId,sdate,edate,new PageRequest(index,size));
+            Page<ClientTbOrder> orders=orderService.getOrders(account,shopId,sdate,edate,keyword,new PageRequest(index,size));
             return ResponseEntity.ok().body(orders);
         } catch (Exception e) {
             e.printStackTrace();
