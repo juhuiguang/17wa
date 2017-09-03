@@ -63,6 +63,10 @@ public class ClientTbProduct {
     @Column(name="product_initamount")
     private Integer productInitAmount;
 
+    @Column(name="iswebsite")
+    @ApiModelProperty(value="是否用于网站")
+    private String iswebsite;
+
     @ApiModelProperty(value="产品库存总量")
     @LogicField
     private Integer amount;
@@ -306,6 +310,15 @@ public class ClientTbProduct {
 
     public void setProductInitAmount(Integer productInitAmount) {
         this.productInitAmount = productInitAmount;
+    }
+
+
+    public String getIswebsite() {
+        return iswebsite;
+    }
+
+    public void setIswebsite(String iswebsite) {
+        this.iswebsite = iswebsite;
     }
 
     @Override

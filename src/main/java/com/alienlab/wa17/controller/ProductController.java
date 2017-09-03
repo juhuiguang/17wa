@@ -114,6 +114,8 @@ public class ProductController {
         p.setProductPrice2(productbase.getInteger("productPrice2"));
         p.setProductType(productbase.getString("productType"));
         p.setMemo(productbase.getString("productMemo"));
+        p.setIswebsite(productbase.getString("iswebsite"));
+        p.setProductInitAmount(productbase.getInteger("productInitAmount"));
 
         p.setProductStatus("上架");
         p.setProductTags(productbase.getString("productTags"));
