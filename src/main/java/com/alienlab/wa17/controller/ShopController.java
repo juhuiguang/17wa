@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -292,6 +294,7 @@ public class ShopController {
     @PostMapping(value="/17wa-shop/account/{account}")
     public ResponseEntity addShop(@PathVariable int account,@ApiParam @RequestBody ClientTbShopAccount shopaccount){
         try {
+            shopaccount.setAccountTime(Timestamp.valueOf(LocalDateTime.now()));
             shopaccount=shopService.addAccount(account,shopaccount);
             if(shopaccount.getAccountId()>0){
                 return ResponseEntity.ok().body(shopaccount);

@@ -89,7 +89,12 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ClientTbShopAccount addAccount(int account_id, ClientTbShopAccount account) throws Exception {
-        account=daoTool.saveOne(account,account_id);
+        if(account.getAccountId()>0){
+            account=daoTool.updateOne(account_id,account);
+        }else{
+            account=daoTool.saveOne(account,account_id);
+        }
+
         return account;
     }
 
