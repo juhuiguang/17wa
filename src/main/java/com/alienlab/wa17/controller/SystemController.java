@@ -1,6 +1,11 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
+import com.alienlab.wa17.entity.api.AppInfo;
+import com.alienlab.wa17.entity.api.AppVersion;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
 import com.alienlab.wa17.entity.client.dto.SizeDto;
 import com.alienlab.wa17.entity.main.*;
@@ -12,12 +17,18 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.xml.ws.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 橘 on 2017/4/29.
@@ -31,6 +42,11 @@ public class SystemController {
     SizeService sizeService;
     @Autowired
     SystemService systemService;
+
+    @Value("${17wa.pgy.apikey}")
+    String pgyapikey;
+    @Value("${17wa.pgy.appid}")
+    String pgyappid;
 
     @ApiOperation(value="获取系统色系")
     @ApiResponses({
@@ -301,6 +317,50 @@ public class SystemController {
             ExecResult er=new ExecResult(false,e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
+    }
+
+
+    @GetMapping(value="/17wa-system/version/{v}")
+    public ResponseEntity checkNewVersion(@PathVariable  Integer v){
+        String url="http://www.pgyer.com/apiv1/app/builds";
+
+        MultiValueMap<String, String> requestEntity = new LinkedMultiValueMap<>();
+        requestEntity.add("aId", pgyappid);
+        requestEntity.add("_api_key", pgyapikey);
+
+        RestTemplate template=new RestTemplate();
+        ResponseEntity result=template.postForEntity(url,requestEntity, JSONObject.class);
+        if(result.getStatusCode().is2xxSuccessful()){
+            JSONObject jo=(JSONObject)result.getBody();
+            JSONObject data=jo.getJSONObject("data");
+            JSONArray list=data.getJSONArray("list");
+            List<AppVersion> versions=JSON.parseArray(list.toJSONString(), AppVersion.class);
+
+            if(versions!=null&&versions.size()>0){
+                AppVersion latestVersion=versions.get(0);
+                if(Integer.valueOf(latestVersion.getAppBuildVersion())>v){
+                    MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+                    param.add("aKey",latestVersion.getAppKey());
+                    param.add("_api_key",pgyapikey);
+                    url="http://www.pgyer.com/apiv1/app/view";
+                    ResponseEntity newVersion=template.postForEntity(url,param,JSONObject.class);
+                    if(newVersion.getStatusCode().is2xxSuccessful()){
+                        JSONObject versionJson=(JSONObject)newVersion.getBody();
+                        JSONObject versionData=versionJson.getJSONObject("data");
+                        AppInfo app=JSON.parseObject(versionData.toJSONString(),AppInfo.class);
+                        app.setAppShortcutUrl("http://www.pgyer.com/"+app.getAppShortcutUrl());
+                        return ResponseEntity.ok(app);
+
+                    }
+                }
+            }
+            ExecResult er=new ExecResult(false,"您已是最新本版");
+            return ResponseEntity.status(500).body(er);
+        }else{
+            ExecResult er=new ExecResult(false,"获取版本信息错误");
+            return ResponseEntity.status(500).body(er);
+        }
+
     }
 
 

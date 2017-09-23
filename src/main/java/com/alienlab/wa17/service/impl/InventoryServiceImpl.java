@@ -102,7 +102,7 @@ public class InventoryServiceImpl implements InventoryService {
                     amount=-amount;
                 }
             }
-            if(type.equalsIgnoreCase("重置")||type.equalsIgnoreCase("初始")&&amount!=inventory.getInventoryAmount()){
+            //if(type.equalsIgnoreCase("重置")||type.equalsIgnoreCase("初始")&&amount!=inventory.getInventoryAmount()){
                 detail.setDetailAmount(amount);
                 detail.setDetailTime(new Timestamp(new Date().getTime()));
                 detail.setDetailType(type);
@@ -119,9 +119,10 @@ public class InventoryServiceImpl implements InventoryService {
                 }else{
                     throw  new Exception("保存库存明细记录失败。");
                 }
-            }else{
-                return inventory;
-            }
+//            }
+//            else{
+//                return inventory;
+//            }
         }else{
             throw new Exception("库存主记录保存失败。");
         }
@@ -321,6 +322,15 @@ public class InventoryServiceImpl implements InventoryService {
         ClientTbDispatch dispatch=(ClientTbDispatch)daoTool.getOne(ClientTbDispatch.class,account,dispatchId);
         if(dispatch==null){
             throw new Exception("未找到编码为"+dispatchId+"的调度记录");
+        }
+        if(dispatch.getDispatchFromShop()==shopId){//如果是调出方
+            if(dispatch.getDispatchFromIsok().equals("1")){
+                throw new Exception("该调货申请已经确认调出。");
+            }
+        }else if(dispatch.getDispatchToShop()==shopId){
+            if(dispatch.getDispatchToIsok().equals("1")){
+                throw new Exception("该调货申请已经确认调入。");
+            }
         }
         long fromShopId=dispatch.getDispatchFromShop();
         long toShopId=dispatch.getDispatchToShop();

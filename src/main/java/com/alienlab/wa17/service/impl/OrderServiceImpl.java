@@ -126,6 +126,9 @@ public class OrderServiceImpl implements OrderService {
                 if(successDetails.size()==details.size()){
                     //更新客户信息
                     custom.setCustomRemainMoney(custom.getCustomRemainMoney()-(order.getOrderMoney()-order.getOrderPayment()));
+                    if(custom.getCustomGrade()==null){
+                        custom.setCustomGrade(0L);
+                    }
                     custom.setCustomGrade(custom.getCustomGrade()+(long)order.getOrderGradeIn());
                     custom.setCustomLatestMoney(totalPrice);
                     custom.setCustomLatestPayment(order.getOrderPayment());

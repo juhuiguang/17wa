@@ -1,5 +1,6 @@
 package com.alienlab.wa17.service.impl;
 
+import com.alienlab.utils.DesUtil;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbShop;
@@ -19,6 +20,8 @@ import java.util.List;
 public class ShopServiceImpl implements ShopService {
     @Autowired
     DaoTool daoTool;
+    @Autowired
+    DesUtil desUtil;
 
     @Override
     public List<ClientTbShop> getShopes(int account_id) throws Exception {
@@ -78,7 +81,19 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public List<ClientTbShopAccount> getShopAccountList(int account_id, int shop_id) throws Exception {
         String sql="select * from tb_shop_account where shop_id="+shop_id+" or account_type='管理员'";
-        return daoTool.getAllList(sql,account_id,ClientTbShopAccount.class);
+        List<ClientTbShopAccount> result= daoTool.getAllList(sql,account_id,ClientTbShopAccount.class);
+        if(result!=null&&result.size()>0){
+            for (ClientTbShopAccount clientTbShopAccount : result) {
+                String pwd=clientTbShopAccount.getAccountPwd();
+                try{
+                    pwd=desUtil.decrypt(pwd);
+                    clientTbShopAccount.setAccountPwd(pwd);
+                }catch(Exception e){
+                    clientTbShopAccount.setAccountPwd(pwd);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -89,6 +104,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ClientTbShopAccount addAccount(int account_id, ClientTbShopAccount account) throws Exception {
+        String pwd=account.getAccountPwd();
+        if(pwd==null)pwd="123456";
+        pwd=desUtil.encrypt(pwd);
+        account.setAccountPwd(pwd);
         if(account.getAccountId()>0){
             account=daoTool.updateOne(account_id,account);
         }else{
