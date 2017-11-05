@@ -124,8 +124,8 @@ public class ShopServiceImpl implements ShopService {
             throw new Exception("未找到编号为"+shopaccount+"的账号。");
         }
         String orignpwd=shopat.getAccountPwd();
-        String loginpwd=desUtil.encrypt(pwd);
-        if(loginpwd.equals(old_pwd)){
+        String loginpwd=desUtil.encrypt(old_pwd);
+        if(loginpwd.equals(orignpwd)){
             if(pwd==null)pwd="123456";
             pwd=desUtil.encrypt(pwd);
             shopat.setAccountPwd(pwd);
