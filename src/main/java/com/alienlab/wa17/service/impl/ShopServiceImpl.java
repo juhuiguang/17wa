@@ -118,6 +118,25 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    public ClientTbShopAccount changeAccountPwd(int account_id, long shopaccount, String old_pwd, String pwd) throws Exception{
+        ClientTbShopAccount shopat=(ClientTbShopAccount)daoTool.getOne(ClientTbShopAccount.class,account_id,(long)shopaccount);
+        if(shopat==null){
+            throw new Exception("未找到编号为"+shopaccount+"的账号。");
+        }
+        String orignpwd=shopat.getAccountPwd();
+        String loginpwd=desUtil.encrypt(pwd);
+        if(loginpwd.equals(old_pwd)){
+            if(pwd==null)pwd="123456";
+            pwd=desUtil.encrypt(pwd);
+            shopat.setAccountPwd(pwd);
+            return daoTool.updateOne((int)shopaccount,shopat);
+        }else{
+            throw new Exception("旧密码输入错误。");
+        }
+    }
+
+
+    @Override
     public ClientTbShopAccount setDenied(int account_id, int shopaccount) throws Exception {
         ClientTbShopAccount shopat=(ClientTbShopAccount)daoTool.getOne(ClientTbShopAccount.class,account_id,(long)shopaccount);
         if(shopat==null){

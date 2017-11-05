@@ -32,6 +32,8 @@ public interface ShopService {
 
     ClientTbShopAccount addAccount(int account_id,ClientTbShopAccount account)throws Exception;
 
+    ClientTbShopAccount changeAccountPwd(int account_id,long shopaccount_id,String old_pwd,String pwd) throws Exception;
+
     ClientTbShopAccount setDenied(int account_id,int shopaccount) throws Exception;
 
     boolean delAccount(int account_id,int shopaccount) throws Exception;

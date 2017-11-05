@@ -1,5 +1,6 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbShop;
 import com.alienlab.wa17.entity.client.ClientTbShopAccount;
@@ -356,6 +357,27 @@ public class ShopController {
                 ClientTbShopAccount cta=shopService.setActive(account,shopaccount);
                 return ResponseEntity.ok().body(cta);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+    @ApiOperation(value="修改门店账户密码")
+    @PutMapping(value="/17wa-shop/account/chpd")
+    public ResponseEntity changeShopAccountPwd(@RequestBody JSONObject param){
+        try {
+           if(param.containsKey("account")&&param.containsKey("shopaccount")&&param.containsKey("oldpwd")&&param.containsKey("pwd")){
+               int account=param.getInteger("account");
+               long shopaccount=param.getLong("shopaccount");
+               String oldpwd=param.getString("oldpwd");
+               String pwd=param.getString("pwd");
+               ClientTbShopAccount at =shopService.changeAccountPwd(account,shopaccount,oldpwd,pwd);
+               return ResponseEntity.ok().body(at);
+           }else{
+               ExecResult er=new ExecResult(false,"参数格式错误");
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+           }
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
