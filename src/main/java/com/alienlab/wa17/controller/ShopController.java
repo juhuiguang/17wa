@@ -365,7 +365,8 @@ public class ShopController {
     }
     @ApiOperation(value="修改门店账户密码")
     @PutMapping(value="/17wa-shop/account/chpd")
-    public ResponseEntity changeShopAccountPwd(@RequestBody JSONObject param){
+    public ResponseEntity changeShopAccountPwd(@ApiParam @RequestBody JSONObject param){
+        System.out.println(param);
         try {
            if(param.containsKey("account")&&param.containsKey("shopaccount")&&param.containsKey("oldpwd")&&param.containsKey("pwd")){
                int account=param.getInteger("account");
