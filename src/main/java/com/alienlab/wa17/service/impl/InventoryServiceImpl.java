@@ -49,6 +49,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "  lj.sku_id, " +
                 "  lj.shop_id, " +
                 "  lj.inventory_amount, " +
+                "  lj1.amount temp_amount, " +
                 "  lj.inventory_count_status, " +
                 "  lj.inventory_count_time, " +
                 "  lj2.`product_code`, " +
@@ -61,6 +62,9 @@ public class InventoryServiceImpl implements InventoryService {
                 "  LEFT JOIN tb_inventory lj " +
                 "    ON a.`id` = lj.`sku_id` " +
                 "    AND lj.`shop_id` = "+shopId+" " +
+                "  LEFT JOIN tb_inventory_temp lj1 " +
+                "    ON a.`id` = lj1.`sku_id` " +
+                "    AND lj1.`shop_id` = "+shopId+" " +
                 "  LEFT JOIN tb_product lj2 ON lj2.`product_id`=a.`product_id` " +
                 "WHERE a.`product_id` = "+productId;
         return daoTool.getAllList(sql,account,InventoryDto.class);
