@@ -71,12 +71,24 @@ public class ClientTbProduct {
     @LogicField
     private Integer amount;
 
+    @ApiModelProperty(value="压缩后的图片")
+    @LogicField
+    private String productDescExpress;
+
     @ApiModelProperty(value="产品临时清点库存总量")
     private Integer tempAmount;
 
     @ApiModelProperty(value="产品库存状态")
     @LogicField
     private String inventroyStatus;
+
+    public String getProductDescExpress() {
+        return productDescExpress;
+    }
+
+    public void setProductDescExpress(String productDescExpress) {
+        this.productDescExpress = productDescExpress;
+    }
 
     @Basic
     @Column(name="inventory_status")

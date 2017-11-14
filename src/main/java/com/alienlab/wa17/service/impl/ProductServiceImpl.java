@@ -255,6 +255,20 @@ public class ProductServiceImpl implements ProductService {
         if(product==null){
             throw new Exception("未找到编码为"+product_id+"的产品");
         }
+
+        String descpic=product.getProductDesc();
+        String [] descpicarr=descpic.split(",");
+        if(descpicarr.length>0){
+            String express=descpicarr[0];
+            for(int i=1;i<descpicarr.length;i++){
+                String picurl=descpicarr[i];
+                int pos=picurl.lastIndexOf(".");
+                String temp=picurl.substring(0,pos-1)+"_320"+picurl.substring(pos);
+                express+=","+temp;
+            }
+            product.setProductDescExpress(express);
+        }
+
         List<ClientTbProductSku> skus=skuService.loadSku(account_id,product_id);
         ProductSkuDto skuDto=new ProductSkuDto();
         skuDto.setProduct(product);
