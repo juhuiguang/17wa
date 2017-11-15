@@ -263,7 +263,7 @@ public class ProductServiceImpl implements ProductService {
             for(int i=1;i<descpicarr.length;i++){
                 String picurl=descpicarr[i];
                 int pos=picurl.lastIndexOf(".");
-                String temp=picurl.substring(0,pos-1)+"_320"+picurl.substring(pos);
+                String temp=picurl.substring(0,pos)+"_320"+picurl.substring(pos);
                 express+=","+temp;
             }
             product.setProductDescExpress(express);
