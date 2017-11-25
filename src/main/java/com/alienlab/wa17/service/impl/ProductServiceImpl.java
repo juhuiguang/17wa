@@ -230,7 +230,7 @@ public class ProductServiceImpl implements ProductService {
              num=TypeUtils.castToInt(countResult.get("NUM"))+1;
         }
         SimpleDateFormat format2=new SimpleDateFormat("ddyyMM");
-        String result=format2.format(new Date())+account_id+"-"+num;
+        String result=format2.format(new Date())+String.format("%04d", account_id)+String.format("%02d", num);
         return result;
     }
 

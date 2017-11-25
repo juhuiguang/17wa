@@ -48,7 +48,7 @@ public class IncludeServiceImpl implements IncludeService {
 
     @Override
     public List<ClientTbProductInclude> getProductIncluedes(int account, int productId) throws Exception {
-        String sql="select * from tb_product_include where product_id="+productId+" order by size_name,include_name";
+        String sql="select * from tb_product_include where product_id="+productId+" order by include_id,include_name";
         return daoTool.getAllList(sql,account,ClientTbProductInclude.class);
     }
 
