@@ -94,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
                 "  ORDER BY FIELD(lj2.`status`,'未盘点','异常','正常'),product_code2";
         ClientTbProduct product=(ClientTbProduct)daoTool.getObject(sql,account,ClientTbProduct.class);
         if(product!=null){
-            List<ClientTbProductSku> skus=skuService.loadSku(account,product.getProductId());
+            List<ClientTbProductSku> skus=skuService.loadSku(account,product.getProductId(),0);
             ProductSkuDto p=new ProductSkuDto();
             p.setProduct(product);
             p.setSkus(skus);
@@ -184,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
 //        //删除现有sku
 //        skuService.delSku(account_id,productid);
         //保存新的sku
-        List<ClientTbProductSku> oldSkus=skuService.loadSku(account_id,productid);
+        List<ClientTbProductSku> oldSkus=skuService.loadSku(account_id,productid,0);
         for(ClientTbProductSku sku:clientTbProductSkus){
             sku.setProductId((long)productid);
             boolean isExists=false;
@@ -249,7 +249,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductSkuDto loadProduct(int account_id, long product_id) throws Exception {
+    public ProductSkuDto loadProduct(int account_id, long product_id,long shopId) throws Exception {
         String sql="select * from tb_product where product_id="+product_id;
         ClientTbProduct product=(ClientTbProduct)daoTool.getOne(ClientTbProduct.class,account_id,product_id);
         if(product==null){
@@ -269,7 +269,7 @@ public class ProductServiceImpl implements ProductService {
             product.setProductDescExpress(express);
         }
 
-        List<ClientTbProductSku> skus=skuService.loadSku(account_id,product_id);
+        List<ClientTbProductSku> skus=skuService.loadSku(account_id,product_id,shopId);
         ProductSkuDto skuDto=new ProductSkuDto();
         skuDto.setProduct(product);
         skuDto.setSkus(skus);

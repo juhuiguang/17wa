@@ -20,6 +20,7 @@ public class ClientTbProductSku {
     private String sizeType;
     private String skuStatus;
     private int amount=0;
+    private int tempAmount=0;
 
     @LogicField
     @Column(name = "amount")
@@ -119,6 +120,16 @@ public class ClientTbProductSku {
 
     public void setSkuStatus(String skuStatus) {
         this.skuStatus = skuStatus;
+    }
+
+    @LogicField
+    @Column(name = "tempamount")
+    public Integer getTempAmount() {
+        return tempAmount;
+    }
+
+    public void setTempAmount(Integer tempAmount){
+        this.tempAmount=tempAmount;
     }
 
     @Override

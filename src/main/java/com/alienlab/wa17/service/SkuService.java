@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface SkuService {
     //加载商品sku
-    List<ClientTbProductSku> loadSku(int account_id, long product_id) throws Exception;
+    List<ClientTbProductSku> loadSku(int account_id, long product_id,long shopId) throws Exception;
 
     //创建sku
     ClientTbProductSku addSku(int account_id, long product_id, ClientTbProductSku sku)throws Exception;

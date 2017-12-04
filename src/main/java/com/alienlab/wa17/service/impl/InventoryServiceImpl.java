@@ -159,8 +159,8 @@ public class InventoryServiceImpl implements InventoryService {
                 "  AND b.`shop_id` = "+shopId+" " +
                 "  AND (1="+isall+" OR a.detail_type = '"+status+"') " +
                 "  AND d.`product_id`=c.`product_id` " +
-                "  AND a.`detail_time` >= '"+startDate+"' " +
-                "  AND a.`detail_time` <= '"+endDate+"' ";
+                "  AND a.`detail_time` >= '"+startDate+" 00:00:00' " +
+                "  AND a.`detail_time` <= '"+endDate+" 23:59:59' ";
         sql+=(keyword==null?"":" AND ( d.product_code like '%"+keyword+"%' or d.product_code2 like '%"+keyword+"%' or d.product_name like '%"+keyword+"%')");
         return daoTool.getPageList(sql,page,account,InventoryDetailDto.class);
     }

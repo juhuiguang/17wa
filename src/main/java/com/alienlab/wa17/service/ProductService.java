@@ -45,7 +45,7 @@ public interface ProductService {
     //下架、售卖商品
     ClientTbProduct changeProductStatus(int account_id,long product_id,String status) throws Exception;
 
-    ProductSkuDto loadProduct(int account_id, long product_id) throws Exception;
+    ProductSkuDto loadProduct(int account_id, long product_id,long shopId) throws Exception;
 
     ClientTbProduct refreshStatus(int account,long productId) throws Exception;
 

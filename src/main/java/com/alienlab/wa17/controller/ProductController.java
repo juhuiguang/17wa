@@ -243,11 +243,15 @@ public class ProductController {
     @ApiOperation(value="获取商品详细信息，包含sku数组")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
-            @ApiImplicitParam(name="productid",value="商品id",paramType = "path")
+            @ApiImplicitParam(name="productid",value="商品id",paramType = "path"),
+            @ApiImplicitParam(name="shopId",value="门店Id",paramType = "query")
     })
-    public ResponseEntity loadProduct(@PathVariable int account,@PathVariable long productid){
+    public ResponseEntity loadProduct(@PathVariable int account,@PathVariable long productid,@RequestParam(required = false) Long shopId){
         try{
-            ProductSkuDto productSkuDto=productService.loadProduct(account,productid);
+            if(shopId==null){
+                shopId=0L;
+            }
+            ProductSkuDto productSkuDto=productService.loadProduct(account,productid,shopId);
             return ResponseEntity.ok().body(productSkuDto);
         }catch(Exception ex){
             ExecResult er=new ExecResult(false,ex.getMessage());

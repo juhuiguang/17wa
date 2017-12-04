@@ -493,6 +493,7 @@ public class InventoryController {
     @ApiOperation(value="单个商品库存核对")
     @PostMapping("/17wa-inventory/singleconfirm")
     public ResponseEntity confirmSingleInventory(@RequestBody String body){
+        System.out.println("/17wa-inventory/singleconfirm>>>>"+body);
         JSONObject param=JSONObject.parseObject(body);
         try{
             if(param.containsKey("account")){

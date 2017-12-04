@@ -22,8 +22,21 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     ProductService productService;
     @Override
-    public List<ClientTbProductSku> loadSku(int account_id, long product_id) throws Exception {
-        String sql="select * from tb_product_sku where product_id="+product_id;
+    public List<ClientTbProductSku> loadSku(int account_id, long product_id,long shopId) throws Exception {
+        String sql="";
+        if(shopId==0){
+            sql="select * from tb_product_sku where product_id="+product_id;
+        }else{
+            sql="SELECT " +
+                    " a.*,c.inventory_amount amount, b.amount tempamount " +
+                    "FROM " +
+                    " tb_product_sku a " +
+                    "LEFT JOIN tb_inventory c ON a.id = c.sku_id and c.shop_id="+shopId+" " +
+                    "LEFT JOIN tb_inventory_temp b ON a.id = b.sku_id and b.shop_id="+shopId+" " +
+                    "WHERE " +
+                    " a.product_id = "+product_id;
+        }
+
         return daoTool.getAllList(sql,account_id,ClientTbProductSku.class);
     }
 
