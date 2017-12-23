@@ -92,6 +92,46 @@ public class ImageController {
 
 
     }
+
+    @ApiOperation(value="独立图片上传接口，返回图片服务端Url")
+    @PostMapping("/17wa-image/upload")
+    public ResponseEntity uploadImage2(@RequestPart("file") MultipartFile file,HttpServletRequest request){
+        String path=request.getSession().getServletContext().getRealPath(upload_path);
+        BufferedOutputStream stream = null;
+        if (!file.isEmpty()) {
+            String fName=file.getOriginalFilename();
+            String exName=fName.substring(fName.indexOf('.')+1);
+            String fileName= UUID.randomUUID().toString();
+            try {
+                byte[] bytes = file.getBytes();
+                stream = new BufferedOutputStream(new FileOutputStream(new File(path+File.separator+fileName+"."+exName)));
+                stream.write(bytes);
+                stream.close();
+
+            } catch (Exception e) {
+                stream =  null;
+                ExecResult er=new ExecResult(false,e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+            try{
+                String fnpath=path+File.separator;
+                imageService.convertImageAuto(fnpath,fileName,exName,110);
+                imageService.convertImageAuto(fnpath,fileName,exName,320);
+                imageService.convertImageAuto(fnpath,fileName,exName,750);
+                imageService.convertImageAuto(fnpath,fileName,exName,1200);
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            ExecResult er=new ExecResult(true,image_path+fileName+"."+exName);
+            return ResponseEntity.ok().body(er);
+        } else {
+            ExecResult er = new ExecResult(false, "没有上传文件.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
+
     @GetMapping("/17wa-image/include")
     public ResponseEntity getIncludeImage(@RequestParam int account,@RequestParam int product,HttpServletRequest request){
         String path=request.getSession().getServletContext().getRealPath(upload_path);
