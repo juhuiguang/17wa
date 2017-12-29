@@ -58,6 +58,7 @@ public class ProductController {
                         "productCode:productCode," +
                         "productColors:productColors," +
                         "productSizes:productSizes," +
+                        "productDesc:productDesc," +
                         "productFabric:productFabric," +
                         "productFabricin:productFabricin," +
                         "productName:productName," +
@@ -106,6 +107,8 @@ public class ProductController {
         p.setProductCode2(productbase.getString("productCode2"));
         p.setProductCode(productbase.getString("productCode"));
         p.setProductColors(productbase.getString("productColors"));
+        //增加图片数组的接收
+        p.setProductDesc(productbase.getString("productDesc"));
         p.setProductSizes(productbase.getString("productSizes"));
         p.setProductFabric(productbase.getString("productFabric"));
         p.setProductFabricin(productbase.getString("productFabricin"));
