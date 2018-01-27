@@ -32,7 +32,7 @@ public class SkuServiceImpl implements SkuService {
                     "FROM " +
                     " tb_product_sku a " +
                     "LEFT JOIN tb_inventory c ON a.id = c.sku_id and c.shop_id="+shopId+" " +
-                    "LEFT JOIN tb_inventory_temp b ON a.id = b.sku_id and b.shop_id="+shopId+" " +
+                    "LEFT JOIN (select shop_id,sku_id,sum(amount) amount from tb_inventory_temp group by shop_id,sku_id) b ON a.id = b.sku_id and b.shop_id="+shopId+" " +
                     "WHERE " +
                     " a.product_id = "+product_id;
         }

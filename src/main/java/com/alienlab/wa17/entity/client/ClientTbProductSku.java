@@ -19,16 +19,16 @@ public class ClientTbProductSku {
     private String sizeName;
     private String sizeType;
     private String skuStatus;
-    private int amount=0;
-    private int tempAmount=0;
+    private Integer amount=0;
+    private Integer tempAmount=0;
 
     @LogicField
     @Column(name = "amount")
-    public int getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 

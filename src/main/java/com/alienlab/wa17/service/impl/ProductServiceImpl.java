@@ -135,9 +135,9 @@ public class ProductServiceImpl implements ProductService {
         }
         String sql="select a.*,b.`id` sku_id,b.`color_name`,b.`size_name`,b.`sku_status`,c.`id` inventory_id,c.`inventory_amount`,c.`shop_id` " +
                 " from tb_product a,tb_product_sku b,tb_inventory c " +
-                " where b.`product_id`=a.`product_id` AND b.`sku_status` ='上架' " +
+                " where b.`product_id`=a.`product_id` AND b.`sku_status` <>'下架' " +
                 " and c.`shop_id`=" +shopId+" "+
-                " and b.`id`=c.`sku_id` and c.`inventory_amount`>0 " +
+                " and b.`id`=c.`sku_id` " +
                 " and (product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%' )";
         List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
         return results;
@@ -147,9 +147,9 @@ public class ProductServiceImpl implements ProductService {
     public List<InventoryDetailDto> getOnSaleByProduct(int account, long shopId,long productId) throws Exception {
         String sql="SELECT a.*,b.`id` sku_id,b.`color_name`,b.`size_name`,b.`sku_status`,c.`id` inventory_id,c.`inventory_amount`,c.`shop_id` " +
                 "                FROM tb_product a,tb_product_sku b,tb_inventory c " +
-                "                WHERE b.`product_id`=a.`product_id` AND b.`sku_status` ='上架' " +
+                "                WHERE b.`product_id`=a.`product_id` AND b.`sku_status` <>'下架' " +
                 "                AND c.`shop_id`= " +shopId+" "+
-                "                AND b.`id`=c.`sku_id` AND c.`inventory_amount`>0 " +
+                "                AND b.`id`=c.`sku_id` " +
                 "                AND (a.product_id="+productId+")";
         List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
         return results;
@@ -396,7 +396,7 @@ public class ProductServiceImpl implements ProductService {
         List<String> result=new ArrayList<String>();
         String pics=product.getProductDesc();
         String [] picsArray=pics.split(",");
-        for(int i=0;i<picsArray.length&&i<7;i++){
+        for(int i=0;i<picsArray.length&&i<9;i++){
             String pic=picsArray[i];
             if(pic.equals("")){
                 continue;
