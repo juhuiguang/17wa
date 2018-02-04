@@ -27,7 +27,12 @@ public class CustomServiceImpl implements CustomService {
 
     @Override
     public ClientTbCustom addCustom(int account, ClientTbCustom custom) throws Exception {
-        return daoTool.saveOne(custom,account);
+        if(custom.getCustomId()>0){
+            return daoTool.updateOne(account,custom);
+        }else{
+            return daoTool.saveOne(custom,account);
+        }
+
     }
     @Override
     public JSONObject getCustomPaper(int account, Long cusid, String startdate, String enddate) throws Exception {

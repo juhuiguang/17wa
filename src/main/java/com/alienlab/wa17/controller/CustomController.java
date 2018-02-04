@@ -23,7 +23,7 @@ public class CustomController {
     @Autowired
     CustomService customService;
 
-    @ApiOperation(value="新增客户")
+    @ApiOperation(value="新增、修改客户")
     @PostMapping("/17wa-custom/{account}")
     public ResponseEntity addCustom(@PathVariable int account, @RequestBody ClientTbCustom custom){
         try {
