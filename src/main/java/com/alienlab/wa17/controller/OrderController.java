@@ -90,6 +90,28 @@ public class OrderController {
         }
     }
 
+    @ApiOperation(value="客户查询分页接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
+            @ApiImplicitParam(name="keyword",value="查询关键字",paramType = "query"),
+            @ApiImplicitParam(name="page",value="当前页码",paramType = "query"),
+            @ApiImplicitParam(name="size",value="页长",paramType = "query")
+    })
+    @GetMapping("/17wa-order/custom/{account}")
+    public ResponseEntity getCustomPage(@PathVariable int account,@RequestParam String keyword,@RequestParam int page,@RequestParam int size){
+        try {
+            if(keyword.equalsIgnoreCase("all")){
+                keyword="";
+            }
+            Page<ClientTbCustom> results=customService.findCustomPage(account,keyword,page,size);
+            return ResponseEntity.ok().body(results);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
     @ApiOperation(value="客户下单")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),

@@ -3,6 +3,7 @@ package com.alienlab.wa17.service;
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ import java.util.List;
  */
 public interface CustomService {
     List<ClientTbCustom> findCustom(int account,String keyword) throws Exception;
+
+    Page<ClientTbCustom> findCustomPage(int account, String keyword, int page, int size) throws Exception;
 
     ClientTbCustom addCustom(int account,ClientTbCustom custom) throws Exception;
 

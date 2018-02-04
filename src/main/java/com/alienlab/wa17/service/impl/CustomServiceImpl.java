@@ -6,6 +6,9 @@ import com.alienlab.wa17.dao.DaoTool;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.service.CustomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +25,14 @@ public class CustomServiceImpl implements CustomService {
     public List<ClientTbCustom> findCustom(int account, String keyword) throws Exception {
         String sql="select * from tb_custom where (custom_name like '%"+keyword+"%' or custom_phone like '%"+keyword+"%')";
         List<ClientTbCustom> customs=daoTool.getAllList(sql,account,ClientTbCustom.class);
+        return customs;
+    }
+
+    @Override
+    public Page<ClientTbCustom> findCustomPage(int account, String keyword, int page, int size) throws Exception {
+        String sql="select * from tb_custom where (custom_name like '%"+keyword+"%' or custom_phone like '%"+keyword+"%') order by custom_remain_money ";
+        Pageable pageable=new PageRequest(page,size);
+        Page<ClientTbCustom> customs=daoTool.getPageList(sql,pageable,account,ClientTbCustom.class);
         return customs;
     }
 
