@@ -174,6 +174,9 @@ public class ShopController {
     public ResponseEntity getAllShopAccount(@PathVariable int account){
         try{
             List<ShopAccountDto> shopAccounts=shopService.getShopAccountList(account);
+            for(int i=0;i<shopAccounts.size();i++){
+                shopAccounts.get(i).setAccountPwd("");
+            }
             return ResponseEntity.ok().body(shopAccounts);
         }catch(Exception e){
             e.printStackTrace();

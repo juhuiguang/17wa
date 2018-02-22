@@ -29,7 +29,7 @@ public class SmsController {
             SendSmsResponse sendSmsResponse=smsService.sendSms(phone,code);
             JSONObject result=new JSONObject();
             result.put("smsresponse",sendSmsResponse);
-            result.put("code",code);
+            //result.put("code",code);
             return ResponseEntity.ok(result);
         } catch (ClientException e) {
             e.printStackTrace();

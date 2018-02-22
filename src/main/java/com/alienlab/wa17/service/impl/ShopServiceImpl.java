@@ -91,6 +91,7 @@ public class ShopServiceImpl implements ShopService {
                 }catch(Exception e){
                     clientTbShopAccount.setAccountPwd(pwd);
                 }
+                clientTbShopAccount.setAccountPwd("");
             }
         }
         return result;

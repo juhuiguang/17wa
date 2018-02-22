@@ -107,7 +107,12 @@ public class ClientTbCustom {
     }
 
     public void setCustomRemainMoney(Float customRemainMoney) {
-        this.customRemainMoney = customRemainMoney;
+        if(customRemainMoney==null){
+            this.customRemainMoney = 0f;
+        }else{
+            this.customRemainMoney = customRemainMoney;
+        }
+
     }
 
     @Basic

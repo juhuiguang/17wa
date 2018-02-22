@@ -54,14 +54,24 @@ public class AccountController {
     public ResponseEntity addAccount(@RequestBody Map body){
         String phone= com.alibaba.fastjson.util.TypeUtils.castToString(body.get("phone"));
         String code=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("code"));
+        String pwd=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("password"));
         if(SmsCodePool.CodePool.containsKey(phone)){
             if(SmsCodePool.CodePool.get(phone).equalsIgnoreCase(code)){
-                MainTbAccount account=new MainTbAccount();
-                account.setAccountCode(phone);
-                account.setAccountLoginname(phone);
-                account.setAccountStatus("0");
-                account=accountService.addAccount(account);
-                return ResponseEntity.ok(account);
+                //判断是否重名
+                try {
+                    accountService.getAccount(phone);
+                    ExecResult er=new ExecResult(false,"手机号码已经被注册");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                } catch (Exception e) {
+                    MainTbAccount account=new MainTbAccount();
+                    account.setAccountCode(phone);
+                    account.setAccountPwd(pwd);
+                    account.setAccountLoginname(phone);
+                    account.setAccountStatus("0");
+                    account=accountService.addAccount(account);
+                    return ResponseEntity.ok(account);
+                }
+
             }else{
                 ExecResult er=new ExecResult(false,"验证码错误");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);

@@ -5,28 +5,29 @@
     <meta charset="UTF-8"/>
     <title>尺码表</title>
 </head>
-<body>
-    <table cellpadding="0" border="1" align="center" cellspacing="0" style="width:750px;text-align:center;">
+<body style="padding:0;margin:0;">
+    <table cellpadding="0" border="0" align="center" cellspacing="0" style="width:750px;text-align:center;">
+        <!--<tr>-->
+            <!--<td th:attrappend="colspan=${columns.size()}"  align="center">-->
+                <!--<strong>尺码明细表</strong>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr>-->
+            <!--<td th:attrappend="colspan=${columns.size()}" align="center">-->
+                <!--<strong th:text="${'产品货号：'+product.productName+' '+product.productCode2}"></strong>-->
+            <!--</td>-->
+        <!--</tr>-->
         <tr>
-            <td th:attrappend="colspan=${columns.size()}"  align="center">
-                <strong>尺码明细表</strong>
-            </td>
-        </tr>
-        <tr>
-            <td th:attrappend="colspan=${columns.size()}" align="center">
-                <strong th:text="${'产品货号：'+product.productName+' '+product.productCode2}"></strong>
-            </td>
-        </tr>
-        <tr>
-            <td th:each="colunm:${columns}" align="center">
+            <td th:each="colunm:${columns}" align="center" height="35px" width="85px" style="background:#d0d0d0;height:35px;width:85px;">
                 <strong th:text="${colunm.toString()}"></strong>
             </td>
         </tr>
         <tr th:each="row:${rows}">
-            <td th:each="cell:${row}" align="center">
+            <td th:each="cell:${row}" align="center" height="30px" width="85px" style="height:30px;width:85px;">
                 <div th:text="${cell}"></div>
             </td>
         </tr>
     </table>
+    <p></p>
 </body>
 </html>

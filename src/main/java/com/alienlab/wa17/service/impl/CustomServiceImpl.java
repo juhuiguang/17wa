@@ -41,6 +41,8 @@ public class CustomServiceImpl implements CustomService {
         if(custom.getCustomId()>0){
             return daoTool.updateOne(account,custom);
         }else{
+            //记录修改日志
+
             return daoTool.saveOne(custom,account);
         }
 

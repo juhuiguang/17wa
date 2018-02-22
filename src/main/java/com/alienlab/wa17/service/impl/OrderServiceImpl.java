@@ -198,12 +198,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private String getOrderNo(int account,long shopId) throws Exception {
-        SimpleDateFormat format=new SimpleDateFormat("ddyyMM");
+        SimpleDateFormat format=new SimpleDateFormat("yyMMdd");
         String ordernopre=account+format.format(new Date())+shopId;
         String sql="select count(1) num from tb_order where shop_id="+shopId+" and order_code like '"+ordernopre+"%'";
         Map<String,Object> map=daoTool.getMap(sql,account);
         int no=TypeUtils.castToInt(map.get("NUM"));
-        String result=ordernopre+"-"+(no+1);
+        String result=ordernopre+(no+1);
         return result;
     }
 

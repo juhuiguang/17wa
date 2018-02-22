@@ -21,6 +21,17 @@ public class MainTbAccount {
     private Timestamp accountTime;
     @ApiModelProperty(value="账户状态")
     private String accountStatus;
+    @ApiModelProperty(value="账户默认密码")
+    private String accountPwd;
+
+    @Column(name="account_pwd")
+    public String getAccountPwd() {
+        return accountPwd;
+    }
+
+    public void setAccountPwd(String accountPwd) {
+        this.accountPwd = accountPwd;
+    }
 
     @Basic
     @Column(name = "account_loginname")

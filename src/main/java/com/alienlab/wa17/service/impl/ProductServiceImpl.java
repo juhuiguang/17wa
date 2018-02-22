@@ -229,8 +229,8 @@ public class ProductServiceImpl implements ProductService {
         if(countResult!=null&&countResult.get("NUM")!=null){
              num=TypeUtils.castToInt(countResult.get("NUM"))+1;
         }
-        SimpleDateFormat format2=new SimpleDateFormat("ddyyMM");
-        String result=format2.format(new Date())+String.format("%04d", account_id)+String.format("%02d", num);
+        SimpleDateFormat format2=new SimpleDateFormat("yyMMdd");
+        String result=format2.format(new Date())+""+account_id+String.format("%03d", num);
         return result;
     }
 
