@@ -266,22 +266,30 @@ public class OrderServiceImpl implements OrderService {
         sql="select * from tb_order where order_id='"+orderno+"'";
         ClientTbOrder order=(ClientTbOrder)daoTool.getObject(sql,account,ClientTbOrder.class);
         if(detail!=null){
-            Float returnmoney=detail.getDetailReturnamount()*detail.getDetailPrice();
+            if(detail.getDetailReturnamount()==null)detail.setDetailReturnamount(0);
+            Float returnmoney=amount*detail.getDetailPrice();
+            //初始化明细退货金额，如果没有发生过退货，则退货金额起始为0
             if(returnmoney==null)returnmoney=0f;
+
+            //初始化当前订单退货金额
             Float rtn=order.getOrderTurnback();
             if(rtn==null)rtn=0f;
 
-            if(amount>(detail.getDetailAmount()-rtn)){
-                throw new Exception("退货数量大于购买数量！");
+            //验证退货数量。此处未考虑到连续退货
+            if(amount>detail.getDetailRealAmount()){
+                throw new Exception("退货数量大于订单有效数量！");
             }
-            detail.setDetailReturnamount(amount);
+            //更新退货总数
+            detail.setDetailReturnamount(detail.getDetailReturnamount()+amount);
             detail.setDetailReturntime(Timestamp.from(new Date().toInstant()));
+
+
             detail=daoTool.updateOne(account,detail);
 
             if(order!=null){//更新订单主表
                 order.setOrderTurnback(rtn+returnmoney);
                 daoTool.updateOne(account,order);
-                inventoryService.setInventory(account,order.getShopId(),skuid,detail.getDetailReturnamount(),"退货");
+                inventoryService.setInventory(account,order.getShopId(),skuid,amount,"退货");
                 ClientTbCustom custom=(ClientTbCustom)daoTool.getOne(ClientTbCustom.class,account,order.getCusId());
                 if(custom!=null){//更新客户余款
                     Float remainMoney=custom.getCustomRemainMoney();

@@ -1,5 +1,7 @@
 package com.alienlab.wa17.entity.client;
 
+import com.alienlab.wa17.entity.LogicField;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -18,6 +20,8 @@ public class ClientTbOrderDetail {
     private Float detailTotalPrice;
     private Integer detailReturnamount;
     private Timestamp detailReturntime;
+    private Integer detailRealAmount;
+
     @Basic
     @Column(name = "detail_returnamount")
     public Integer getDetailReturnamount() {
@@ -105,6 +109,11 @@ public class ClientTbOrderDetail {
 
     public void setDetailTotalPrice(Float detailTotalPrice) {
         this.detailTotalPrice = detailTotalPrice;
+    }
+
+    @LogicField
+    public Integer getDetailRealAmount() {
+        return this.detailAmount-this.detailReturnamount;
     }
 
     @Override
