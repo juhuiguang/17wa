@@ -113,7 +113,15 @@ public class ClientTbOrderDetail {
 
     @LogicField
     public Integer getDetailRealAmount() {
-        return this.detailAmount-this.detailReturnamount;
+        if(this.detailReturnamount==null){
+            this.detailReturnamount=0;
+        }
+        this.detailRealAmount=this.detailAmount-this.detailReturnamount;
+        return this.detailRealAmount;
+    }
+
+    public void setDetailRealAmount(Integer detailRealAmount) {
+        this.detailRealAmount = detailRealAmount;
     }
 
     @Override

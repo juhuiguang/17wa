@@ -25,6 +25,11 @@ public interface ColorService {
     MainTbColors addMainColor(MainTbColors color) throws Exception;
     boolean delMainColor(int color_id) throws Exception;
 
+    MainTbColors getSysColor(Long colorId) throws Exception;
+    ClientTbColorCus getClientColor(Long accountId,Long colorId) throws Exception;
+
+
+
 
 }
 

@@ -116,4 +116,16 @@ public class ColorServiceImpl implements ColorService {
     public boolean delMainColor(int color_id) throws Exception {
         return daoTool.deleteOne(MainTbColors.class,0,color_id);
     }
+
+    @Override
+    public MainTbColors getSysColor(Long colorId) throws Exception {
+
+        return (MainTbColors)daoTool.getOne(MainTbColors.class,0,colorId);
+    }
+
+    @Override
+    public ClientTbColorCus getClientColor(Long accountId, Long colorId) throws Exception {
+        return (ClientTbColorCus)daoTool.getOne(ClientTbColorCus.class,accountId.intValue(),colorId);
+    }
+
 }

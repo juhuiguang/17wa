@@ -73,6 +73,50 @@ public class InventoryController {
         }
     }
 
+    @ApiOperation(value="批量添加库存")
+    @PostMapping("/17wa-inventory/inventorybatchadd")
+    public ResponseEntity addInventoryBatch(@RequestBody String body ){
+        JSONObject param=JSONObject.parseObject(body);
+        if(param.containsKey("account")) {
+            if (param.containsKey("shopId")) {
+                int account = param.getInteger("account");
+                long shopId = param.getLong("shopId");
+                if (param.containsKey("details")) {
+                    JSONArray detailsArr=param.getJSONArray("details");
+                    JSONArray resultDetails = new JSONArray();
+                    for(int i=0;i<detailsArr.size();i++){
+                        JSONObject item=detailsArr.getJSONObject(i);
+                        Long skuid=item.getLong("skuid");
+                        Integer amount=item.getInteger("amount");
+                        try {
+                            ClientTbInventory inventory=inventoryService.setInventory(account,shopId,skuid,amount,"入库");
+                            resultDetails.add(inventory);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            ExecResult er=new ExecResult(false,"库存设置失败");
+                            JSONObject errorData=new JSONObject();
+                            errorData.put("skuid",skuid);
+                            errorData.put("amount",amount);
+                            er.setData(errorData);
+                            resultDetails.add(er);
+                        }
+                    }
+                    return ResponseEntity.ok(resultDetails);
+
+                }else{
+                    ExecResult er=new ExecResult(false,"details参数无效");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"shopId参数无效");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }else{
+            ExecResult er=new ExecResult(false,"account参数无效");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
+
     @ApiOperation(value="获取单品全部库存明细")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),

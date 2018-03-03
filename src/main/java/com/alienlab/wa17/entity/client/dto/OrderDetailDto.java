@@ -18,6 +18,8 @@ public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，
     private Integer detailAmount;
     private Float detailPrice;
     private Float detailTotalPrice;
+    private Integer detailRealAmount;
+    private Integer detailReturnamount;
 
     @Override
     public long getDetailId() {
@@ -118,6 +120,30 @@ public class OrderDetailDto extends ClientTbOrderDetail {//集成订单明细，
     @Override
     public void setDetailTotalPrice(Float detailTotalPrice) {
         this.detailTotalPrice = detailTotalPrice;
+    }
+
+    @Override
+    public Integer getDetailReturnamount() {
+        return detailReturnamount;
+    }
+
+    @Override
+    public void setDetailReturnamount(Integer detailReturnamount) {
+        this.detailReturnamount = detailReturnamount;
+    }
+
+    @Override
+    public Integer getDetailRealAmount() {
+        if(this.detailReturnamount==null){
+            this.detailReturnamount=0;
+        }
+        this.detailRealAmount=this.detailAmount-this.detailReturnamount;
+        return this.detailRealAmount;
+    }
+
+    @Override
+    public void setDetailRealAmount(Integer detailRealAmount) {
+        this.detailRealAmount = detailRealAmount;
     }
 
     public void setSkuId(long skuId) {

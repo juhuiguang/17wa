@@ -284,6 +284,7 @@ public class ProductServiceImpl implements ProductService {
                 MainTbColors c=new MainTbColors();
                 c.setColorId(clientTbProductSku.getColorId());
                 c.setColorName(clientTbProductSku.getColorName());
+                c.setColorRgb(clientTbProductSku.getColorRgb());
                 colors.add(c);
             }
             String sizeName=clientTbProductSku.getSizeName();

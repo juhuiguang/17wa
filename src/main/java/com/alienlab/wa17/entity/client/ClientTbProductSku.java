@@ -21,6 +21,7 @@ public class ClientTbProductSku {
     private String skuStatus;
     private Integer amount=0;
     private Integer tempAmount=0;
+    private String colorRgb="";
 
     @LogicField
     @Column(name = "amount")
@@ -130,6 +131,15 @@ public class ClientTbProductSku {
 
     public void setTempAmount(Integer tempAmount){
         this.tempAmount=tempAmount;
+    }
+
+    @Column(name = "color_rgb")
+    public String getColorRgb() {
+        return colorRgb;
+    }
+
+    public void setColorRgb(String colorRgb) {
+        this.colorRgb = colorRgb;
     }
 
     @Override

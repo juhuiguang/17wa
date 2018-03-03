@@ -9,12 +9,11 @@ import com.alienlab.wa17.entity.client.ClientTbProduct;
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.ClientTbSizeCus;
 import com.alienlab.wa17.entity.client.dto.*;
+import com.alienlab.wa17.entity.main.MainTbColors;
 import com.alienlab.wa17.entity.main.MainTbProducttype;
 import com.alienlab.wa17.entity.main.MainTbTags;
 import com.alienlab.wa17.entity.main.dto.ProductTypeDto;
-import com.alienlab.wa17.service.ImageService;
-import com.alienlab.wa17.service.ProductService;
-import com.alienlab.wa17.service.SkuService;
+import com.alienlab.wa17.service.*;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +46,9 @@ public class ProductController {
 
     @Autowired
     SkuService skuService;
+
+    @Autowired
+    ColorService colorService;
 
     @Value("${alienlab.upload.path}")
     String upload_path;
@@ -135,6 +137,31 @@ public class ProductController {
                     skus[pos].setColorId(color.getLong("colorId"));
                     skus[pos].setColorName(color.getString("colorName"));
                     skus[pos].setColorType(color.getString("colorType"));
+                    if(skus[pos].getColorType().equals("系统")){
+                        try {
+                            MainTbColors mc=colorService.getSysColor(skus[pos].getColorId());
+                            if(mc!=null){
+                                skus[pos].setColorRgb(mc.getColorRgb());
+                            }
+                            else{
+                                skus[pos].setColorRgb("");
+                            }
+                        } catch (Exception e) {
+                            skus[pos].setColorRgb("");
+                        }
+                    }else{
+                        try {
+                            ClientTbColorCus cc=colorService.getClientColor(Long.parseLong(String.valueOf(account)),skus[pos].getColorId());
+                            if(cc==null){
+                                skus[pos].setColorRgb(cc.getColorRgb());
+                            }else{
+                                skus[pos].setColorRgb("");
+                            }
+                        } catch (Exception e) {
+                            skus[pos].setColorRgb("");
+                        }
+                    }
+
                     skus[pos].setSizeId(size.getLong("sizeId"));
                     skus[pos].setSizeName(size.getString("sizeName"));
                     skus[pos].setSizeType(size.getString("sizeType"));

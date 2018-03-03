@@ -355,6 +355,11 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setProductPic(TypeUtils.castToString(detail.get("PRODUCT_PIC")));
             orderDetail.setSizeName(TypeUtils.castToString(detail.get("SIZE_NAME")));
             orderDetail.setSkuId(TypeUtils.castToLong(detail.get("SKU_ID")));
+            orderDetail.setDetailReturnamount(TypeUtils.castToInt(detail.get("DETAIL_RETURNAMOUNT")));
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.0");
+            if(detail.get("DETAIL_RETURN_TIME")!=null){
+                orderDetail.setDetailReturntime(TypeUtils.castToTimestamp(sdf.parse(TypeUtils.castToString(detail.get("DETAIL_RETURN_TIME"))).getTime()));
+            }
             result.add(orderDetail);
         }
         return result;
