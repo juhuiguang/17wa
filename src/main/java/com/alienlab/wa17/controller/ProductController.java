@@ -106,6 +106,7 @@ public class ProductController {
         }
 
         p.setAccountId((long)account);
+        p.setProductPic(productbase.getString("productPic"));
         p.setProductCode2(productbase.getString("productCode2"));
         p.setProductCode(productbase.getString("productCode"));
         p.setProductColors(productbase.getString("productColors"));
