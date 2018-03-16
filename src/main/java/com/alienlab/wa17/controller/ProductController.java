@@ -420,12 +420,20 @@ public class ProductController {
 
     @ApiOperation(value="获取所有SKU数据（用于门店调货）")
     @GetMapping(value="/17wa-produt/allsku")
-    public ResponseEntity getAllSkusByCode(@RequestParam int account,@RequestParam long shopId,@RequestParam(required = false) String code){
+    public ResponseEntity getAllSkusByCode(
+            @RequestParam int account,
+            @RequestParam long shopId,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) Integer index,
+            @RequestParam(required = false) Integer size
+            ){
         try {
             if(code==null){
                 code="";
             }
-            List<InventoryDto> skus=skuService.getAllSku(account,shopId,code);
+            if(index==null) index=0;
+            if(size==null) size=20;
+            Page<InventoryDto> skus=skuService.getAllSku(account,shopId,code,index,size);
             return ResponseEntity.ok().body(skus);
         } catch (Exception e) {
             e.printStackTrace();

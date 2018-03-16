@@ -345,7 +345,7 @@ public class InventoryController {
     @ApiOperation(value="获取指定产品的跨门店库存")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
-            @ApiImplicitParam(name="productId",value="产品编码",paramType = "path")
+            @ApiImplicitParam(name="productId",value="SKU_ID 单品ID，此处参数名定义错误",paramType = "path")
     })
     @GetMapping("/17wa-inventory/shop/{account}/{productId}")
     public ResponseEntity getSkuShopList(@PathVariable int account, @PathVariable long productId){

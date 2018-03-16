@@ -7,6 +7,8 @@ import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.service.ProductService;
 import com.alienlab.wa17.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,13 +42,14 @@ public class SkuServiceImpl implements SkuService {
         return daoTool.getAllList(sql,account_id,ClientTbProductSku.class);
     }
 
-    public List<InventoryDto> getAllSku(int account, long shopId, String code) throws Exception {
+    @Override
+    public Page<InventoryDto> getAllSku(int account, long shopId, String code, int index, int size) throws Exception {
         String sql="SELECT tb1.*,lj.id inventory_id,lj.`inventory_amount` FROM ( " +
-                "SELECT a.*,b.`product_code`,b.`product_code2`,b.`product_name` FROM `tb_product_sku` a,`tb_product` b " +
+                "SELECT a.*,b.`product_code`,b.`product_code2`,b.product_pic,b.`product_name` FROM `tb_product_sku` a,`tb_product` b " +
                 "WHERE a.`product_id`=b.`product_id` AND (b.`product_code` LIKE '%"+code+"%' OR b.`product_code2` LIKE '%"+code+"%') " +
                 ") tb1 " +
                 "LEFT JOIN `tb_inventory` lj ON lj.`sku_id`=tb1.id AND lj.`shop_id`= "+shopId;
-        return daoTool.getAllList(sql,account,InventoryDto.class);
+        return (Page<InventoryDto>)daoTool.getPageList(sql,new PageRequest(index,size),account,InventoryDto.class);
     }
 
     @Override

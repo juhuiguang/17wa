@@ -2,6 +2,7 @@ package com.alienlab.wa17.service;
 
 import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -22,5 +23,5 @@ public interface SkuService {
 
     ClientTbProductSku setStatus(int account_id,long sku_id,String status) throws Exception;
 
-    List<InventoryDto> getAllSku(int account, long shopId, String code) throws Exception;
+    Page<InventoryDto> getAllSku(int account, long shopId, String code, int index, int size) throws Exception;
 }

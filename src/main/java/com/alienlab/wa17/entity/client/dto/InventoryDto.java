@@ -55,6 +55,8 @@ public class InventoryDto {
     private Timestamp inventoryCountTime;
     @ApiModelProperty(value="此店铺的单品当前清点数量")
     private Integer inventoryTempAmount;
+    @ApiModelProperty(value = "产品图片")
+    private String productPic;
 
     @Column(name = "temp_amount")
     public Integer getInventoryTempAmount() {
@@ -254,4 +256,13 @@ public class InventoryDto {
         this.productPrice2 = productPrice2;
     }
 
+    @Basic
+    @Column(name = "product_pic")
+    public String getProductPic() {
+        return productPic;
+    }
+
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
+    }
 }

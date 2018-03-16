@@ -1,5 +1,8 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.*;
 import com.alienlab.wa17.entity.client.dto.ColorDto;
@@ -15,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -162,6 +166,35 @@ public class SkuController {
         }
     }
 
+    @ApiOperation(value="设置多个单品状态：上架、下架、缺货")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="account",value="账户id",paramType = "path")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "", response = ClientTbProductSku.class),
+            @ApiResponse(code = 500, message = "", response = ExecResult.class),
+    })
+    @PostMapping(value="/17wa-sku/status/{account}")
+    public ResponseEntity setSkuStatus(@PathVariable int account,@RequestBody String skusjson){
+        try {
+            JSONArray skus= JSON.parseArray(skusjson);
+            List<ClientTbProductSku> result=new ArrayList<ClientTbProductSku>();
+            for(int i=0;i<skus.size();i++){
+                JSONObject sku=skus.getJSONObject(i);
+                if(sku.containsKey("skuid")&&sku.containsKey("status")){
+                    Long sid=sku.getLong("skuid");
+                    String status=sku.getString("status");
+                    ClientTbProductSku s=skuService.setStatus(account,sid,status);
+                    result.add(s);
+                }
+            }
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 
     @ApiOperation(value="设置单品状态：上架、下架、缺货")
     @ApiImplicitParams({
