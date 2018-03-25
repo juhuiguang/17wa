@@ -1,0 +1,39 @@
+{
+  "account":1,
+  "shopId":1,
+  "details":[
+    {
+      "skuid":752,
+      "amount":1
+    },
+    {
+      "skuid":753,
+      "amount":5
+    },
+    {
+      "skuid":754,
+      "amount":10
+    }
+  ]
+},
+
+{
+  "account":1,
+  "shopId":1,
+  "details":[
+    {
+      "skus":[
+        {
+          "skuId":752,
+          "amount":50
+        },{
+          "skuId":753,
+          "amount":48
+        },{
+          "skuId":754,
+          "amount":30
+        }
+      ]
+    }
+  ]
+}

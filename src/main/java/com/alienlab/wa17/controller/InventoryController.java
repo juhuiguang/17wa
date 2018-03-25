@@ -9,6 +9,7 @@ import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.InventoryDto;
 import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
 import com.alienlab.wa17.service.InventoryService;
+import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,6 +34,9 @@ import java.util.List;
 public class InventoryController {
     @Autowired
     InventoryService inventoryService;
+    @Autowired
+    ProductService productService;
+
     @ApiOperation(value="获得指定产品库存sku及库存列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name="account",value="账户编码",paramType = "path"),
@@ -381,55 +385,6 @@ public class InventoryController {
         }
     }
 
-//    @ApiOperation(value="手动盘点（老版本，整体提交）")
-//    @PostMapping("/17wa-inventory/check")
-//    public ResponseEntity checkInventory(@RequestBody String body){
-//        JSONObject param=JSONObject.parseObject(body);
-//        try{
-//            if(param.containsKey("account")){
-//                if(param.containsKey("shopId")){
-//                    int account=param.getInteger("account");
-//                    long shopId=param.getLong("shopId");
-//                    if(param.containsKey("details")){
-//                        JSONArray array=param.getJSONArray("details");
-//                        List<ClientTbProduct> products=inventoryService.checkShopInventory(account,shopId,array);
-//                        JSONObject result=new JSONObject();
-//                        JSONArray normal=new JSONArray();
-//                        JSONArray error=new JSONArray();
-//                        for(ClientTbProduct p:products){
-//                            if(p.getInventroyStatus().equals("正常")){
-//                                normal.add(p);
-//                            }
-//                        }
-//                        for(ClientTbProduct p:products){
-//                            if(p.getInventroyStatus().equals("异常")){
-//                                error.add(p);
-//                            }
-//                        }
-//                        result.put("normal",normal);
-//                        result.put("error",error);
-//                        return ResponseEntity.ok().body(result);
-//                    }else{
-//                        ExecResult er=new ExecResult(false,"未正确指定details参数");
-//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-//                    }
-//
-//                }else{
-//                    ExecResult er=new ExecResult(false,"未正确指定shopId参数");
-//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-//                }
-//            }else{
-//                ExecResult er=new ExecResult(false,"未正确指定account参数");
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-//            }
-//
-//        }catch(Exception e){
-//            ExecResult er=new ExecResult(false,e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
-//        }
-//
-//    }
-
 
     @ApiOperation(value="手动盘点（新版本，单个产品提交）")
     @PostMapping("/17wa-inventory/singlecheck")
@@ -492,10 +447,13 @@ public class InventoryController {
 
     @ApiOperation(value="扫码盘点,完成盘点")
     @GetMapping("/17wa-inventory/scan")
-    public ResponseEntity scanFinish(int account,Long shopId){
+    public ResponseEntity scanFinish(int account,Long shopId,@RequestParam(required = false) Integer index,@RequestParam(required = false) Integer size){
         List<ClientTbProduct> products= null;
         try {
-            products = inventoryService.getCheckResult(account,shopId);
+            if(index==null)index=0;
+            if(size==null)size=20;
+            inventoryService.getCheckResult(account,shopId);
+            products = productService.getAllProducts(account,shopId,new PageRequest(index,size)).getContent();
             JSONObject result=new JSONObject();
             JSONArray normal=new JSONArray();
             JSONArray error=new JSONArray();
@@ -518,6 +476,36 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
         }
 
+    }
+    @ApiOperation(value="清单盘点，完成盘点")
+    @GetMapping("/17wa-inventory/listcount")
+    public ResponseEntity getListCount(int account,Long shopId,@RequestParam(required = false) Integer index,@RequestParam(required = false) Integer size){
+        List<ClientTbProduct> products= null;
+        try {
+            if(index==null)index=0;
+            if(size==null)size=20;
+            products = productService.getAllProducts(account,shopId,new PageRequest(index,size)).getContent();
+            JSONObject result=new JSONObject();
+            JSONArray normal=new JSONArray();
+            JSONArray error=new JSONArray();
+            for(ClientTbProduct p:products){
+                if(p.getInventroyStatus().equals("正常")){
+                    normal.add(p);
+                }
+            }
+            for(ClientTbProduct p:products){
+                if(p.getInventroyStatus().equals("异常")){
+                    error.add(p);
+                }
+            }
+            result.put("normal",normal);
+            result.put("error",error);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
     }
 
     @ApiOperation(value="库存核对一键处理")

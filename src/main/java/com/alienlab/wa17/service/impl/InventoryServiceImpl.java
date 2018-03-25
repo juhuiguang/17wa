@@ -287,8 +287,16 @@ public class InventoryServiceImpl implements InventoryService {
     OrderService orderService;
     @Override
     public ClientTbDispatch addDispatch(int account, long fromShopId, long toShopId, long skuId, int amount) throws Exception {
+        //检验调货操作是否可以进行
+        if(amount==0){
+            throw new Exception("申请调出数量不可以为0。");
+        }
+        boolean flag=orderService.canDispatch(account,fromShopId,toShopId,skuId);
+        if(!flag){
+            throw new Exception("调货不成功！调出方有未完成的请求。");
+        }
         //查询调货提供方的库存量是否满足调货要求
-        boolean flag=orderService.validateInventory(account,fromShopId,skuId,amount);
+        flag=orderService.validateInventory(account,fromShopId,skuId,amount);
         if(!flag){
             throw new Exception("调货方库存不足");
         }
@@ -335,6 +343,9 @@ public class InventoryServiceImpl implements InventoryService {
             if(dispatch.getDispatchToIsok().equals("1")){
                 throw new Exception("该调货申请已经确认调入。");
             }
+            if(!dispatch.getDispatchFromIsok().equals("1")){
+                throw new Exception("调出方尚未确认调出，不能进行调入确认。");
+            }
         }
         long fromShopId=dispatch.getDispatchFromShop();
         long toShopId=dispatch.getDispatchToShop();
@@ -379,9 +390,29 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public List<SkuShopInventoryDto> getSkuShopList(int account, long skuId) throws Exception {
-        String sql="SELECT a.*,c.color_name,c.size_name,b.shop_id,b.shop_name,b.shop_isdefault FROM tb_inventory a,tb_shop b,tb_product_sku c " +
-                "WHERE a.`sku_id`=c.id AND c.id="+skuId+" AND a.shop_id=b.shop_id";
+        String sql="select tb.*,ifnull(lj.dispatch_id,0) dispatch_status from ( " +
+                "SELECT " +
+                "a.*, c.color_name, " +
+                "c.size_name, " +
+                "b.shop_name, " +
+                "b.shop_isdefault " +
+                "FROM " +
+                "tb_inventory a, " +
+                "tb_shop b, " +
+                "tb_product_sku c " +
+                "WHERE " +
+                "a.`sku_id` = c.id " +
+                "AND c.id = "+skuId+" " +
+                "AND a.shop_id = b.shop_id " +
+                "AND a.inventory_amount > 0 " +
+                ") tb " +
+                "left join tb_dispatch lj on lj.sku_id=tb.sku_id and lj.dispatch_from_shop=tb.shop_id and lj.dispatch_isfinished=0 ";
         List<SkuShopInventoryDto> result=daoTool.getAllList(sql,account,SkuShopInventoryDto.class);
+        for (SkuShopInventoryDto skuShopInventoryDto : result) {
+            if(skuShopInventoryDto.getDispatchStatus()>0){
+                skuShopInventoryDto.setDispatchStatus(1);
+            }
+        }
         return result;
     }
 
@@ -410,6 +441,8 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public boolean resetShopInventoryStatus(int account, long shopid) throws Exception {
         String sql="delete from tb_product_inventory_status where shop_id="+shopid;
+        daoTool.exec(sql,account);
+        sql="update tb_inventory set inventory_count_status='正常' where shop_id="+shopid;
         daoTool.exec(sql,account);
         sql="delete from tb_inventory_temp where shop_id="+shopid;
         return daoTool.exec(sql,account);
@@ -515,11 +548,11 @@ public class InventoryServiceImpl implements InventoryService {
         daoTool.exec(sql,account);
 
         sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
-                "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
+                "WHERE a.shop_id="+shopid+" AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='异常' ";
         daoTool.exec(sql,account);
 
         sql="insert into tb_product_inventory_status(product_id,shop_id,status) SELECT DISTINCT b.product_id,a.shop_id,inventory_count_status FROM `tb_inventory` a,tb_product_sku b " +
-                "WHERE a.shop_id=1 AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='正常' and not exists(select 1 from tb_product_inventory_status where tb_product_inventory_status.product_id=b.product_id)";
+                "WHERE a.shop_id="+shopid+" AND a.`sku_id`=b.`id` AND a.`inventory_count_status`='正常' and not exists(select 1 from tb_product_inventory_status where tb_product_inventory_status.product_id=b.product_id)";
         daoTool.exec(sql,account);
         return productService.getAllProducts(account,shopid,new PageRequest(0,99)).getContent();
     }

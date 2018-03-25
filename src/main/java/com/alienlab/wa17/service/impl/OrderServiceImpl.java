@@ -207,8 +207,9 @@ public class OrderServiceImpl implements OrderService {
         return result;
     }
 
-    public boolean validateInventory(int account,long shopId,long skuid,int saleAmount) throws Exception {
-        String sql="select * from tb_inventory where sku_id="+skuid+" and shop_id="+shopId;
+    public boolean validateInventory(int account,long fromshopId,long skuid,int saleAmount) throws Exception {
+        //校验当前剩余库存
+        String sql="select * from tb_inventory where sku_id="+skuid+" and shop_id="+fromshopId;
         Map<String,Object> map=daoTool.getMap(sql,account);
         if(map==null){
             return false;
@@ -223,6 +224,28 @@ public class OrderServiceImpl implements OrderService {
         }
         return true;
     }
+
+    @Override
+    public boolean canDispatch(int account, long fromshopid, long toshopid, long skuid) throws Exception {
+        //检查相同调入调出方是否已经存在未完成调货记录
+        String sql="select * from `tb_dispatch` where sku_id="+skuid+" and dispatch_from_shop="+fromshopid+" and dispatch_to_shop="+toshopid +" and dispatch_isfinished=0 ";
+        Map<String,Object> map=daoTool.getMap(sql,account);
+        if(map==null){
+            //检验调出方是否被其他店申请调出且未完成
+            sql="select * from `tb_dispatch` where sku_id="+skuid+" and dispatch_from_shop="+fromshopid+" and dispatch_isfinished=0 ";
+            map=daoTool.getMap(sql,account);
+            if(map==null){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
+
+
     @Override
     public OrderPrintDto doPrint(int account,Long orderId) throws Exception {
         ClientTbOrder order=(ClientTbOrder)daoTool.getOne(ClientTbOrder.class,account,orderId);

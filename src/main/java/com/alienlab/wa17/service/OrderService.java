@@ -16,6 +16,7 @@ import java.util.List;
 public interface OrderService {
     OrderPrintDto addOrder(int account,long shopId,JSONObject orderinfo) throws Exception;
     boolean validateInventory(int account,long shopId,long skuid,int saleAmount) throws Exception;
+    boolean canDispatch(int account,long fromshopid,long toshopid,long skuid) throws Exception;
     OrderPrintDto doPrint(int account, Long shopId, OrderDto order, ClientTbCustom custom) throws Exception;
     OrderPrintDto doPrint(int account,Long orderId) throws Exception;
 

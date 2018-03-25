@@ -38,6 +38,10 @@ public class SkuShopInventoryDto {
     @Column(name = "shop_name")
     private String shopName;
 
+    @ApiModelProperty(value="调货状态")
+    @Column(name = "dispatch_status")
+    private Integer dispatchStatus;
+
     public Long getSkuId() {
         return skuId;
     }
@@ -108,5 +112,13 @@ public class SkuShopInventoryDto {
 
     public void setShopName(String shopName) {
         this.shopName = shopName;
+    }
+
+    public Integer getDispatchStatus() {
+        return dispatchStatus;
+    }
+
+    public void setDispatchStatus(Integer dispatchStatus) {
+        this.dispatchStatus = dispatchStatus;
     }
 }
