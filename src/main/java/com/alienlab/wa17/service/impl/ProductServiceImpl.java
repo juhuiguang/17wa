@@ -110,9 +110,9 @@ public class ProductServiceImpl implements ProductService {
 //                " FROM tb_product a LEFT JOIN (SELECT c.`product_id`,SUM(b.`inventory_amount`) product_amount FROM tb_inventory b,tb_product_sku c WHERE b.shop_id="+shopId+" AND b.`sku_id`=c.`id` ) lj ON lj.product_id=a.`product_id` " +
 //                " LEFT JOIN `tb_product_inventory_status` lj2 ON lj2.`product_id`=a.`product_id` AND lj2.`shop_id`="+shopId +" ORDER BY FIELD(lj2.`status`,'未盘点','异常','正常'),product_code2";
         String sql="SELECT a.product_id,product_code,product_code2,account_id,product_name,product_pic,product_price1,product_price2,product_type,product_fabric,product_fabricin,product_sizes,product_colors,product_status,product_tags ,lj.product_amount,lj2.`status` inventory_status ,lj3.tempamount " +
-                " FROM tb_product a LEFT JOIN (SELECT c.`product_id`,SUM(b.`inventory_amount`) product_amount FROM tb_inventory b,tb_product_sku c WHERE b.shop_id="+shopId+" AND b.`sku_id`=c.`id` ) lj ON lj.product_id=a.`product_id`  " +
+                " FROM tb_product a LEFT JOIN (SELECT c.`product_id`,SUM(b.`inventory_amount`) product_amount FROM tb_inventory b,tb_product_sku c WHERE b.shop_id="+shopId+" AND b.`sku_id`=c.`id` group by c.product_id ) lj ON lj.product_id=a.`product_id`  " +
                 "  LEFT JOIN `tb_product_inventory_status` lj2 ON lj2.`product_id`=a.`product_id` AND lj2.`shop_id`=" +shopId +
-                "  LEFT JOIN (SELECT SUM(m.`amount`) tempamount,n.`product_id` FROM `tb_inventory_temp` m,tb_product_sku n WHERE m.`sku_id`=n.`id` AND m.`shop_id`="+shopId+") lj3 ON lj3.product_id=a.`product_id` " +
+                "  LEFT JOIN (SELECT SUM(m.`amount`) tempamount,n.`product_id` FROM `tb_inventory_temp` m,tb_product_sku n WHERE m.`sku_id`=n.`id` AND m.`shop_id`="+shopId+" group by n.product_id ) lj3 ON lj3.product_id=a.`product_id` " +
                 "  ORDER BY FIELD(lj2.`status`,'未盘点','异常','正常'),product_code2";
         Page<ClientTbProduct> results=daoTool.getPageList(sql,page,account_id,ClientTbProduct.class);
 

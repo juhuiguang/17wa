@@ -62,7 +62,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "  LEFT JOIN tb_inventory lj " +
                 "    ON a.`id` = lj.`sku_id` " +
                 "    AND lj.`shop_id` = "+shopId+" " +
-                "  LEFT JOIN tb_inventory_temp lj1 " +
+                "  LEFT JOIN (select sku_id,shop_id,sum(amount) amount from `tb_inventory_temp` group by sku_id,shop_id) lj1 " +
                 "    ON a.`id` = lj1.`sku_id` " +
                 "    AND lj1.`shop_id` = "+shopId+" " +
                 "  LEFT JOIN tb_product lj2 ON lj2.`product_id`=a.`product_id` " +
@@ -592,7 +592,7 @@ public class InventoryServiceImpl implements InventoryService {
                 "from `tb_product_sku` b " +
                 "left join `tb_inventory` a on a.`sku_id`=b.`id` and a.`shop_id`="+shopid+" " +
                 "left join `tb_product` c on c.`product_id`=b.`product_id` and c.`product_id`="+productid+" " +
-                "left join `tb_inventory_temp` d on d.`sku_id`=b.id and d.`shop_id`="+shopid+" " +
+                "left join (select sku_id,shop_id,sum(amount) amount from `tb_inventory_temp` group by sku_id,shop_id) d on d.`sku_id`=b.id and d.`shop_id`="+shopid+" " +
                 "where b.`product_id`="+productid;
         List<InventoryDto> result=daoTool.getAllList(sql,account,InventoryDto.class);
         return result;
