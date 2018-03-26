@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.*;
-import com.alienlab.wa17.entity.client.dto.DispatchDto;
-import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
-import com.alienlab.wa17.entity.client.dto.InventoryDto;
-import com.alienlab.wa17.entity.client.dto.SkuShopInventoryDto;
+import com.alienlab.wa17.entity.client.dto.*;
 import com.alienlab.wa17.service.InventoryService;
 import com.alienlab.wa17.service.ProductService;
 import io.swagger.annotations.Api;
@@ -443,6 +440,54 @@ public class InventoryController {
         }
     }
 
+
+    @ApiOperation(value="扫码盘点提交数据（自动查询skuid）")
+    @PostMapping("/17wa-inventory/scan/sizeandcolor")
+    public ResponseEntity scanInventorySizeAndColor(@RequestBody String body){
+        JSONObject param=JSONObject.parseObject(body);
+        try {
+            if (param.containsKey("account")&&param.containsKey("shopId")&&param.containsKey("amount")
+                    &&param.containsKey("sizeType")&&param.containsKey("colorType")&&param.containsKey("sizeId")
+                    &&param.containsKey("colorId")&&param.containsKey("productId")) {
+                int account=param.getInteger("account");
+                long shopId=param.getLong("shopId");
+                String sizeType=param.getString("sizeType");
+                String colorType=param.getString("colorType");
+                long colorId=param.getLong("colorId");
+                long sizeId=param.getLong("sizeId");
+                int amount=param.getInteger("amount");
+                long productid=param.getLong("productId");
+                Long skuId=null;
+                ProductSkuDto productSkuDto=productService.loadProduct(account,productid,shopId);
+                List<ClientTbProductSku> skus=productSkuDto.getSkus();
+                for (ClientTbProductSku clientTbProductSku : skus) {
+                    if(
+                        clientTbProductSku.getSizeId()==sizeId &&
+                        clientTbProductSku.getSizeType().equals(sizeType)&&
+                        clientTbProductSku.getColorId()==colorId &&
+                        clientTbProductSku.getColorType().equals(colorType)
+                    ) {
+                        skuId = clientTbProductSku.getId();
+                        break;
+                    }
+                }
+
+                if(skuId==null){
+                    ExecResult er = new ExecResult(false, "未找到sku编码。");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+
+                ClientTbInventoryTemp temp=inventoryService.addTempInventoryAmount(account,shopId, skuId,amount);
+                return ResponseEntity.ok(temp);
+            } else {
+                ExecResult er = new ExecResult(false, "需指定参数：account,shopId,amount,sizeType,colorType,sizeId,colorId,productId");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }catch(Exception e){
+            ExecResult er=new ExecResult(false,e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+    }
 
 
     @ApiOperation(value="扫码盘点,完成盘点")
