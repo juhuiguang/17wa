@@ -1,9 +1,6 @@
 package com.alienlab.wa17.entity.client;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -17,7 +14,13 @@ public class ClientTbMsgInfo {
     private String msgContent;
     private Timestamp msgTime;
     private String msgStatus;
+    private String msgTitle;
+    private Integer fromShop;
+    private Integer toShop;
+    private String msgTypeLink;
 
+
+    @Id
     @Basic
     @Column(name = "msg_id")
     public Long getMsgId() {
@@ -66,6 +69,46 @@ public class ClientTbMsgInfo {
 
     public void setMsgStatus(String msgStatus) {
         this.msgStatus = msgStatus;
+    }
+
+    @Basic
+    @Column(name = "msg_title")
+    public String getMsgTitle() {
+        return msgTitle;
+    }
+
+    public void setMsgTitle(String msgTitle) {
+        this.msgTitle = msgTitle;
+    }
+
+    @Basic
+    @Column(name = "msg_from_shop")
+    public Integer getFromShop() {
+        return fromShop;
+    }
+
+    public void setFromShop(Integer fromShop) {
+        this.fromShop = fromShop;
+    }
+
+    @Basic
+    @Column(name = "msg_to_shop")
+    public Integer getToShop() {
+        return toShop;
+    }
+
+    public void setToShop(Integer toShop) {
+        this.toShop = toShop;
+    }
+
+    @Basic
+    @Column(name = "msg_type_link")
+    public String getMsgTypeLink() {
+        return msgTypeLink;
+    }
+
+    public void setMsgTypeLink(String msgTypeLink) {
+        this.msgTypeLink = msgTypeLink;
     }
 
     @Override

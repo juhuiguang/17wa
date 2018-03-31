@@ -309,15 +309,34 @@ public class InventoryServiceImpl implements InventoryService {
         dispatch.setDispatchIsfinished("0");
         dispatch=daoTool.saveOne(dispatch,account);
         if(dispatch.getDispatchId()>0){
+            //产生调货消息
+            String sql="select * from tb_product a,tb_product_sku b where a.product_id=b.product_id and b.id="+skuId;
+            Map<String,Object> product=daoTool.getMap(sql,account);
+            ClientTbMsgInfo msg=new ClientTbMsgInfo();
+            if(product!=null){
+                msg.setMsgContent("您收到商品 ["+TypeUtils.castToString(product.get("product_name".toUpperCase()))+"] "+amount+" 件 调货申请，请及时处理。");
+            }else{
+                msg.setMsgContent("您收到商品 "+amount+" 件 调货申请，请及时处理。");
+            }
+
+            msg.setMsgStatus("0");
+            msg.setMsgType("调货");
+            msg.setMsgTitle("调货申请");
+            msg.setMsgTypeLink("dispatch");
+            msg.setToShop(Long.valueOf(toShopId).intValue());
+            msg.setFromShop(Long.valueOf(fromShopId).intValue());
+            msg.setMsgTime(Timestamp.from(Instant.now()));
+            daoTool.saveOne(msg,account);
+
             return dispatch;
-        }else{
+        }else {
             throw new Exception("调货请求保存失败");
         }
 
     }
 
     @Override
-    public boolean delDispatch(int account, long dispatchId) throws Exception {
+    public boolean delDispatch(int account,long dispatchId) throws Exception{
         ClientTbDispatch dispatch=(ClientTbDispatch)daoTool.getOne(ClientTbDispatch.class,account,dispatchId);
         if(dispatch==null){
             throw new Exception("未找到编码为"+dispatchId+"的调度记录");

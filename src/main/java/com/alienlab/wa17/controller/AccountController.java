@@ -83,6 +83,38 @@ public class AccountController {
 
     }
 
+    @ApiOperation(value="修改密码与重置密码")
+    @PostMapping("/17wa-account/reset")
+    public ResponseEntity resetAccount(@RequestBody Map body){
+        String phone= com.alibaba.fastjson.util.TypeUtils.castToString(body.get("phone"));
+        String code=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("code"));
+        String pwd=com.alibaba.fastjson.util.TypeUtils.castToString(body.get("password"));
+        if(SmsCodePool.CodePool.containsKey(phone)){
+            if(SmsCodePool.CodePool.get(phone).equalsIgnoreCase(code)){
+                //判断是否重名
+                try {
+                    MainTbAccount account=accountService.getAccount(phone);
+                    account.setAccountPwd(pwd);
+                    account=accountService.addAccount(account);
+                    return ResponseEntity.ok(account);
+                } catch (Exception e) {
+                   e.printStackTrace();
+                    ExecResult er=new ExecResult(false,"修改账户发生错误");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+                }
+            }else{
+                ExecResult er=new ExecResult(false,"验证码错误");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+            }
+        }else{
+            ExecResult er=new ExecResult(false,"未查询到您的短信验证码");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
+        }
+
+    }
+
+
+
     @ApiOperation(value="激活账户")
     @PostMapping("/17wa-account/active")
     public ResponseEntity activeAccount(@RequestParam int accountId){
@@ -114,7 +146,10 @@ public class AccountController {
                                       @RequestParam String username,@RequestParam String pwd){
         try {
             ClientTbShopAccount user=accountService.shopLogin(account,shop,username,pwd);
-            return ResponseEntity.ok().body(user);
+            JSONObject result=JSONObject.parseObject(JSONObject.toJSONString(user));
+            MainTbAccountSetting settings=accountService.getSetting(account);
+            result.put("settins",settings);
+            return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());
