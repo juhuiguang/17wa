@@ -37,3 +37,36 @@
     }
   ]
 }
+
+
+{
+  "cus_id":4,
+  "details":[{
+       "sku_id":"517",
+        "detail_amount":"1",
+        "detail_price":"49",
+        "total_price":"49.00",
+        "detail_name":"纯棉牛仔衬衫"
+  },{
+      "sku_id":"0",
+      "detail_amount":"0",
+      "detail_price":"0",
+      "total_price":"3.00",
+      "detail_name":"抹零"
+    },{
+      "sku_id":"0",
+      "detail_amount":"0",
+      "detail_price":"0",
+      "total_price":"100.00",
+      "detail_name":"核销"
+      }
+  ],
+  "account":"1",
+  "order_recharge":"100.00",
+  "order_payment":"0",
+  "order_paytype":"现金",
+  "order_odd":"3.00",
+  "order_memo":"8888",
+  "order_grade_out":"100",
+  "order_grade_money":"1"
+}

@@ -81,7 +81,8 @@ public class OrderServiceImpl implements OrderService {
             odd=orderinfo.getFloat("order_odd");
             totalPrice-=odd;
             //积分换算成金额，如果存在倍率在这里处理
-            Float grademoney=orderinfo.getInteger("order_grade_out")*0.1f;
+            Float grademoney=orderinfo.getFloat("order_grade_money");
+            if(grademoney==null)grademoney=0f;
             //订单总额-积分抵扣金额
             totalPrice-=grademoney;
 
@@ -92,6 +93,12 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderCode(orderCode);
             order.setOrderGradeIn(Math.round(totalPrice));
             order.setOrderGradeOut(orderinfo.getInteger("order_grade_out"));
+            if(custom.getCustomGrade()==null){
+                custom.setCustomGrade(0L);
+            }
+            if(custom.getCustomGrade()<order.getOrderGradeOut()){
+                throw new Exception("客户积分不足，抵扣失败。");
+            }
             order.setOrderMemo(orderinfo.getString("order_memo"));
             order.setOrderMoney(totalPrice);
             order.setOrderOdd(odd);
@@ -129,6 +136,9 @@ public class OrderServiceImpl implements OrderService {
                     if(custom.getCustomGrade()==null){
                         custom.setCustomGrade(0L);
                     }
+                    //扣除积分
+                    custom.setCustomGrade(custom.getCustomGrade()-(long)order.getOrderGradeOut());
+                    //增加积分
                     custom.setCustomGrade(custom.getCustomGrade()+(long)order.getOrderGradeIn());
                     custom.setCustomLatestMoney(totalPrice);
                     custom.setCustomLatestPayment(order.getOrderPayment());

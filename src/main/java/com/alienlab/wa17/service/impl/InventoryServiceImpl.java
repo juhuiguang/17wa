@@ -314,9 +314,9 @@ public class InventoryServiceImpl implements InventoryService {
             Map<String,Object> product=daoTool.getMap(sql,account);
             ClientTbMsgInfo msg=new ClientTbMsgInfo();
             if(product!=null){
-                msg.setMsgContent("您收到商品 ["+TypeUtils.castToString(product.get("product_name".toUpperCase()))+"] "+amount+" 件 调货申请，请及时处理。");
+                msg.setMsgContent("您收到1条调货申请，商品 ["+TypeUtils.castToString(product.get("product_name".toUpperCase()))+"] "+amount+" 件，请及时处理。");
             }else{
-                msg.setMsgContent("您收到商品 "+amount+" 件 调货申请，请及时处理。");
+                msg.setMsgContent("您收到1条调货申请，商品 "+amount+" 件 调货申请，请及时处理。");
             }
 
             msg.setMsgStatus("0");
