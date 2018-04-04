@@ -72,12 +72,14 @@ public class AccountServiceImpl implements AccountService {
             if(getac!=null){
                 throw new Exception("账户名已存在。");
             }
-            account.setAccountStatus("0");
-            account=daoTool.saveOne(account,0);
-
-            return account;
         } catch (Exception e) {
-            e.printStackTrace();
+            account.setAccountStatus("0");
+            try {
+                account=daoTool.saveOne(account,0);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            return account;
         }
         return null;
     }

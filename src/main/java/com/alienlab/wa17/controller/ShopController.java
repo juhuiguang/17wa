@@ -245,6 +245,7 @@ public class ShopController {
     @PutMapping(value="/17wa-shop/{account}")
     public ResponseEntity updateShop(@PathVariable int account,@ApiParam @RequestBody ClientTbShop shop){
         try {
+
             shop=shopService.updateShop(account,shop);
             if(shop.getShopId()>0){
                 return ResponseEntity.ok().body(shop);

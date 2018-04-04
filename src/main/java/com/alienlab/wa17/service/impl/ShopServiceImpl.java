@@ -42,6 +42,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ClientTbShop updateShop(int account_id, ClientTbShop shop) throws Exception {
+        if(shop.getShopIsdefault().equals("1")){//如果将门店设置为默认门店，更新其他门店为非默认
+            String sql="update tb_shop set shop_isdefault='0' where 1=1";
+            daoTool.exec(sql,account_id);
+        }
         ClientTbShop s=daoTool.updateOne(account_id,shop);
         return s;
     }
