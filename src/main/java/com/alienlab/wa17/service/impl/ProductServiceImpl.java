@@ -138,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
                 " where b.`product_id`=a.`product_id` AND b.`sku_status` <>'下架' " +
                 " and c.`shop_id`=" +shopId+" "+
                 " and b.`id`=c.`sku_id` " +
-                " and (product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%' )";
+                " and (product_code2 like '%"+keyword+"%' or product_name like '%"+keyword+"%' ) order by a.product_id";
         List<InventoryDetailDto> results=daoTool.getAllList(sql,account,InventoryDetailDto.class);
         return results;
     }

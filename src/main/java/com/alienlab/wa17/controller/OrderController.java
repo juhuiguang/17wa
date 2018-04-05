@@ -1,11 +1,14 @@
 package com.alienlab.wa17.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.alienlab.wa17.controller.util.ExecResult;
 import com.alienlab.wa17.entity.client.ClientTbCustom;
 import com.alienlab.wa17.entity.client.ClientTbOrder;
 import com.alienlab.wa17.entity.client.ClientTbProduct;
+import com.alienlab.wa17.entity.client.ClientTbProductSku;
 import com.alienlab.wa17.entity.client.dto.InventoryDetailDto;
 import com.alienlab.wa17.entity.client.dto.OrderDto;
 import com.alienlab.wa17.entity.client.dto.OrderPrintDto;
@@ -21,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.ws.Response;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +53,36 @@ public class OrderController {
     public ResponseEntity getOnSaleProduct(@PathVariable int account,@PathVariable long shopId,@RequestParam(required = false) String keyword){
         try {
             List<InventoryDetailDto> results=productService.getOnSaleProducts(account,shopId,keyword);
-            return ResponseEntity.ok().body(results);
+            Map<Long,List<ClientTbProductSku>> hashProduct=new HashMap<>();
+            for (InventoryDetailDto result : results) {
+                Long productId=result.getProductId();
+                ClientTbProductSku sku=new ClientTbProductSku();
+                sku.setSizeName(result.getSizeName());
+                sku.setColorName(result.getColorName());
+                sku.setSkuStatus(result.getSkuStatus());
+                sku.setColorId(result.getColorId());
+                sku.setSizeId(result.getSizeId());
+                sku.setSizeType(result.getSizeType());
+                sku.setColorType(result.getColorType());
+                sku.setAmount(result.getAmount());
+                sku.setId(result.getId());
+                if(hashProduct.containsKey(productId)){
+                    List<ClientTbProductSku> skuslist=hashProduct.get(productId);
+                    skuslist.add(sku);
+                    hashProduct.put(productId,skuslist);
+                }else{
+                    List<ClientTbProductSku> skuslist=new ArrayList<>();
+                    skuslist.add(sku);
+                    hashProduct.put(productId,skuslist);
+                }
+
+            }
+            JSONArray array= JSONArray.parseArray(JSON.toJSONString(results));
+            for(int i=0;i<array.size();i++){
+                JSONObject item=array.getJSONObject(i);
+                item.put("skuslist",hashProduct.get(item.getLong("productId")));
+            }
+            return ResponseEntity.ok().body(array);
         } catch (Exception e) {
             e.printStackTrace();
             ExecResult er=new ExecResult(false,e.getMessage());

@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                 if(productName.equals("抹零")){
                     //odd=detail.getFloat("total_price");
                 }else if(productName.equals("核销")){//处理核销
-                    recharge=detail.getFloat("order_recharge");
+                    recharge=orderinfo.getFloat("order_recharge");
                 }else{//一般商品的请求,验证库存是否可以满足下单
                     boolean validate=validateInventory(account,shopId,detail.getLong("sku_id"),detail.getInteger("detail_amount"));
                     if(!validate){

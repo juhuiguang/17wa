@@ -323,8 +323,8 @@ public class InventoryServiceImpl implements InventoryService {
             msg.setMsgType("调货");
             msg.setMsgTitle("调货申请");
             msg.setMsgTypeLink("dispatch");
-            msg.setToShop(Long.valueOf(toShopId).intValue());
-            msg.setFromShop(Long.valueOf(fromShopId).intValue());
+            msg.setToShop(Long.valueOf(fromShopId).intValue());
+            msg.setFromShop(Long.valueOf(toShopId).intValue());
             msg.setMsgTime(Timestamp.from(Instant.now()));
             daoTool.saveOne(msg,account);
 
@@ -632,6 +632,8 @@ public class InventoryServiceImpl implements InventoryService {
             //进行库存对比
             setInventory(account,shopid,tempinv.getSkuId(),tempinv.getInventoryAmount(),"重置");
         }
+
+        resetShopInventoryStatus(account,shopid);
         return true;
     }
 
